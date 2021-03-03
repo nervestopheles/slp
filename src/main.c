@@ -1,30 +1,31 @@
-#include <GL/glew.h>
+#include "settings.h"
+#include "foo.c"
 
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-
-#define MAX_VERTEX_MEMORY 512 * 1024
-#define MAX_ELEMENT_MEMORY 128 * 1024
-
-#define NK_IMPLEMENTATION
-#define NK_SDL_GL3_IMPLEMENTATION
-
-#include "../include/nuklear.h"
-#include "../include/nuklear_sdl_gl3.h"
-
-const char *appName = "Lab One";
-const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
-
-const int appWidth = 600;
-const int appHeight = 600;
-
-void calculator(struct nk_context *ctx);
-
-int main(void)
+int main(void) 
 {
-    /* --------------- Vars --------------- */
+    /* --------------- Sets Vars --------------- */
+    double memberArrV[arrLength];
+    double memberArrM[arrLength];
+
+    double complementArrV[arrLength];
+    double complementArrM[arrLength];
+
+    double intersectionArr[arrLength];
+    double unionArr[arrLength];
+
+    double limitedAmountArr[arrLength];
+    double differenceArr[arrLength];
+
+    double multiplicationArr[arrLength];
+    double *cartesianProductArr;
+
+    double minV = 1, maxV = 12;
+    double midV = (minV + maxV) / 2;
+
+    double minM = 300, maxM = 1200;
+    double midM = (minM + maxM) / 2;
+
+    /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
     SDL_GLContext glContext;
     SDL_Event evt;
@@ -35,12 +36,79 @@ int main(void)
     int winWidth = appWidth;
     int winHeight = appHeight;
 
-    int quit = 0;
-
     bgColor.a = 1.0f;
     bgColor.r = 0.10f;
     bgColor.g = 0.10f;
     bgColor.b = 0.10f; 
+
+    /* --------------- Console Output --------------- */
+    printf("\n-------------------- Source Data --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        printf("%10s:  (x%i) | V = %6.3f | M = %.0f \n", 
+                Data[i].name, i+1, Data[i].V, Data[i].M);
+    } 
+    
+    /* Функции Принадлежности */
+    printf("\n-------------------- Membership Functions --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        memberArrV[i] = Membership(Data[i].V, minV, midV, maxV, 1);
+        memberArrM[i] = Membership(Data[i].M, minM, midM, maxM, 0);
+        printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
+                Data[i].name, i+1, memberArrV[i], memberArrM[i]);
+    }
+
+    /* Дополнение | Инверсия */
+    printf("\n-------------------- Complemet --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        complementArrV[i] = Complement(memberArrV[i]);
+        complementArrM[i] = Complement(memberArrM[i]);
+        printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
+                Data[i].name, i+1, complementArrV[i], complementArrM[i]);
+    }
+
+    /* Пересечение | MIN */
+    printf("\n-------------------- Intersection --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        intersectionArr[i] = Intersection(memberArrV[i], memberArrM[i]);
+        printf("  (x%i) | %5.3f \n", i+1, intersectionArr[i]);
+    }
+
+    /* Объединение | MAX */
+    printf("\n-------------------- Union --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        unionArr[i] = Union(memberArrV[i], memberArrM[i]);
+        printf("  (x%i) | %5.3f \n", i+1, unionArr[i]);
+    }
+
+    /* Разность */
+    printf("\n-------------------- Difference --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        differenceArr[i] = Difference(memberArrV[i], memberArrM[i]);
+        printf("  (x%i) | %5.3f \n", i+1, differenceArr[i]);
+    }
+
+    /* Ограниченная Сумма */
+    printf("\n-------------------- Limited Amount --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        limitedAmountArr[i] = LimitedAmount(memberArrV[i], memberArrM[i]);
+        printf("  (x%i) | %5.3f \n", i+1, limitedAmountArr[i]);
+    }
+
+    /* Алгебраическое произведение */
+    printf("\n-------------------- Multiplication --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        multiplicationArr[i] = Multiplication(memberArrV[i], memberArrM[i]);
+        printf("  (x%i) | %5.3f \n", i+1, multiplicationArr[i]);
+    }
+
+    /* Декартово | Прямое произведение */
+    printf("\n-------------------- Cartesian Product --------------------\n\n"); 
+    cartesianProductArr = CartesianProduct(memberArrV, memberArrM);
+    for (int i = 0; i < arrLength*arrLength; i++) {
+        printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
+    }
+
+    printf("\n-------------------------------------------------------------\n");
 
     /* --------------- Setup --------------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
@@ -66,14 +134,15 @@ int main(void)
     nk_style_set_font(ctx, &font->handle);
 
     /* --------------- Loop --------------- */
-    while (!quit) {
+    for (int quit = 0; !quit;) 
+    {
         nk_input_begin(ctx);
         while(SDL_PollEvent(&evt)) {
-            if (evt.type == SDL_QUIT) goto exit;
+            if (evt.type == SDL_QUIT) quit = 1;
             nk_sdl_handle_event(&evt);
         } nk_input_end(ctx);
 
-        calculator(ctx);
+
 
         SDL_GetWindowSize(window, &winWidth, &winHeight);
         glViewport(0, 0, winWidth, winHeight);
@@ -85,7 +154,8 @@ int main(void)
     }
 
     /* --------------- Exit --------------- */
-exit:
+    free(cartesianProductArr);
+
     nk_sdl_shutdown();
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
@@ -95,63 +165,3 @@ exit:
     return 0;
 }
 
-void calculator(struct nk_context *ctx)
-{
-    if (nk_begin(ctx, "Calculator", nk_rect(0, 0, appWidth, appHeight), NK_WINDOW_NO_SCROLLBAR))
-    {
-        static int set = 0, prev = 0, op = 0;
-        static const char numbers[] = "789456123";
-        static const char ops[] = "+-*/";
-        static double a = 0, b = 0;
-        static double *current = &a;
-
-        size_t i = 0;
-        int solve = 0;
-        int len; char buffer[256];
-        nk_layout_row_dynamic(ctx, 40, 1);
-        len = snprintf(buffer, 256, "%.2f", *current);
-        nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_float);
-        buffer[len] = 0;
-        *current = atof(buffer);
-
-        nk_layout_row_dynamic(ctx, 35, 4);
-        for (i = 0; i < 16; ++i) {
-            if (i >= 12 && i < 15) {
-                if (i > 12) continue;
-                if (nk_button_label(ctx, "C")) {
-                    a = b = op = 0; current = &a; set = 0;
-                } if (nk_button_label(ctx, "0")) {
-                    *current = *current*10.0f; set = 0;
-                } if (nk_button_label(ctx, "=")) {
-                    solve = 1; prev = op; op = 0;
-                }
-            } else if (((i+1) % 4)) {
-                if (nk_button_text(ctx, &numbers[(i/4)*3+i%4], 1)) {
-                    *current = *current * 10.0f + numbers[(i/4)*3+i%4] - '0';
-                    set = 0;
-                }
-            } else if (nk_button_text(ctx, &ops[i/4], 1)) {
-                if (!set) {
-                    if (current != &b) {
-                        current = &b;
-                    } else {
-                        prev = op;
-                        solve = 1;
-                    }
-                }
-                op = ops[i/4];
-                set = 1;
-            }
-        }
-        if (solve) {
-            if (prev == '+') a = a + b;
-            if (prev == '-') a = a - b;
-            if (prev == '*') a = a * b;
-            if (prev == '/') a = a / b;
-            current = &a;
-            if (set) current = &b;
-            b = 0; set = 0;
-        }
-    }
-    nk_end(ctx);
-}

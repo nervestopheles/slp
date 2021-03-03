@@ -1,1 +1,4 @@
+*.swp
 debug/
+backup/
+old/
