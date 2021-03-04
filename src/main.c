@@ -144,6 +144,7 @@ int main(void)
     nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 
     /* --------------- Loop --------------- */
+    int DrawSet = 0;
     while (PollEvent(ctx, evt))
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -151,29 +152,13 @@ int main(void)
         glLineWidth(2);
         DrawGrid();
 
-        glLineWidth(3);
-        glBegin(GL_LINES);
-        {
-            glColor3f(1,0,0);
-            for (int i = 0; i < arrLength-1; i++) {
-                glVertex2f(i, memberArrV[i]);
-                glVertex2f(i+1, memberArrV[i+1]);
-            }
-            glColor3f(0,1,0);
-            for (int i = 0; i < arrLength-1; i++) {
-                glVertex2f(i, memberArrM[i]);
-                glVertex2f(i+1, memberArrM[i+1]);
-            }
-        } glEnd();
-
-        glPointSize(6);
-        glBegin(GL_POINTS);
-            for (int i = 0; i < arrLength; i++) {
-                glColor4f(1,1,1,1);
-                glVertex2f(i, memberArrV[i]);
-                glVertex2f(i, memberArrM[i]);
-            }
-        glEnd();
+        if (DrawSet == 1) {
+            GraphDraw(arrLength, memberArrV, 1, 0, 0);
+            GraphDraw(arrLength, memberArrM, 0, 1, 0);
+        } else if (DrawSet == 2) {
+            GraphDraw(arrLength, complementArrV, 1, 0, 1);
+            GraphDraw(arrLength, complementArrM, 1, 1, 0);
+        }
 
         if (nk_begin(ctx, "Graph", nk_rect(5, 5, 388, 790),
             NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
@@ -181,7 +166,15 @@ int main(void)
             NK_WINDOW_SCALABLE | NK_WINDOW_NO_SCROLLBAR))
         {
             nk_layout_row_static(ctx, 45, 374, 1);
-            if (nk_button_label(ctx, "button")) printf("button pressed!\n");
+            if (nk_button_label(ctx, "Membership Function Graph")) {
+                DrawSet = 1;
+                printf("button pressed!\n");
+            }
+            nk_layout_row_static(ctx, 45, 374, 1);
+            if (nk_button_label(ctx, "Complement Function Graph")) {
+                DrawSet = 2;
+                printf("button pressed!\n");
+            }
         } 
         nk_end(ctx);
 

@@ -99,3 +99,25 @@ int PollEvent(struct nk_context *ctx, SDL_Event evt)
     } nk_input_end(ctx); 
     return 1;
 }
+
+void GraphDraw(int arrLength, double set[],
+        int colorR, int colorG, int colorB) 
+{
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    {
+        glColor3f(colorR, colorG, colorB);
+        for (int i = 0; i < arrLength-1; i++) {
+            glVertex2f(i, set[i]);
+            glVertex2f(i+1, set[i+1]);
+        }
+    } glEnd();
+    
+    glPointSize(9);
+    glBegin(GL_POINTS);
+        for (int i = 0; i < arrLength; i++) {
+            glColor4f(1,1,1,1);
+            glVertex2f(i, set[i]);
+        }
+    glEnd();
+}
