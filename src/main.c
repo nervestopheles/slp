@@ -40,12 +40,9 @@ int main(void)
     SDL_GLContext glContext;
     SDL_Event evt;
 
-    int winWidth = 1200;
-    int winHeight = 800;
-
+    int drawSet = 0;
     struct nk_context *ctx;
-    //struct nk_colorf bgColor;
-    struct bgColor bg = {0.08, 0.08, 0.1, 0};
+    struct bgColor bg = {0.08, 0.08, 0.1};
 
     /* --------------- Console Output --------------- */
     printf("\n-------------------- Source Data --------------------\n\n"); 
@@ -126,12 +123,10 @@ int main(void)
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
+    gluOrtho2D(setGlRegion);
+    glEnable(GL_POINT_SMOOTH);
 
-    glClearColor(bg.r, bg.g, bg.b, 0);
-    gluOrtho2D(-3, 6.035, -0.008, 1.008);
-
-    glEnable(GL_BLEND); glEnable(GL_POINT_SMOOTH);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(bg.r, bg.g, bg.b, 1);
 
     ctx = nk_sdl_init(window);
     struct nk_font_atlas *atlas;
@@ -144,39 +139,44 @@ int main(void)
     nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 
     /* --------------- Loop --------------- */
-    int DrawSet = 0;
     while (PollEvent(ctx, evt))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
         glLineWidth(2);
-        DrawGrid();
 
-        if (DrawSet == 1) {
-            GraphDraw(arrLength, memberArrV, 1, 0, 0);
-            GraphDraw(arrLength, memberArrM, 0, 1, 0);
-        } else if (DrawSet == 2) {
-            GraphDraw(arrLength, complementArrV, 1, 0, 1);
-            GraphDraw(arrLength, complementArrM, 1, 1, 0);
-        }
+        if (drawSet == _membership) {
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+        } else if (drawSet == _complement) {
+            DrawGrid();
+            DrawGraph(arrLength, complementArrV, colorGraph_V);
+            DrawGraph(arrLength, complementArrM, colorGraph_M);
+        } else if (drawSet == _intersection) {
+            FillGraph(arrLength, intersectionArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, intersectionArr, colorGraph_VM);
+        } else if (drawSet == _union) {
+            FillGraph(arrLength, unionArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, unionArr, colorGraph_VM);
+        } else DrawGrid();
 
-        if (nk_begin(ctx, "Graph", nk_rect(5, 5, 388, 790),
-            NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
-            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
-            NK_WINDOW_SCALABLE | NK_WINDOW_NO_SCROLLBAR))
+        if (nk_begin(ctx, "Menu", nk_rect(7, 6, 383, 785),
+                NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
+                NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)) 
         {
-            nk_layout_row_static(ctx, 45, 374, 1);
-            if (nk_button_label(ctx, "Membership Function Graph")) {
-                DrawSet = 1;
-                printf("button pressed!\n");
-            }
-            nk_layout_row_static(ctx, 45, 374, 1);
-            if (nk_button_label(ctx, "Complement Function Graph")) {
-                DrawSet = 2;
-                printf("button pressed!\n");
-            }
-        } 
-        nk_end(ctx);
+            nk_layout_row_dynamic(ctx, 40, 2);
+            if (nk_button_label(ctx, "Membership Functions")) drawSet = _membership;
+            if (nk_button_label(ctx, "Complement Functions")) drawSet = _complement;
+            if (nk_button_label(ctx, "Intersection Function")) drawSet = _intersection;
+            if (nk_button_label(ctx, "Clear")) drawSet = _empty;
+            if (nk_button_label(ctx, "Union Function")) drawSet = _union;
+        } nk_end(ctx);
 
         glFlush();
         nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);

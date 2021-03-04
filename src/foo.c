@@ -76,9 +76,9 @@ double* CartesianProduct(double arrX[], double arrY[])
 /* ----------------- Graphics Foo ----------------- */
 void DrawGrid()
 {
+    glColor3f(0.3,0.3,0.3);
+    glLineWidth(2);
     glBegin(GL_LINES);
-    {
-        glColor3f(0.3,0.3,0.3);
         for (int i = 0; i < 7; i++) {
             glVertex2f(i, 0); 
             glVertex2f(i, 1);
@@ -87,7 +87,7 @@ void DrawGrid()
             glVertex2f(0, i); 
             glVertex2f(6, i);
         }
-    } glEnd();
+    glEnd();
 }
 
 int PollEvent(struct nk_context *ctx, SDL_Event evt)
@@ -100,24 +100,56 @@ int PollEvent(struct nk_context *ctx, SDL_Event evt)
     return 1;
 }
 
-void GraphDraw(int arrLength, double set[],
-        int colorR, int colorG, int colorB) 
+void DrawGraph(int arrLength, double set[],
+        double colorR, double colorG, double colorB) 
 {
+    glColor3f(colorR, colorG, colorB);
+
     glLineWidth(3);
     glBegin(GL_LINES);
-    {
-        glColor3f(colorR, colorG, colorB);
         for (int i = 0; i < arrLength-1; i++) {
             glVertex2f(i, set[i]);
             glVertex2f(i+1, set[i+1]);
         }
-    } glEnd();
-    
-    glPointSize(9);
+    glEnd();
+
+    glPointSize(8);
     glBegin(GL_POINTS);
         for (int i = 0; i < arrLength; i++) {
-            glColor4f(1,1,1,1);
+            glColor3f(1,1,1);
             glVertex2f(i, set[i]);
         }
     glEnd();
+}
+
+void FillGraph(int arrLength, double set[],
+        double colorR, double colorG, double colorB) 
+{
+    glColor3f(colorR, colorG, colorB);
+    for (int i = 0; i < arrLength-1; i++)
+    {
+        if (set[i] < set[i+1]){
+            glBegin(GL_POLYGON);
+                glVertex2f(i, set[i]);
+                glVertex2f(i, 0);
+                glVertex2f(i+1, set[i+1]);
+            glEnd();
+            glBegin(GL_POLYGON);
+                glVertex2f(i, 0);
+                glVertex2f(i+1, 0);
+                glVertex2f(i+1, set[i+1]);
+            glEnd();
+        } else {
+            glBegin(GL_POLYGON);
+                glVertex2f(i, set[i]);
+                glVertex2f(i, 0);
+                glVertex2f(i+1, 0);
+            glEnd();
+            glBegin(GL_POLYGON);
+                glVertex2f(i, set[i]);
+                glVertex2f(i+1, set[i+1]);
+                glVertex2f(i+1, 0);
+            glEnd();
+        }
+    }
 }

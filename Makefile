@@ -1,14 +1,18 @@
 BIN = app
-DIR = ./debug
+DIR = ./build
 
 SRC = ./src/main.c
 
 CC = gcc
-CFLAGS = -O0 -o $(DIR)/$(BIN) -Wall -g #-std=c99 -pedantic
+CFLAGS-D = -O0 -o $(DIR)/$(BIN) -Wall -g
+CFLAGS-R = -O2 -o $(DIR)/$(BIN)
 LIBS = -lSDL2 -lGLEW -lGLU -lGL -lm
 
-build: $(DIR) $(SRC)
-	$(CC) $(SRC) $(CFLAGS) $(LIBS)
+debug: $(DIR) $(SRC)
+	$(CC) $(SRC) $(CFLAGS-D) $(LIBS)
+
+release:
+	$(CC) $(SRC) $(CFLAGS-R) $(LIBS)
 
 $(DIR):
 	mkdir $(DIR)
