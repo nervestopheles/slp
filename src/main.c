@@ -25,21 +25,27 @@ int main(void)
     double minM = 300, maxM = 1200;
     double midM = (minM + maxM) / 2;
 
+    struct obj Data[] = {
+        { "K/SQ 2"   , 0.3  , 110   }, 
+        { "K/SQ 3"   , 0.9  , 200   }, 
+        { "K/SQ 5"   , 4.5  , 380   }, 
+        { "CM-243 V" , 4    , 550   }, 
+        { "CM-489 B" , 8    , 1220  }, 
+        { "K/SQ 7"   , 13.5 , 1230  }, 
+        { "K/SQ 10"  , 38   , 2700  }
+    };
+
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
     SDL_GLContext glContext;
     SDL_Event evt;
 
-    struct nk_context *ctx;
-    struct nk_colorf bgColor;
-    
-    int winWidth = appWidth;
-    int winHeight = appHeight;
+    int winWidth = 1200;
+    int winHeight = 800;
 
-    bgColor.a = 1.0f;
-    bgColor.r = 0.10f;
-    bgColor.g = 0.10f;
-    bgColor.b = 0.10f; 
+    struct nk_context *ctx;
+    //struct nk_colorf bgColor;
+    struct bgColor bg = {0.08, 0.08, 0.1, 0};
 
     /* --------------- Console Output --------------- */
     printf("\n-------------------- Source Data --------------------\n\n"); 
@@ -108,47 +114,78 @@ int main(void)
         printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
     }
 
-    printf("\n-------------------------------------------------------------\n");
-
     /* --------------- Setup --------------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
     window = SDL_CreateWindow(
             appName, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             winWidth, winHeight, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-
+            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN /* | SDL_WINDOW_RESIZABLE */ );
     glContext = SDL_GL_CreateContext(window);
-    SDL_GetWindowSize(window, &winWidth, &winHeight);
 
-    glViewport(0, 0, winWidth, winHeight);
-    glewExperimental = 1;
     glewInit();
+
+    glClearColor(bg.r, bg.g, bg.b, 0);
+    gluOrtho2D(-3, 6.035, -0.008, 1.008);
+
+    glEnable(GL_BLEND); glEnable(GL_POINT_SMOOTH);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ctx = nk_sdl_init(window);
     struct nk_font_atlas *atlas;
+
     nk_sdl_font_stash_begin(&atlas);
     struct nk_font *font = nk_font_atlas_add_from_file(atlas, fontPath, 12, 0);
     nk_sdl_font_stash_end();
+
     nk_style_set_font(ctx, &font->handle);
+    nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 
     /* --------------- Loop --------------- */
-    for (int quit = 0; !quit;) 
+    while (PollEvent(ctx, evt))
     {
-        nk_input_begin(ctx);
-        while(SDL_PollEvent(&evt)) {
-            if (evt.type == SDL_QUIT) quit = 1;
-            nk_sdl_handle_event(&evt);
-        } nk_input_end(ctx);
-
-
-
-        SDL_GetWindowSize(window, &winWidth, &winHeight);
-        glViewport(0, 0, winWidth, winHeight);
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
+        glLineWidth(2);
+        DrawGrid();
+
+        glLineWidth(3);
+        glBegin(GL_LINES);
+        {
+            glColor3f(1,0,0);
+            for (int i = 0; i < arrLength-1; i++) {
+                glVertex2f(i, memberArrV[i]);
+                glVertex2f(i+1, memberArrV[i+1]);
+            }
+            glColor3f(0,1,0);
+            for (int i = 0; i < arrLength-1; i++) {
+                glVertex2f(i, memberArrM[i]);
+                glVertex2f(i+1, memberArrM[i+1]);
+            }
+        } glEnd();
+
+        glPointSize(6);
+        glBegin(GL_POINTS);
+            for (int i = 0; i < arrLength; i++) {
+                glColor4f(1,1,1,1);
+                glVertex2f(i, memberArrV[i]);
+                glVertex2f(i, memberArrM[i]);
+            }
+        glEnd();
+
+        if (nk_begin(ctx, "Graph", nk_rect(5, 5, 388, 790),
+            NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
+            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
+            NK_WINDOW_SCALABLE | NK_WINDOW_NO_SCROLLBAR))
+        {
+            nk_layout_row_static(ctx, 45, 374, 1);
+            if (nk_button_label(ctx, "button")) printf("button pressed!\n");
+        } 
+        nk_end(ctx);
+
+        glFlush();
         nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
         SDL_GL_SwapWindow(window);
     }
@@ -161,7 +198,7 @@ int main(void)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    printf("Goodbye.\n");
+    printf("\nGoodbye.\n");
     return 0;
 }
 

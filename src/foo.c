@@ -1,3 +1,4 @@
+/* Функции Принадлежности */
 double Membership(double x, 
     double min, double mid, double max, char choice)
 {
@@ -19,39 +20,46 @@ double Membership(double x,
     return -1;
 }
 
+/* Дополнение | Инверсия */
 double Complement(double x) 
 { 
     return 1-x; 
 }
 
+/* Алгебраическое произведение */
 double Multiplication(double x, double y) 
 { 
     return x*y; 
 }
 
+/* Ограниченная Сумма */
 double LimitedAmount(double x, double y)
 {
     if (x+y > 1) return 1;
     else return x+y;
 }
 
+/* Пересечение | MIN */
 double Intersection(double x, double y) 
 {
     if (x > y) return y;
     else return x;
 }
 
+/* Объединение | MAX */
 double Union(double x, double y) 
 {
     if (x > y) return x;
     else return y;
 }
 
+/* Разность */
 double Difference(double x, double y) 
 { 
     return Intersection(x, Complement(y)); 
 }
 
+/* Декартово | Прямое произведение */
 double* CartesianProduct(double arrX[], double arrY[])
 {
     double *cartesianProductArr = malloc(sizeof(double)*arrLength*arrLength);
@@ -65,3 +73,29 @@ double* CartesianProduct(double arrX[], double arrY[])
     return cartesianProductArr;
 }
 
+/* ----------------- Graphics Foo ----------------- */
+void DrawGrid()
+{
+    glBegin(GL_LINES);
+    {
+        glColor3f(0.3,0.3,0.3);
+        for (int i = 0; i < 7; i++) {
+            glVertex2f(i, 0); 
+            glVertex2f(i, 1);
+        }
+        for (double i = 0; i <= 1; i += 0.1) {
+            glVertex2f(0, i); 
+            glVertex2f(6, i);
+        }
+    } glEnd();
+}
+
+int PollEvent(struct nk_context *ctx, SDL_Event evt)
+{
+    nk_input_begin(ctx);
+    while(SDL_PollEvent(&evt)) {
+        if (evt.type == SDL_QUIT) return 0;
+        nk_sdl_handle_event(&evt);
+    } nk_input_end(ctx); 
+    return 1;
+}

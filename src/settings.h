@@ -17,23 +17,14 @@
 const char *appName = "Lab One";
 const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
-const int appWidth = 800;
-const int appHeight = 600;
-
 const int arrLength = 7; 
 
 struct obj {
     char *name;
-    double V;
-    double M;
+    double V, M;
 };
 
-struct obj Data[] = {
-    { "K/SQ 2"   , 0.3  , 110   }, 
-    { "K/SQ 3"   , 0.9  , 200   }, 
-    { "K/SQ 5"   , 4.5  , 380   }, 
-    { "CM-243 V" , 4    , 550   }, 
-    { "CM-489 B" , 8    , 1220  }, 
-    { "K/SQ 7"   , 13.5 , 1230  }, 
-    { "K/SQ 10"  , 38   , 2700  }
+struct bgColor {
+    double r,g,b,a;
 };
+

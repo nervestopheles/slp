@@ -4,7 +4,7 @@ DIR = ./debug
 SRC = ./src/main.c
 
 CC = gcc
-CFLAGS = -Wall -O0 -g -o $(DIR)/$(BIN) -std=c99 -pedantic
+CFLAGS = -O0 -o $(DIR)/$(BIN) -Wall -g #-std=c99 -pedantic
 LIBS = -lSDL2 -lGLEW -lGLU -lGL -lm
 
 build: $(DIR) $(SRC)
