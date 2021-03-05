@@ -119,7 +119,7 @@ int main(void)
             appName, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             winWidth, winHeight, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN /* | SDL_WINDOW_RESIZABLE */ );
+            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
@@ -132,7 +132,7 @@ int main(void)
     struct nk_font_atlas *atlas;
 
     nk_sdl_font_stash_begin(&atlas);
-    struct nk_font *font = nk_font_atlas_add_from_file(atlas, fontPath, 12, 0);
+    struct nk_font *font = nk_font_atlas_add_from_file(atlas, fontPath, fontSize, 0);
     nk_sdl_font_stash_end();
 
     nk_style_set_font(ctx, &font->handle);
@@ -142,7 +142,6 @@ int main(void)
     while (PollEvent(ctx, evt))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glLineWidth(2);
 
         if (drawSet == _membership) {
             DrawGrid();
@@ -164,18 +163,42 @@ int main(void)
             DrawGraph(arrLength, memberArrV, colorGraph_V);
             DrawGraph(arrLength, memberArrM, colorGraph_M);
             DrawGraph(arrLength, unionArr, colorGraph_VM);
-        } else DrawGrid();
+        } else if (drawSet == _amount) {
+            FillGraph(arrLength, limitedAmountArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, limitedAmountArr, colorGraph_VM);
+        } else if (drawSet == _difference) {
+            FillGraph(arrLength, differenceArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, complementArrM, colorGraph_M);
+            DrawGraph(arrLength, differenceArr, colorGraph_VM);
+        } else if (drawSet == _multiplication) {
+            FillGraph(arrLength, multiplicationArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, multiplicationArr, colorGraph_VM);
+        }
+        else DrawGrid();
+
 
         if (nk_begin(ctx, "Menu", nk_rect(7, 6, 383, 785),
                 NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
                 NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)) 
         {
-            nk_layout_row_dynamic(ctx, 40, 2);
-            if (nk_button_label(ctx, "Membership Functions")) drawSet = _membership;
-            if (nk_button_label(ctx, "Complement Functions")) drawSet = _complement;
-            if (nk_button_label(ctx, "Intersection Function")) drawSet = _intersection;
+            nk_layout_row_dynamic(ctx, 40, 1);
             if (nk_button_label(ctx, "Clear")) drawSet = _empty;
-            if (nk_button_label(ctx, "Union Function")) drawSet = _union;
+            nk_layout_row_dynamic(ctx, 40, 3);
+            if (nk_button_label(ctx, "Membership")) drawSet = _membership;
+            if (nk_button_label(ctx, "Complement")) drawSet = _complement;
+            if (nk_button_label(ctx, "Intersection")) drawSet = _intersection;
+            if (nk_button_label(ctx, "Union")) drawSet = _union;
+            if (nk_button_label(ctx, "Limited Amount")) drawSet = _amount;
+            if (nk_button_label(ctx, "Difference")) drawSet = _difference;
+            if (nk_button_label(ctx, "Multiplication")) drawSet = _multiplication;
         } nk_end(ctx);
 
         glFlush();

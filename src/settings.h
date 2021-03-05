@@ -8,10 +8,10 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
-#define colorGraph_V 0.75, 0, 0
-#define colorGraph_M 0, 0.75, 0
-#define colorGraph_VM 0, 0.5, 0.5
-#define colorForFill 0, 0.2, 0.2
+#define colorGraph_V 0.6, 0, 0
+#define colorGraph_M 0, 0.6, 0
+#define colorGraph_VM 0, 0.6, 0.6
+#define colorForFill 0, 0.1, 0.15
 
 #define setGlRegion -3, 6.05, -0.01, 1.008
 
@@ -23,6 +23,7 @@
 
 const char *appName = "Lab One";
 const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
+const int fontSize = 14;
 
 const int winWidth = 1200;
 const int winHeight = 800;
@@ -34,6 +35,9 @@ const int _membership = 1;
 const int _complement = 2;
 const int _intersection = 3;
 const int _union = 4;
+const int _amount = 5;
+const int _difference = 6;
+const int _multiplication = 7;
 
 struct obj {
     char *name;
