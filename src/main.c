@@ -41,8 +41,11 @@ int main(void)
     SDL_Event evt;
 
     int drawSet = 0;
+
     struct nk_context *ctx;
     struct bgColor bg = {0.08, 0.08, 0.1};
+    struct glRegion camera = {-3, 6.05, -0.01, 1.008};
+    struct nkPosition pos = {6, 6, 385, winHeight-6*2};
 
     /* --------------- Console Output --------------- */
     printf("\n-------------------- Source Data --------------------\n\n"); 
@@ -123,7 +126,7 @@ int main(void)
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
-    gluOrtho2D(setGlRegion);
+    gluOrtho2D(camera.xL, camera.xR, camera.yD, camera.yU);
     glEnable(GL_POINT_SMOOTH);
 
     glClearColor(bg.r, bg.g, bg.b, 1);
@@ -139,7 +142,7 @@ int main(void)
     nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 
     /* --------------- Loop --------------- */
-    while (PollEvent(ctx, evt))
+    while (PollEvent(&camera, ctx, evt))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -181,11 +184,9 @@ int main(void)
             DrawGraph(arrLength, memberArrV, colorGraph_V);
             DrawGraph(arrLength, memberArrM, colorGraph_M);
             DrawGraph(arrLength, multiplicationArr, colorGraph_VM);
-        }
-        else DrawGrid();
+        } else DrawGrid();
 
-
-        if (nk_begin(ctx, "Menu", nk_rect(7, 6, 383, 785),
+        if (nk_begin(ctx, "Menu", nk_rect(pos.x1, pos.y1, pos.x2, pos.y2),
                 NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
                 NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)) 
         {
@@ -217,4 +218,3 @@ int main(void)
     printf("\nGoodbye.\n");
     return 0;
 }
-

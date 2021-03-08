@@ -4,7 +4,7 @@ DIR = ./build
 SRC = ./src/main.c
 
 CC = gcc
-CFLAGS-D = -O0 -o $(DIR)/$(BIN) -Wall -g
+CFLAGS-D = -O0 -o $(DIR)/$(BIN) -Wall -g3
 CFLAGS-R = -O2 -o $(DIR)/$(BIN)
 LIBS = -lSDL2 -lGLEW -lGLU -lGL -lm
 

@@ -90,11 +90,53 @@ void DrawGrid()
     glEnd();
 }
 
-int PollEvent(struct nk_context *ctx, SDL_Event evt)
+int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
 {
     nk_input_begin(ctx);
     while(SDL_PollEvent(&evt)) {
-        if (evt.type == SDL_QUIT) return 0;
+        switch (evt.type) {
+            case SDL_QUIT: 
+                return 0;
+            case SDL_KEYDOWN:
+                switch (evt.key.keysym.sym) {
+                    case SDLK_EQUALS:
+                        camera->xL += 0.7;
+                        camera->xR -= 0.7;
+                        camera->yD += 0.1;
+                        camera->yU -= 0.1;
+                        break;
+                    case SDLK_MINUS: 
+                        camera->xL -= 0.7;
+                        camera->xR += 0.7;
+                        camera->yD -= 0.1;
+                        camera->yU += 0.1;
+                        break;
+                    case SDLK_h:
+                        camera->xL -= 0.7;
+                        camera->xR -= 0.7;
+                        break;
+                    case SDLK_j:
+                        camera->yD -= 0.1;
+                        camera->yU -= 0.1;
+                        break;
+                    case SDLK_k:
+                        camera->yD += 0.1;
+                        camera->yU += 0.1;
+                        break;
+                     case SDLK_l:
+                        camera->xL += 0.7;
+                        camera->xR += 0.7;
+                        break;
+                    case SDLK_q:
+                        return 0;
+                } 
+                glLoadIdentity();
+                gluOrtho2D(camera->xL, camera->xR, camera->yD, camera->yU);
+                glMatrixMode(GL_MODELVIEW);
+                break;
+            default:
+                break;
+        }
         nk_sdl_handle_event(&evt);
     } nk_input_end(ctx); 
     return 1;
@@ -104,16 +146,14 @@ void DrawGraph(int arrLength, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
-
-    glLineWidth(3);
+    glLineWidth(lineWidth);
     glBegin(GL_LINES);
         for (int i = 0; i < arrLength-1; i++) {
             glVertex2f(i, set[i]);
             glVertex2f(i+1, set[i+1]);
         }
     glEnd();
-
-    glPointSize(8);
+    glPointSize(pointSize);
     glBegin(GL_POINTS);
         for (int i = 0; i < arrLength; i++) {
             glColor3f(colorR+0.4, colorG+0.4, colorB+0.4);
@@ -128,10 +168,7 @@ void FillGraph(int arrLength, double set[],
     glColor3f(colorR, colorG, colorB);
     glBegin(GL_QUAD_STRIP);
     for (int i = 0; i < arrLength; i++) {
-        /* Градиент, погчамп */
-        //glColor3f(0.1,0.1,0.1);
         glVertex2f(i, 0);
-        //glColor3f(0.1+set[i], 0.1+set[i], 0.1+set[i]);
         glVertex2f(i, set[i]);
     }
     glEnd();

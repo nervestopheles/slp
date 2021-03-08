@@ -13,8 +13,6 @@
 #define colorGraph_VM 0, 0.6, 0.6
 #define colorForFill 0, 0.1, 0.15
 
-#define setGlRegion -3, 6.05, -0.01, 1.008
-
 #define NK_IMPLEMENTATION
 #define NK_SDL_GL3_IMPLEMENTATION
 
@@ -23,12 +21,14 @@
 
 const char *appName = "Lab One";
 const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
+
 const int fontSize = 14;
+const int arrLength = 7; 
+const int pointSize = 8;
+const int lineWidth = 3;
 
 const int winWidth = 1200;
 const int winHeight = 800;
-
-const int arrLength = 7; 
 
 const int _empty = 0;
 const int _membership = 1;
@@ -48,3 +48,11 @@ struct bgColor {
     double r,g,b;
 };
 
+struct glRegion
+{
+    double xL, xR, yD, yU;
+};
+
+struct nkPosition {
+    int x1, y1, x2, y2;
+};
