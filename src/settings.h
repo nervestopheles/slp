@@ -31,8 +31,7 @@ struct bgColor {
     double r,g,b;
 };
 
-struct glRegion
-{
+struct glRegion {
     double xL, xR, yD, yU;
 };
 
@@ -52,15 +51,17 @@ const struct glRegion defaultGlRegion = { -3, 6.05, -0.01, 1.008 };
 const char *appName = "Lab One";
 const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
-const char *setsArr[] =  {"ArrV","ArrM"};
+const char *setsArr[] =  {"Capacity", "Mass"};
 
-const int fontSize = 14;
-const int arrLength = 7; 
-const int pointSize = 8;
-const int lineWidth = 3;
-
+const int zoomBorderMin = 12;
+const int zoomBorderMax = 8;
 const double cameraStepX = 0.1;
 const double cameraStepY = 0.01;
+
+const int graphLineWidth = 3;
+const int graphPointSize = 8;
+const int fontSize = 14;
+const int arrLength = 7; 
 
 const int winWidth = 1200;
 const int winHeight = 800;

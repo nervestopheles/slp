@@ -1,5 +1,6 @@
 #include "settings.h"
-#include "foo.c"
+#include "mathFoo.c"
+#include "graphFoo.c"
 
 int main(void) 
 {
@@ -10,14 +11,14 @@ int main(void)
     double midV = (minV + maxV) / 2,  midM = (minM + maxM) / 2;
 
     double memberArrV[arrLength], memberArrM[arrLength];
-    double complementArrV[arrLength], complementArrM[arrLength];
+    double supplementArrV[arrLength], supplementArrM[arrLength];
 
     double intersectionArr[arrLength];
     double unionArr[arrLength];
     double limitedAmountArr[arrLength];
     double differenceArr[arrLength];
     double multiplicationArr[arrLength];
-    double *cartesianProductArr;
+    double cartesianProductArr[arrLength*arrLength];
 
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
@@ -26,7 +27,7 @@ int main(void)
 
     int drawSet = 0;
     int alphaMessage = 0;
-    double alphaSlice = 0;
+    double alphaCut = 0;
 
     struct nk_context *ctx;
     struct glRegion camera = defaultGlRegion;
@@ -49,12 +50,12 @@ int main(void)
     }
 
     /* Дополнение | Инверсия */
-    printf("\n-------------------- Complemet --------------------\n\n"); 
+    printf("\n-------------------- Supplement --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
-        complementArrV[i] = Complement(memberArrV[i]);
-        complementArrM[i] = Complement(memberArrM[i]);
+        supplementArrV[i] = Supplement(memberArrV[i]);
+        supplementArrM[i] = Supplement(memberArrM[i]);
         printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
-                defaultData[i].name, i+1, complementArrV[i], complementArrM[i]);
+                defaultData[i].name, i+1, supplementArrV[i], supplementArrM[i]);
     }
 
     /* Пересечение | MIN */
@@ -94,8 +95,8 @@ int main(void)
 
     /* Декартово | Прямое произведение */
     printf("\n-------------------- Cartesian Product --------------------\n\n"); 
-    cartesianProductArr = CartesianProduct(memberArrV, memberArrM);
-    for (int i = 0; i < arrLength*arrLength; i++) {
+    CartesianProduct(memberArrV, memberArrM, cartesianProductArr);
+    for (int i = 0; i < sizeof(cartesianProductArr)/sizeof(double); i++) {
         printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
     }
 
@@ -138,8 +139,8 @@ int main(void)
             DrawGraph(arrLength, memberArrM, colorGraph_M);
         } else if (drawSet == _supplement) {
             DrawGrid();
-            DrawGraph(arrLength, complementArrV, colorGraph_V);
-            DrawGraph(arrLength, complementArrM, colorGraph_M);
+            DrawGraph(arrLength, supplementArrV, colorGraph_V);
+            DrawGraph(arrLength, supplementArrM, colorGraph_M);
         } else if (drawSet == _intersection) {
             FillGraph(arrLength, intersectionArr, colorForFill);
             DrawGrid();
@@ -162,7 +163,7 @@ int main(void)
             FillGraph(arrLength, differenceArr, colorForFill);
             DrawGrid();
             DrawGraph(arrLength, memberArrV, colorGraph_V);
-            DrawGraph(arrLength, complementArrM, colorGraph_M);
+            DrawGraph(arrLength, supplementArrM, colorGraph_M);
             DrawGraph(arrLength, differenceArr, colorGraph_VM);
         } else if (drawSet == _multiplication) {
             FillGraph(arrLength, multiplicationArr, colorForFill);
@@ -172,12 +173,12 @@ int main(void)
             DrawGraph(arrLength, multiplicationArr, colorGraph_VM);
         } else DrawGrid();
 
-        MainMenu(ctx, &drawSet, &alphaMessage, &alphaSlice, &currentArr);
+        MainMenu(ctx, &drawSet, &alphaMessage, &alphaCut, &currentArr);
         if (alphaMessage) {
             if (currentArr == 0) 
-                AlphaMessage(ctx, &alphaMessage, memberArrV, alphaSlice);
+                AlphaMessage(ctx, &alphaMessage, memberArrV, alphaCut);
             else if (currentArr == 1)
-                AlphaMessage(ctx, &alphaMessage, memberArrM, alphaSlice);
+                AlphaMessage(ctx, &alphaMessage, memberArrM, alphaCut);
         }
 
         glFlush();
@@ -186,8 +187,6 @@ int main(void)
     }
 
     /* --------------- Exit --------------- */
-    free(cartesianProductArr);
-
     nk_sdl_shutdown();
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);

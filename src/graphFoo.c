@@ -1,86 +1,5 @@
-/* Функции Принадлежности */
-double Membership(double x, 
-    double min, double mid, double max, char choice)
-{
-    if (choice) {
-        if (x <= min) return 0;
-        else if (x > min && x <= mid) 
-            return 2.0*((x-min)/(max-min))*((x-min)/(max-min));
-        else if (x > mid && x <  max) 
-            return 1.0-2.0*((x-max)/(max-min))*((x-max)/(max-min));
-        else return 1.0;
-    } else {
-        if (x <= min) return 1.0;
-        else if (x > min && x <= mid) 
-            return 1.0+2.0*((x-max)/(max-min))*((x-min)/(max-min));
-        else if (x > mid && x <  max) 
-            return 2.0*((x-min)/(max-min))*((x-max)/(max-min));
-        else return 0;
-    }
-    return -1;
-}
-
-/* Дополнение | Инверсия */
-double Complement(double x) 
-{ 
-    return 1-x; 
-}
-
-/* Алгебраическое произведение */
-double Multiplication(double x, double y) 
-{ 
-    return x*y; 
-}
-
-/* Ограниченная Сумма */
-double LimitedAmount(double x, double y)
-{
-    if (x+y > 1) return 1;
-    else return x+y;
-}
-
-/* Пересечение | MIN */
-double Intersection(double x, double y) 
-{
-    if (x > y) return y;
-    else return x;
-}
-
-/* Объединение | MAX */
-double Union(double x, double y) 
-{
-    if (x > y) return x;
-    else return y;
-}
-
-/* Разность */
-double Difference(double x, double y) 
-{ 
-    return Intersection(x, Complement(y)); 
-}
-
-/* Декартово | Прямое произведение */
-double* CartesianProduct(double arrX[], double arrY[])
-{
-    double *cartesianProductArr = malloc(sizeof(double)*arrLength*arrLength);
-    int step = 0;
-    for (int i = 0; i < arrLength; i++) {
-        for (int j = 0; j < arrLength; j++) {
-            *(cartesianProductArr+step) = arrX[i] * arrY[j];
-            step++;
-        }
-    }
-    return cartesianProductArr;
-}
-
-/* Альфа Срез */
-int alpha(double x, double slice)
-{
-    if (x >= slice) return 1;
-    return 0;
-}
-
 /* ----------------- Graphics Foo ----------------- */
+
 int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
 {
     nk_input_begin(ctx);
@@ -91,16 +10,21 @@ int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
             case SDL_KEYDOWN:
                 switch (evt.key.keysym.sym) {
                     case SDLK_o:
-                        camera->xL += cameraStepX;
-                        camera->xR -= cameraStepX;
-                        camera->yD += cameraStepY;
-                        camera->yU -= cameraStepY;
+                        if (camera->xL+cameraStepX*zoomBorderMax < 
+                                camera->xR-cameraStepX*zoomBorderMax) {
+                            camera->xL += cameraStepX;
+                            camera->xR -= cameraStepX;
+                            camera->yD += cameraStepY;
+                            camera->yU -= cameraStepY;
+                        }
                         break;
                     case SDLK_i: 
-                        camera->xL -= cameraStepX;
-                        camera->xR += cameraStepX;
-                        camera->yD -= cameraStepY;
-                        camera->yU += cameraStepY;
+                        if (camera->xR - camera->xL < zoomBorderMin) {
+                            camera->xL -= cameraStepX;
+                            camera->xR += cameraStepX;
+                            camera->yD -= cameraStepY;
+                            camera->yU += cameraStepY;
+                        }
                         break;
                     case SDLK_h:
                         camera->xL -= cameraStepX;
@@ -156,14 +80,14 @@ void DrawGraph(int arrLength, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
-    glLineWidth(lineWidth);
+    glLineWidth(graphLineWidth);
     glBegin(GL_LINES);
         for (int i = 0; i < arrLength-1; i++) {
             glVertex2f(i, set[i]);
             glVertex2f(i+1, set[i+1]);
         }
     glEnd();
-    glPointSize(pointSize);
+    glPointSize(graphPointSize);
     glBegin(GL_POINTS);
         for (int i = 0; i < arrLength; i++) {
             glColor3f(colorR+0.4, colorG+0.4, colorB+0.4);
@@ -184,12 +108,12 @@ void FillGraph(int arrLength, double set[],
     glEnd();
 }
 
-void AlphaChoice(struct nk_context *ctx, int *alphaMessage, double *slice)
+void SetsChoice(struct nk_context *ctx, int *alphaMessage, double *slice)
 {
     static int len = 5;
-    static char sliceChar[12] = {"0.000"};
-    nk_edit_string(ctx, NK_EDIT_SIMPLE, sliceChar, &len, 12, nk_filter_float);
-    if (nk_button_label(ctx, "Alpha")) *alphaMessage = 1;
+    static char sliceChar[8] = {"0.000"};
+    nk_edit_string(ctx, NK_EDIT_SIMPLE, sliceChar, &len, 6, nk_filter_float);
+    if (nk_button_label(ctx, "Alpha")) *alphaMessage = !*alphaMessage;
     *slice = atof(sliceChar);
 }
 
@@ -200,12 +124,12 @@ void AlphaMessage(struct nk_context *ctx,
     static char strHead[20];
     static char strName[40];
 
-    sprintf(strHead, "Alpha: %4.3f", slice);
+    sprintf(strHead, "Cut: %4.3f", slice);
     if (nk_begin(ctx, strHead, 
-            nk_rect(winWidth / 2 - 75, winHeight / 2 - 120, 190, 210),
+            nk_rect(398, 6, 230, 200),
             NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
             NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
-            NK_WINDOW_NO_SCROLLBAR))
+            NK_WINDOW_NO_SCROLLBAR ))
     {
         for (int i = 0; i < arrLength; i++) {
             if (alpha(arr[i], slice)) {
@@ -217,7 +141,7 @@ void AlphaMessage(struct nk_context *ctx,
         nk_layout_row_dynamic(ctx, 15, 1);
         for (int i = 0; i < arrLength; i++) {
             if (names[i]) {
-                sprintf(strName, "%10s - %6.5f%3c", names[i], arr[i], ' ');
+                sprintf(strName, "x%i: %8s - %6.5f", i, names[i], arr[i]);
                 nk_label(ctx, strName, NK_TEXT_CENTERED);
             }
         }
@@ -239,7 +163,7 @@ void MainMenu(struct nk_context *ctx,
         nk_layout_row_dynamic(ctx, 30, 3);
         *currentArr = nk_combo(ctx, setsArr, 
             NK_LEN(setsArr), *currentArr, 25, nk_vec2(200,200));
-        AlphaChoice(ctx, alphaMessage, slice);
+        SetsChoice(ctx, alphaMessage, slice);
 
         nk_layout_row_dynamic(ctx, 4, 1);
         nk_spacing(ctx, 0);
