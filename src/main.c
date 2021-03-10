@@ -4,36 +4,20 @@
 int main(void) 
 {
     /* --------------- Sets Vars --------------- */
-    double memberArrV[arrLength];
-    double memberArrM[arrLength];
+    int currentArr = 0;
 
-    double complementArrV[arrLength];
-    double complementArrM[arrLength];
+    double minV = 1, maxV = 12,       minM = 300, maxM = 1200;
+    double midV = (minV + maxV) / 2,  midM = (minM + maxM) / 2;
+
+    double memberArrV[arrLength], memberArrM[arrLength];
+    double complementArrV[arrLength], complementArrM[arrLength];
 
     double intersectionArr[arrLength];
     double unionArr[arrLength];
-
     double limitedAmountArr[arrLength];
     double differenceArr[arrLength];
-
     double multiplicationArr[arrLength];
     double *cartesianProductArr;
-
-    double minV = 1, maxV = 12;
-    double midV = (minV + maxV) / 2;
-
-    double minM = 300, maxM = 1200;
-    double midM = (minM + maxM) / 2;
-
-    struct obj Data[] = {
-        { "K/SQ 2"   , 0.3  , 110   }, 
-        { "K/SQ 3"   , 0.9  , 200   }, 
-        { "K/SQ 5"   , 4.5  , 380   }, 
-        { "CM-243 V" , 4    , 550   }, 
-        { "CM-489 B" , 8    , 1220  }, 
-        { "K/SQ 7"   , 13.5 , 1230  }, 
-        { "K/SQ 10"  , 38   , 2700  }
-    };
 
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
@@ -41,26 +25,27 @@ int main(void)
     SDL_Event evt;
 
     int drawSet = 0;
+    int alphaMessage = 0;
+    double alphaSlice = 0;
 
     struct nk_context *ctx;
-    struct bgColor bg = {0.08, 0.08, 0.1};
-    struct glRegion camera = {-3, 6.05, -0.01, 1.008};
-    struct nkPosition pos = {6, 6, 385, winHeight-6*2};
+    struct glRegion camera = defaultGlRegion;
+    struct bgColor bg = {defaultBgColor};
 
     /* --------------- Console Output --------------- */
     printf("\n-------------------- Source Data --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
         printf("%10s:  (x%i) | V = %6.3f | M = %.0f \n", 
-                Data[i].name, i+1, Data[i].V, Data[i].M);
+                defaultData[i].name, i+1, defaultData[i].V, defaultData[i].M);
     } 
     
     /* Функции Принадлежности */
     printf("\n-------------------- Membership Functions --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
-        memberArrV[i] = Membership(Data[i].V, minV, midV, maxV, 1);
-        memberArrM[i] = Membership(Data[i].M, minM, midM, maxM, 0);
+        memberArrV[i] = Membership(defaultData[i].V, minV, midV, maxV, 1);
+        memberArrM[i] = Membership(defaultData[i].M, minM, midM, maxM, 0);
         printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
-                Data[i].name, i+1, memberArrV[i], memberArrM[i]);
+                defaultData[i].name, i+1, memberArrV[i], memberArrM[i]);
     }
 
     /* Дополнение | Инверсия */
@@ -69,7 +54,7 @@ int main(void)
         complementArrV[i] = Complement(memberArrV[i]);
         complementArrM[i] = Complement(memberArrM[i]);
         printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
-                Data[i].name, i+1, complementArrV[i], complementArrM[i]);
+                defaultData[i].name, i+1, complementArrV[i], complementArrM[i]);
     }
 
     /* Пересечение | MIN */
@@ -122,7 +107,8 @@ int main(void)
             appName, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             winWidth, winHeight, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN 
+            /* | SDL_WINDOW_RESIZABLE */ );
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
@@ -150,7 +136,7 @@ int main(void)
             DrawGrid();
             DrawGraph(arrLength, memberArrV, colorGraph_V);
             DrawGraph(arrLength, memberArrM, colorGraph_M);
-        } else if (drawSet == _complement) {
+        } else if (drawSet == _supplement) {
             DrawGrid();
             DrawGraph(arrLength, complementArrV, colorGraph_V);
             DrawGraph(arrLength, complementArrM, colorGraph_M);
@@ -186,21 +172,13 @@ int main(void)
             DrawGraph(arrLength, multiplicationArr, colorGraph_VM);
         } else DrawGrid();
 
-        if (nk_begin(ctx, "Menu", nk_rect(pos.x1, pos.y1, pos.x2, pos.y2),
-                NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
-                NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)) 
-        {
-            nk_layout_row_dynamic(ctx, 40, 1);
-            if (nk_button_label(ctx, "Clear")) drawSet = _empty;
-            nk_layout_row_dynamic(ctx, 40, 3);
-            if (nk_button_label(ctx, "Membership")) drawSet = _membership;
-            if (nk_button_label(ctx, "Complement")) drawSet = _complement;
-            if (nk_button_label(ctx, "Intersection")) drawSet = _intersection;
-            if (nk_button_label(ctx, "Union")) drawSet = _union;
-            if (nk_button_label(ctx, "Limited Amount")) drawSet = _amount;
-            if (nk_button_label(ctx, "Difference")) drawSet = _difference;
-            if (nk_button_label(ctx, "Multiplication")) drawSet = _multiplication;
-        } nk_end(ctx);
+        MainMenu(ctx, &drawSet, &alphaMessage, &alphaSlice, &currentArr);
+        if (alphaMessage) {
+            if (currentArr == 0) 
+                AlphaMessage(ctx, &alphaMessage, memberArrV, alphaSlice);
+            else if (currentArr == 1)
+                AlphaMessage(ctx, &alphaMessage, memberArrM, alphaSlice);
+        }
 
         glFlush();
         nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);

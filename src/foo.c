@@ -73,23 +73,14 @@ double* CartesianProduct(double arrX[], double arrY[])
     return cartesianProductArr;
 }
 
-/* ----------------- Graphics Foo ----------------- */
-void DrawGrid()
+/* Альфа Срез */
+int alpha(double x, double slice)
 {
-    glColor3f(0.3,0.3,0.3);
-    glLineWidth(2);
-    glBegin(GL_LINES);
-        for (int i = 0; i < 7; i++) {
-            glVertex2f(i, 0); 
-            glVertex2f(i, 1);
-        }
-        for (double i = 0; i <= 1; i += 0.1) {
-            glVertex2f(0, i); 
-            glVertex2f(6, i);
-        }
-    glEnd();
+    if (x >= slice) return 1;
+    return 0;
 }
 
+/* ----------------- Graphics Foo ----------------- */
 int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
 {
     nk_input_begin(ctx);
@@ -99,33 +90,36 @@ int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
                 return 0;
             case SDL_KEYDOWN:
                 switch (evt.key.keysym.sym) {
-                    case SDLK_EQUALS:
-                        camera->xL += 0.7;
-                        camera->xR -= 0.7;
-                        camera->yD += 0.1;
-                        camera->yU -= 0.1;
+                    case SDLK_o:
+                        camera->xL += cameraStepX;
+                        camera->xR -= cameraStepX;
+                        camera->yD += cameraStepY;
+                        camera->yU -= cameraStepY;
                         break;
-                    case SDLK_MINUS: 
-                        camera->xL -= 0.7;
-                        camera->xR += 0.7;
-                        camera->yD -= 0.1;
-                        camera->yU += 0.1;
+                    case SDLK_i: 
+                        camera->xL -= cameraStepX;
+                        camera->xR += cameraStepX;
+                        camera->yD -= cameraStepY;
+                        camera->yU += cameraStepY;
                         break;
                     case SDLK_h:
-                        camera->xL -= 0.7;
-                        camera->xR -= 0.7;
+                        camera->xL -= cameraStepX;
+                        camera->xR -= cameraStepX;
                         break;
                     case SDLK_j:
-                        camera->yD -= 0.1;
-                        camera->yU -= 0.1;
+                        camera->yD -= cameraStepY;
+                        camera->yU -= cameraStepY;
                         break;
                     case SDLK_k:
-                        camera->yD += 0.1;
-                        camera->yU += 0.1;
+                        camera->yD += cameraStepY;
+                        camera->yU += cameraStepY;
                         break;
-                     case SDLK_l:
-                        camera->xL += 0.7;
-                        camera->xR += 0.7;
+                    case SDLK_l:
+                        camera->xL += cameraStepX;
+                        camera->xR += cameraStepX;
+                        break;
+                    case SDLK_d:
+                        *camera = defaultGlRegion;
                         break;
                     case SDLK_q:
                         return 0;
@@ -140,6 +134,22 @@ int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
         nk_sdl_handle_event(&evt);
     } nk_input_end(ctx); 
     return 1;
+}
+
+void DrawGrid()
+{
+    glColor3f(0.3,0.3,0.3);
+    glLineWidth(2);
+    glBegin(GL_LINES);
+        for (int i = 0; i < 7; i++) {
+            glVertex2f(i, 0); 
+            glVertex2f(i, 1);
+        }
+        for (double i = 0; i <= 1; i += 0.1) {
+            glVertex2f(0, i); 
+            glVertex2f(6, i);
+        }
+    glEnd();
 }
 
 void DrawGraph(int arrLength, double set[],
@@ -172,4 +182,89 @@ void FillGraph(int arrLength, double set[],
         glVertex2f(i, set[i]);
     }
     glEnd();
+}
+
+void AlphaChoice(struct nk_context *ctx, int *alphaMessage, double *slice)
+{
+    static int len = 5;
+    static char sliceChar[12] = {"0.000"};
+    nk_edit_string(ctx, NK_EDIT_SIMPLE, sliceChar, &len, 12, nk_filter_float);
+    if (nk_button_label(ctx, "Alpha")) *alphaMessage = 1;
+    *slice = atof(sliceChar);
+}
+
+void AlphaMessage(struct nk_context *ctx, 
+        int *alphaMessage, double arr[], double slice)
+{
+    static char* names[12];
+    static char strHead[20];
+    static char strName[40];
+
+    sprintf(strHead, "Alpha: %4.3f", slice);
+    if (nk_begin(ctx, strHead, 
+            nk_rect(winWidth / 2 - 75, winHeight / 2 - 120, 190, 210),
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
+            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
+            NK_WINDOW_NO_SCROLLBAR))
+    {
+        for (int i = 0; i < arrLength; i++) {
+            if (alpha(arr[i], slice)) {
+                names[i] = defaultData[i].name;
+            } else names[i] = 0;
+        }
+        nk_layout_row_dynamic(ctx, 1, 4);
+        nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 15, 1);
+        for (int i = 0; i < arrLength; i++) {
+            if (names[i]) {
+                sprintf(strName, "%10s - %6.5f%3c", names[i], arr[i], ' ');
+                nk_label(ctx, strName, NK_TEXT_CENTERED);
+            }
+        }
+    } else *alphaMessage = 0;
+    nk_end(ctx);
+}
+
+void MainMenu(struct nk_context *ctx,
+        int *drawSet, int *alphaMessage, double *slice, int *currentArr)
+{
+    if (nk_begin(ctx, "Menu", nk_rect(defaultNkPosition),
+            NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
+            NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR | 
+            NK_WINDOW_BACKGROUND)) 
+    {
+        nk_layout_row_dynamic(ctx, 4, 1);
+        nk_spacing(ctx, 0);
+
+        nk_layout_row_dynamic(ctx, 30, 3);
+        *currentArr = nk_combo(ctx, setsArr, 
+            NK_LEN(setsArr), *currentArr, 25, nk_vec2(200,200));
+        AlphaChoice(ctx, alphaMessage, slice);
+
+        nk_layout_row_dynamic(ctx, 4, 1);
+        nk_spacing(ctx, 0);
+
+        nk_layout_row_dynamic(ctx, 40, 1);
+        if (nk_button_label(ctx, "Clear")) 
+            *drawSet = _empty;
+
+        nk_layout_row_dynamic(ctx, 4, 1);
+        nk_spacing(ctx, 0);
+
+        nk_layout_row_dynamic(ctx, 40, 3);
+        if (nk_button_label(ctx, "Membership")) 
+            *drawSet = _membership;
+        if (nk_button_label(ctx, "Supplement")) 
+            *drawSet = _supplement;
+        if (nk_button_label(ctx, "Intersection")) 
+            *drawSet = _intersection;
+        if (nk_button_label(ctx, "Union")) 
+            *drawSet = _union;
+        if (nk_button_label(ctx, "Limited Amount")) 
+            *drawSet = _amount;
+        if (nk_button_label(ctx, "Difference")) 
+            *drawSet = _difference;
+        if (nk_button_label(ctx, "Multiplication")) 
+            *drawSet = _multiplication;
+    } nk_end(ctx); 
 }
