@@ -74,8 +74,39 @@ void CartesianProduct(double arrX[], double arrY[], double res[])
 }
 
 /* Альфа Срез */
-int alpha(double x, double cut)
+int Alpha(double x, double cut)
 {
     if (x >= cut) return 1;
     return 0;
+}
+
+/* Нахождение ближайшего четекого множества */
+double Near(double x)
+{
+    if (x >= 0.5) return 1;
+    else  return 0;
+}
+
+/* Расстояние Хемминга */
+void HammingDistance(double x[], double y[], double res[])
+{
+    for (int i = 0; i < arrLength; i++) {
+        res[i] = sqrt((x[i] - y[i])*(x[i] - y[i]));
+    }
+}
+
+/* Линейный индекс нечеткости */
+void LinearIndex(double hamDist[], double res[])
+{
+    for (int i = 0; i < arrLength; i++) {
+        res[i] = (2.0 / arrLength) * hamDist[i];
+    }
+}
+
+/* Квадратичный индекс нечеткости */
+void QuadroIndex(double egerDist[], double res[])
+{
+    for (int i = 0; i < arrLength; i++) {
+        res[i] = (2.0 / sqrt(arrLength)) * egerDist[i];
+    }
 }

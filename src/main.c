@@ -13,6 +13,12 @@ int main(void)
     double memberArrV[arrLength], memberArrM[arrLength];
     double supplementArrV[arrLength], supplementArrM[arrLength];
 
+    double nearArrV[arrLength], nearArrM[arrLength];
+    double hammingDistV[arrLength], hammingDistM[arrLength];
+
+    double linearFuzzyIndexV[arrLength], linearFuzzyIndexM[arrLength];
+    double quadroFuzzyIndexV[arrLength], quadroFuzzyIndexM[arrLength];
+
     double intersectionArr[arrLength];
     double unionArr[arrLength];
     double limitedAmountArr[arrLength];
@@ -36,7 +42,7 @@ int main(void)
     /* --------------- Console Output --------------- */
     printf("\n-------------------- Source Data --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
-        printf("%10s:  (x%i) | V = %6.3f | M = %.0f \n", 
+        printf("%10s: (x%i) | V = %6.3f | M = %4.0f \n", 
                 defaultData[i].name, i+1, defaultData[i].V, defaultData[i].M);
     } 
     
@@ -45,7 +51,7 @@ int main(void)
     for (int i = 0; i < arrLength; i++) {
         memberArrV[i] = Membership(defaultData[i].V, minV, midV, maxV, 1);
         memberArrM[i] = Membership(defaultData[i].M, minM, midM, maxM, 0);
-        printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
+        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
                 defaultData[i].name, i+1, memberArrV[i], memberArrM[i]);
     }
 
@@ -54,8 +60,26 @@ int main(void)
     for (int i = 0; i < arrLength; i++) {
         supplementArrV[i] = Supplement(memberArrV[i]);
         supplementArrM[i] = Supplement(memberArrM[i]);
-        printf("%10s:  (x%i) | %5.3f | %5.3f \n", 
+        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
                 defaultData[i].name, i+1, supplementArrV[i], supplementArrM[i]);
+    }
+
+    /* Нахождение ближайшего четекого множества */
+    printf("\n-------------------- Near --------------------\n\n"); 
+    for (int i = 0; i < arrLength; i++) {
+        nearArrV[i] = Near(memberArrV[i]);
+        nearArrM[i] = Near(memberArrM[i]);
+        printf("%10s: (x%i) | %1.0f | %1.0f \n", 
+            defaultData[i].name, i+1, nearArrV[i], nearArrM[i]);
+    }
+
+    /* Расстояние Хэмминга */
+    printf("\n-------------------- Hamming Distance --------------------\n\n"); 
+    HammingDistance(memberArrV, nearArrV, hammingDistV);
+    HammingDistance(memberArrM, nearArrM, hammingDistM);
+    for (int i = 0; i < arrLength; i++) {
+        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
+            defaultData[i].name, i+1, hammingDistV[i], hammingDistM[i]);
     }
 
     /* Пересечение | MIN */
@@ -100,6 +124,14 @@ int main(void)
         printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
     }
 
+    printf("\n-------------------- Linear Fuzzy Index --------------------\n\n"); 
+    LinearIndex(hammingDistV, linearFuzzyIndexV);
+    LinearIndex(hammingDistM, linearFuzzyIndexM);
+    for (int i = 0; i < arrLength; i++) {
+        printf("  (x%i) | %7.5f | %7.5f \n", 
+            i+1, linearFuzzyIndexV[i], linearFuzzyIndexM[i]);
+    }
+
     /* --------------- Setup --------------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -108,8 +140,7 @@ int main(void)
             appName, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             winWidth, winHeight, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN 
-            /* | SDL_WINDOW_RESIZABLE */ );
+            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
@@ -122,11 +153,13 @@ int main(void)
     struct nk_font_atlas *atlas;
 
     nk_sdl_font_stash_begin(&atlas);
-    struct nk_font *font = nk_font_atlas_add_from_file(atlas, fontPath, fontSize, 0);
+    struct nk_font *font = nk_font_atlas_add_from_file(
+        atlas, fontPath, fontSize, 0);
     nk_sdl_font_stash_end();
 
     nk_style_set_font(ctx, &font->handle);
-    nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
+    nk_sdl_render(NK_ANTI_ALIASING_ON, 
+        MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 
     /* --------------- Loop --------------- */
     while (PollEvent(&camera, ctx, evt))
@@ -182,7 +215,8 @@ int main(void)
         }
 
         glFlush();
-        nk_sdl_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
+        nk_sdl_render(NK_ANTI_ALIASING_ON, 
+            MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
         SDL_GL_SwapWindow(window);
     }
 

@@ -11,7 +11,7 @@ LIBS = -lSDL2 -lGLEW -lGLU -lGL -lm
 debug: $(DIR) $(SRC)
 	$(CC) $(SRC) $(CFLAGS-D) $(LIBS)
 
-release:
+release: $(DIR) $(SRC)
 	$(CC) $(SRC) $(CFLAGS-R) $(LIBS)
 
 $(DIR):

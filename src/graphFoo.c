@@ -132,7 +132,7 @@ void AlphaMessage(struct nk_context *ctx,
             NK_WINDOW_NO_SCROLLBAR ))
     {
         for (int i = 0; i < arrLength; i++) {
-            if (alpha(arr[i], slice)) {
+            if (Alpha(arr[i], slice)) {
                 names[i] = defaultData[i].name;
             } else names[i] = 0;
         }
