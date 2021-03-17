@@ -96,11 +96,12 @@ void HammingDistance(double x[], double y[], double res[])
 }
 
 /* Линейный индекс нечеткости */
-void LinearIndex(double hamDist[], double res[])
+double LinearFuzzyIndex(double x[])
 {
-    for (int i = 0; i < arrLength; i++) {
-        res[i] = (2.0 / arrLength) * hamDist[i];
-    }
+    double sum = 0;
+    for (int i = 0; i < arrLength; i++)
+        sum += x[i];
+    return 2.0 * sum / arrLength;
 }
 
 /* Квадратичный индекс нечеткости */

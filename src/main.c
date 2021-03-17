@@ -1,30 +1,14 @@
 #include "settings.h"
-#include "mathFoo.c"
-#include "graphFoo.c"
+#include "math.c"
+#include "calculation.c"
+#include "graphics.c"
 
 int main(void) 
 {
     /* --------------- Sets Vars --------------- */
-    int currentArr = 0;
-
-    double minV = 1, maxV = 12,       minM = 300, maxM = 1200;
-    double midV = (minV + maxV) / 2,  midM = (minM + maxM) / 2;
-
-    double memberArrV[arrLength], memberArrM[arrLength];
-    double supplementArrV[arrLength], supplementArrM[arrLength];
-
-    double nearArrV[arrLength], nearArrM[arrLength];
-    double hammingDistV[arrLength], hammingDistM[arrLength];
-
-    double linearFuzzyIndexV[arrLength], linearFuzzyIndexM[arrLength];
-    double quadroFuzzyIndexV[arrLength], quadroFuzzyIndexM[arrLength];
-
-    double intersectionArr[arrLength];
-    double unionArr[arrLength];
-    double limitedAmountArr[arrLength];
-    double differenceArr[arrLength];
-    double multiplicationArr[arrLength];
-    double cartesianProductArr[arrLength*arrLength];
+    currentArr = 0;
+    minV = 1, maxV = 12; midV = (minV + maxV) / 2;
+    minM = 300, maxM = 1200; midM = (minM + maxM) / 2;
 
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
@@ -38,99 +22,6 @@ int main(void)
     struct nk_context *ctx;
     struct glRegion camera = defaultGlRegion;
     struct bgColor bg = {defaultBgColor};
-
-    /* --------------- Console Output --------------- */
-    printf("\n-------------------- Source Data --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        printf("%10s: (x%i) | V = %6.3f | M = %4.0f \n", 
-                defaultData[i].name, i+1, defaultData[i].V, defaultData[i].M);
-    } 
-    
-    /* Функции Принадлежности */
-    printf("\n-------------------- Membership Functions --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        memberArrV[i] = Membership(defaultData[i].V, minV, midV, maxV, 1);
-        memberArrM[i] = Membership(defaultData[i].M, minM, midM, maxM, 0);
-        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                defaultData[i].name, i+1, memberArrV[i], memberArrM[i]);
-    }
-
-    /* Дополнение | Инверсия */
-    printf("\n-------------------- Supplement --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        supplementArrV[i] = Supplement(memberArrV[i]);
-        supplementArrM[i] = Supplement(memberArrM[i]);
-        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                defaultData[i].name, i+1, supplementArrV[i], supplementArrM[i]);
-    }
-
-    /* Нахождение ближайшего четекого множества */
-    printf("\n-------------------- Near --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        nearArrV[i] = Near(memberArrV[i]);
-        nearArrM[i] = Near(memberArrM[i]);
-        printf("%10s: (x%i) | %1.0f | %1.0f \n", 
-            defaultData[i].name, i+1, nearArrV[i], nearArrM[i]);
-    }
-
-    /* Расстояние Хэмминга */
-    printf("\n-------------------- Hamming Distance --------------------\n\n"); 
-    HammingDistance(memberArrV, nearArrV, hammingDistV);
-    HammingDistance(memberArrM, nearArrM, hammingDistM);
-    for (int i = 0; i < arrLength; i++) {
-        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-            defaultData[i].name, i+1, hammingDistV[i], hammingDistM[i]);
-    }
-
-    /* Пересечение | MIN */
-    printf("\n-------------------- Intersection --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        intersectionArr[i] = Intersection(memberArrV[i], memberArrM[i]);
-        printf("  (x%i) | %5.3f \n", i+1, intersectionArr[i]);
-    }
-
-    /* Объединение | MAX */
-    printf("\n-------------------- Union --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        unionArr[i] = Union(memberArrV[i], memberArrM[i]);
-        printf("  (x%i) | %5.3f \n", i+1, unionArr[i]);
-    }
-
-    /* Разность */
-    printf("\n-------------------- Difference --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        differenceArr[i] = Difference(memberArrV[i], memberArrM[i]);
-        printf("  (x%i) | %5.3f \n", i+1, differenceArr[i]);
-    }
-
-    /* Ограниченная Сумма */
-    printf("\n-------------------- Limited Amount --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        limitedAmountArr[i] = LimitedAmount(memberArrV[i], memberArrM[i]);
-        printf("  (x%i) | %5.3f \n", i+1, limitedAmountArr[i]);
-    }
-
-    /* Алгебраическое произведение */
-    printf("\n-------------------- Multiplication --------------------\n\n"); 
-    for (int i = 0; i < arrLength; i++) {
-        multiplicationArr[i] = Multiplication(memberArrV[i], memberArrM[i]);
-        printf("  (x%i) | %5.3f \n", i+1, multiplicationArr[i]);
-    }
-
-    /* Декартово | Прямое произведение */
-    printf("\n-------------------- Cartesian Product --------------------\n\n"); 
-    CartesianProduct(memberArrV, memberArrM, cartesianProductArr);
-    for (int i = 0; i < sizeof(cartesianProductArr)/sizeof(double); i++) {
-        printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
-    }
-
-    printf("\n-------------------- Linear Fuzzy Index --------------------\n\n"); 
-    LinearIndex(hammingDistV, linearFuzzyIndexV);
-    LinearIndex(hammingDistM, linearFuzzyIndexM);
-    for (int i = 0; i < arrLength; i++) {
-        printf("  (x%i) | %7.5f | %7.5f \n", 
-            i+1, linearFuzzyIndexV[i], linearFuzzyIndexM[i]);
-    }
 
     /* --------------- Setup --------------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
@@ -192,12 +83,18 @@ int main(void)
             DrawGraph(arrLength, memberArrV, colorGraph_V);
             DrawGraph(arrLength, memberArrM, colorGraph_M);
             DrawGraph(arrLength, limitedAmountArr, colorGraph_VM);
-        } else if (drawSet == _difference) {
-            FillGraph(arrLength, differenceArr, colorForFill);
+        } else if (drawSet == _differenceVM) {
+            FillGraph(arrLength, differenceArr_VM, colorForFill);
             DrawGrid();
             DrawGraph(arrLength, memberArrV, colorGraph_V);
             DrawGraph(arrLength, supplementArrM, colorGraph_M);
-            DrawGraph(arrLength, differenceArr, colorGraph_VM);
+            DrawGraph(arrLength, differenceArr_VM, colorGraph_VM);
+        } else if (drawSet == _differenceMV) {
+            FillGraph(arrLength, differenceArr_MV, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, supplementArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, differenceArr_MV, colorGraph_VM);
         } else if (drawSet == _multiplication) {
             FillGraph(arrLength, multiplicationArr, colorForFill);
             DrawGrid();
@@ -207,6 +104,7 @@ int main(void)
         } else DrawGrid();
 
         MainMenu(ctx, &drawSet, &alphaMessage, &alphaCut, &currentArr);
+
         if (alphaMessage) {
             if (currentArr == 0) 
                 AlphaMessage(ctx, &alphaMessage, memberArrV, alphaCut);

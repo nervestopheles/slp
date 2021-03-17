@@ -76,32 +76,32 @@ void DrawGrid()
     glEnd();
 }
 
-void DrawGraph(int arrLength, double set[],
+void DrawGraph(int length, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
     glLineWidth(graphLineWidth);
     glBegin(GL_LINES);
-        for (int i = 0; i < arrLength-1; i++) {
+        for (int i = 0; i < length-1; i++) {
             glVertex2f(i, set[i]);
             glVertex2f(i+1, set[i+1]);
         }
     glEnd();
     glPointSize(graphPointSize);
     glBegin(GL_POINTS);
-        for (int i = 0; i < arrLength; i++) {
+        for (int i = 0; i < length; i++) {
             glColor3f(colorR+0.4, colorG+0.4, colorB+0.4);
             glVertex2f(i, set[i]);
         }
     glEnd();
 }
 
-void FillGraph(int arrLength, double set[],
+void FillGraph(int length, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
     glBegin(GL_QUAD_STRIP);
-    for (int i = 0; i < arrLength; i++) {
+    for (int i = 0; i < length; i++) {
         glVertex2f(i, 0);
         glVertex2f(i, set[i]);
     }
@@ -141,7 +141,7 @@ void AlphaMessage(struct nk_context *ctx,
         nk_layout_row_dynamic(ctx, 15, 1);
         for (int i = 0; i < arrLength; i++) {
             if (names[i]) {
-                sprintf(strName, "x%i: %8s - %6.5f", i, names[i], arr[i]);
+                sprintf(strName, "x%i: %8s - %6.5f", i+1, names[i], arr[i]);
                 nk_label(ctx, strName, NK_TEXT_CENTERED);
             }
         }
@@ -158,37 +158,40 @@ void MainMenu(struct nk_context *ctx,
             NK_WINDOW_BACKGROUND)) 
     {
         nk_layout_row_dynamic(ctx, 4, 1);
-        nk_spacing(ctx, 0);
-
+            nk_spacing(ctx, 0);
         nk_layout_row_dynamic(ctx, 30, 3);
-        *currentArr = nk_combo(ctx, setsArr, 
-            NK_LEN(setsArr), *currentArr, 25, nk_vec2(200,200));
-        SetsChoice(ctx, alphaMessage, slice);
+            *currentArr = nk_combo(ctx, setsArr, 
+                NK_LEN(setsArr), *currentArr, 25, nk_vec2(200,200));
+            SetsChoice(ctx, alphaMessage, slice);
 
         nk_layout_row_dynamic(ctx, 4, 1);
-        nk_spacing(ctx, 0);
-
-        nk_layout_row_dynamic(ctx, 40, 1);
-        if (nk_button_label(ctx, "Clear")) 
-            *drawSet = _empty;
+            nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 40, 2);
+            if (nk_button_label(ctx, "Calc of Sets")) 
+                CalcOfSets();
+            if (nk_button_label(ctx, "Clear")) 
+                *drawSet = _empty;
 
         nk_layout_row_dynamic(ctx, 4, 1);
-        nk_spacing(ctx, 0);
+            nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 40, 2);
+            if (nk_button_label(ctx, "Membership")) 
+                *drawSet = _membership;
+            if (nk_button_label(ctx, "Supplement")) 
+                *drawSet = _supplement;
 
         nk_layout_row_dynamic(ctx, 40, 3);
-        if (nk_button_label(ctx, "Membership")) 
-            *drawSet = _membership;
-        if (nk_button_label(ctx, "Supplement")) 
-            *drawSet = _supplement;
-        if (nk_button_label(ctx, "Intersection")) 
-            *drawSet = _intersection;
-        if (nk_button_label(ctx, "Union")) 
-            *drawSet = _union;
-        if (nk_button_label(ctx, "Limited Amount")) 
-            *drawSet = _amount;
-        if (nk_button_label(ctx, "Difference")) 
-            *drawSet = _difference;
-        if (nk_button_label(ctx, "Multiplication")) 
-            *drawSet = _multiplication;
+            if (nk_button_label(ctx, "Intersection")) 
+                *drawSet = _intersection;
+            if (nk_button_label(ctx, "Difference V-M")) 
+                *drawSet = _differenceVM;
+            if (nk_button_label(ctx, "Limited Amount")) 
+                *drawSet = _amount;
+            if (nk_button_label(ctx, "Union")) 
+                *drawSet = _union;
+            if (nk_button_label(ctx, "Difference M-V")) 
+                *drawSet = _differenceMV;
+            if (nk_button_label(ctx, "Multiplication")) 
+                *drawSet = _multiplication;
     } nk_end(ctx); 
 }
