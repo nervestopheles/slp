@@ -6,16 +6,16 @@ void CalcOfSets()
     printf("\n-------------------- Source Data --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
         printf("%10s: (x%i) | V = %6.3f | M = %4.0f \n", 
-                defaultData[i].name, i+1, defaultData[i].V, defaultData[i].M);
+                data[i].name, i+1, data[i].V, data[i].M);
     }
 
     /* Функции Принадлежности */
     printf("\n-------------------- Membership Functions --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
-        memberArrV[i] = Membership(defaultData[i].V, minV, midV, maxV, 1);
-        memberArrM[i] = Membership(defaultData[i].M, minM, midM, maxM, 0);
+        memberArrV[i] = Membership(data[i].V, minV, midV, maxV, 1);
+        memberArrM[i] = Membership(data[i].M, minM, midM, maxM, 0);
         printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                defaultData[i].name, i+1, memberArrV[i], memberArrM[i]);
+                data[i].name, i+1, memberArrV[i], memberArrM[i]);
     }
 
     /* Дополнение | Инверсия */
@@ -24,16 +24,16 @@ void CalcOfSets()
         supplementArrV[i] = Supplement(memberArrV[i]);
         supplementArrM[i] = Supplement(memberArrM[i]);
         printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                defaultData[i].name, i+1, supplementArrV[i], supplementArrM[i]);
+                data[i].name, i+1, supplementArrV[i], supplementArrM[i]);
     }
 
-    /* Нахождение ближайшего четекого множества */
+    /* Нахождение ближайшего четкого множества */
     printf("\n-------------------- Near --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
         nearArrV[i] = Near(memberArrV[i]);
         nearArrM[i] = Near(memberArrM[i]);
         printf("%10s: (x%i) | %1.0f | %1.0f \n", 
-            defaultData[i].name, i+1, nearArrV[i], nearArrM[i]);
+            data[i].name, i+1, nearArrV[i], nearArrM[i]);
     }
 
     /* Расстояние Хэмминга */
@@ -42,7 +42,7 @@ void CalcOfSets()
     HammingDistance(memberArrM, nearArrM, hammingDistM);
     for (int i = 0; i < arrLength; i++) {
         printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-            defaultData[i].name, i+1, hammingDistV[i], hammingDistM[i]);
+            data[i].name, i+1, hammingDistV[i], hammingDistM[i]);
     }
 
     /* Линейный индекс нечеткости */
@@ -66,14 +66,14 @@ void CalcOfSets()
         printf("  (x%i) | %5.3f \n", i+1, unionArr[i]);
     }
 
-    /* Разность V от M*/
+    /* Разность V от M */
     printf("\n-------------------- Difference V - M --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
         differenceArr_VM[i] = Difference(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, differenceArr_VM[i]);
     }
 
-    /* Разность M от V*/
+    /* Разность M от V */
     printf("\n-------------------- Difference M - V --------------------\n\n"); 
     for (int i = 0; i < arrLength; i++) {
         differenceArr_MV[i] = Difference(memberArrM[i], memberArrV[i]);

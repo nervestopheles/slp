@@ -108,32 +108,32 @@ void FillGraph(int length, double set[],
     glEnd();
 }
 
-void SetsChoice(struct nk_context *ctx, int *alphaMessage, double *slice)
+void SetCut(struct nk_context *ctx, double *cut)
 {
     static int len = 5;
     static char sliceChar[8] = {"0.000"};
     nk_edit_string(ctx, NK_EDIT_SIMPLE, sliceChar, &len, 6, nk_filter_float);
-    if (nk_button_label(ctx, "Alpha")) *alphaMessage = !*alphaMessage;
-    *slice = atof(sliceChar);
+    if (nk_button_label(ctx, "Alpha")) alphaMessage = !alphaMessage;
+    sliceChar[len] = '\0';
+    *cut = atof(sliceChar);
 }
 
-void AlphaMessage(struct nk_context *ctx, 
-        int *alphaMessage, double arr[], double slice)
+void AlphaMessage(struct nk_context *ctx, double arr[], const char curArr[])
 {
     static char* names[12];
-    static char strHead[20];
+    static char menuName[40];
     static char strName[40];
 
-    sprintf(strHead, "Cut: %4.3f", slice);
-    if (nk_begin(ctx, strHead, 
-            nk_rect(398, 6, 230, 200),
+    sprintf(menuName, "%s Cut: %4.3f", curArr, alphaCut);
+    if (nk_begin(ctx, menuName, 
+            nk_rect(398+280+6, 6, 230, 200),
             NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
             NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
             NK_WINDOW_NO_SCROLLBAR ))
     {
         for (int i = 0; i < arrLength; i++) {
-            if (Alpha(arr[i], slice)) {
-                names[i] = defaultData[i].name;
+            if (Alpha(arr[i], alphaCut)) {
+                names[i] = data[i].name;
             } else names[i] = 0;
         }
         nk_layout_row_dynamic(ctx, 1, 4);
@@ -145,53 +145,220 @@ void AlphaMessage(struct nk_context *ctx,
                 nk_label(ctx, strName, NK_TEXT_CENTERED);
             }
         }
-    } else *alphaMessage = 0;
+    } else alphaMessage = 0;
     nk_end(ctx);
 }
 
-void MainMenu(struct nk_context *ctx,
-        int *drawSet, int *alphaMessage, double *slice, int *currentArr)
+void DataMessage(struct nk_context *ctx, struct obj data[])
+{
+    const char* menuName = "Current Data";
+    static char dataCharV[arrLength][8];
+    static char dataCharM[arrLength][8];
+    static char elemName[20];
+    static char beginStr[20];
+    static char endStr[20];
+
+    static int init = 1;
+    static int len[arrLength*2];
+
+    if (init) {
+        for (int i = 0; i < arrLength; i++) {
+            len[i] = sprintf(dataCharV[i], "%.1f", data[i].V); 
+            len[i+arrLength] = sprintf(dataCharM[i], "%.1f", data[i].M);
+        }
+        init = 0;
+    }
+
+    if (nk_begin(ctx, menuName, 
+            nk_rect(398, 6, 280, 550),
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
+            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
+            NK_WINDOW_NO_SCROLLBAR ))
+    {
+        for (int i = 0; i < arrLength; i++) {
+            sprintf(elemName, "(x%i) - %9s:", i+1, data[i].name);
+            sprintf(beginStr, "Capacity: ");
+            sprintf(endStr, "Mass: ");
+
+            nk_layout_row_dynamic(ctx, 20, 1);
+            nk_label(ctx, elemName, NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 20, 2);
+            nk_label_colored(ctx, beginStr, NK_TEXT_RIGHT, nk_rgb(220,30,30));
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, dataCharV[i], 
+                &len[i], 6, nk_filter_float);
+            nk_label_colored(ctx, endStr, NK_TEXT_RIGHT, nk_rgb(30, 220, 30));
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, dataCharM[i], 
+                &len[i+arrLength], 7, nk_filter_float);
+
+            dataCharV[i][len[i]] = '\0';
+            dataCharM[i][len[i+arrLength]] = '\0';
+            data[i].V = atof(dataCharV[i]);
+            data[i].M = atof(dataCharM[i]);
+        }
+    } else dataMessage = 0;
+    nk_end(ctx);
+}
+
+void IndexMessage(struct nk_context *ctx)
+{
+    static char menuName[20] = "Fuzzy Indices:";
+    char str[2][40];
+
+    sprintf(str[0], "%10s %5.3f", "Capacity:", linearFuzzyIndexV);
+    sprintf(str[1], "%10s %5.3f", "Mass:", linearFuzzyIndexM);
+
+    if (nk_begin(ctx, menuName, 
+            nk_rect(398+280+6+230+6, 6, 230, 200),
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
+            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
+            NK_WINDOW_NO_SCROLLBAR ))
+    {
+        nk_layout_row_dynamic(ctx, 1, layoutSpacing);
+        nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 15, 1);
+        nk_label(ctx, "Linear Fuzzy Indices", NK_TEXT_CENTERED);
+        nk_label(ctx, str[0], NK_TEXT_LEFT);
+        nk_label(ctx, str[1], NK_TEXT_LEFT);
+    } else indexMessage = 0;
+    nk_end(ctx);
+}
+
+void MainMenu(struct nk_context *ctx)
 {
     if (nk_begin(ctx, "Menu", nk_rect(defaultNkPosition),
             NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
             NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR | 
             NK_WINDOW_BACKGROUND)) 
     {
-        nk_layout_row_dynamic(ctx, 4, 1);
+        nk_layout_row_dynamic(ctx, 18, 4);
+        nk_label(ctx, "Legend:", NK_TEXT_LEFT);
+        nk_label_colored(ctx, "Capacity", NK_TEXT_CENTERED, nk_rgb(220, 30, 30));
+        nk_label_colored(ctx, "Mass", NK_TEXT_CENTERED, nk_rgb(30, 220, 30));
+        nk_label_colored(ctx, "Function", NK_TEXT_CENTERED, nk_rgb(30, 220, 220));
+        nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
-        nk_layout_row_dynamic(ctx, 30, 3);
-            *currentArr = nk_combo(ctx, setsArr, 
-                NK_LEN(setsArr), *currentArr, 25, nk_vec2(200,200));
-            SetsChoice(ctx, alphaMessage, slice);
 
-        nk_layout_row_dynamic(ctx, 4, 1);
-            nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 40, 1);
+        if (nk_button_label(ctx, "Current Data")) 
+            dataMessage = !dataMessage;
         nk_layout_row_dynamic(ctx, 40, 2);
             if (nk_button_label(ctx, "Calc of Sets")) 
                 CalcOfSets();
-            if (nk_button_label(ctx, "Clear")) 
-                *drawSet = _empty;
+            if (nk_button_label(ctx, "Clear Graph")) 
+                drawSet = _empty;
 
-        nk_layout_row_dynamic(ctx, 4, 1);
+        nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
         nk_layout_row_dynamic(ctx, 40, 2);
             if (nk_button_label(ctx, "Membership")) 
-                *drawSet = _membership;
+                drawSet = _membership;
             if (nk_button_label(ctx, "Supplement")) 
-                *drawSet = _supplement;
-
+                drawSet = _supplement;
         nk_layout_row_dynamic(ctx, 40, 3);
             if (nk_button_label(ctx, "Intersection")) 
-                *drawSet = _intersection;
+                drawSet = _intersection;
             if (nk_button_label(ctx, "Difference V-M")) 
-                *drawSet = _differenceVM;
+                drawSet = _differenceVM;
             if (nk_button_label(ctx, "Limited Amount")) 
-                *drawSet = _amount;
+                drawSet = _amount;
             if (nk_button_label(ctx, "Union")) 
-                *drawSet = _union;
+                drawSet = _union;
             if (nk_button_label(ctx, "Difference M-V")) 
-                *drawSet = _differenceMV;
+                drawSet = _differenceMV;
             if (nk_button_label(ctx, "Multiplication")) 
-                *drawSet = _multiplication;
+                drawSet = _multiplication;
+
+        nk_layout_row_dynamic(ctx, layoutSpacing, 1);
+            nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 30, 1);
+        if (nk_button_label(ctx, "Fuzzy Indices"))
+            indexMessage = !indexMessage;
+
+        nk_layout_row_dynamic(ctx, layoutSpacing, 1);
+            nk_spacing(ctx, 0);
+        /* Выбор множества для альфа среза */
+        nk_layout_row_dynamic(ctx, 30, 2);
+            currentArr = nk_combo(ctx, setsArr, 
+                NK_LEN(setsArr), currentArr, 25, nk_vec2(160, 200));
+        nk_layout_row_dynamic(ctx, 30, 4);
+            SetCut(ctx, &alphaCut);
+
     } nk_end(ctx); 
+}
+
+void Messages(struct nk_context *ctx)
+{
+    if (alphaMessage) {
+        if (currentArr == 0) 
+            AlphaMessage(ctx, memberArrV, setsArr[currentArr]);
+        else if (currentArr == 1)
+            AlphaMessage(ctx, memberArrM, setsArr[currentArr]);
+    }
+    if (dataMessage) {
+        DataMessage(ctx, data);
+    }
+    if (indexMessage) {
+        IndexMessage(ctx);
+    }
+}
+
+void GraphRenderingCondition(int drawSet)
+{
+    switch (drawSet)
+    {
+        case _membership:
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            break;
+        case _supplement:
+            DrawGrid();
+            DrawGraph(arrLength, supplementArrV, colorGraph_V);
+            DrawGraph(arrLength, supplementArrM, colorGraph_M);
+            break;
+        case _intersection:
+            FillGraph(arrLength, intersectionArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, intersectionArr, colorGraph_VM);
+            break;
+        case _union:
+            FillGraph(arrLength, unionArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, unionArr, colorGraph_VM);
+            break;
+        case _amount:
+            FillGraph(arrLength, limitedAmountArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, limitedAmountArr, colorGraph_VM);
+            break;
+        case _differenceVM:
+            FillGraph(arrLength, differenceArr_VM, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, supplementArrM, colorGraph_M);
+            DrawGraph(arrLength, differenceArr_VM, colorGraph_VM);
+            break;
+        case _differenceMV:
+            FillGraph(arrLength, differenceArr_MV, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, supplementArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, differenceArr_MV, colorGraph_VM);
+            break;
+        case _multiplication:
+            FillGraph(arrLength, multiplicationArr, colorForFill);
+            DrawGrid();
+            DrawGraph(arrLength, memberArrV, colorGraph_V);
+            DrawGraph(arrLength, memberArrM, colorGraph_M);
+            DrawGraph(arrLength, multiplicationArr, colorGraph_VM);
+            break;
+        default:
+            DrawGrid();
+    }
 }
