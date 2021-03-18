@@ -36,21 +36,19 @@ void CalcOfSets()
             data[i].name, i+1, nearArrV[i], nearArrM[i]);
     }
 
-    /* Расстояние Хэмминга */
-    printf("\n-------------------- Hamming Distance --------------------\n\n"); 
-    HammingDistance(memberArrV, nearArrV, hammingDistV);
-    HammingDistance(memberArrM, nearArrM, hammingDistM);
-    for (int i = 0; i < arrLength; i++) {
-        printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-            data[i].name, i+1, hammingDistV[i], hammingDistM[i]);
-    }
-
     /* Линейный индекс нечеткости */
     printf("\n-------------------- Linear Fuzzy Index --------------------\n\n"); 
-    linearFuzzyIndexV = LinearFuzzyIndex(hammingDistV);
-    linearFuzzyIndexM = LinearFuzzyIndex(hammingDistM);
+    linearFuzzyIndexV = LinearFuzzyIndex(memberArrV, nearArrV);
+    linearFuzzyIndexM = LinearFuzzyIndex(memberArrM, nearArrM);
     printf("  Capacity: %5.3f\n", linearFuzzyIndexV); 
     printf("  Mass: %5.3f\n", linearFuzzyIndexM);
+
+    /* Квадратичный индекс нечеткости */
+    printf("\n-------------------- Quadro Fuzzy Index --------------------\n\n"); 
+    quadroFuzzyIndexV = QuadroFuzzyIndex(memberArrV, nearArrV);
+    quadroFuzzyIndexM = QuadroFuzzyIndex(memberArrM, nearArrM);
+    printf("  Capacity: %5.3f\n", quadroFuzzyIndexV); 
+    printf("  Mass: %5.3f\n", quadroFuzzyIndexM);
 
     /* Пересечение | MIN */
     printf("\n-------------------- Intersection --------------------\n\n"); 
@@ -95,9 +93,11 @@ void CalcOfSets()
     }
 
     /* Декартово | Прямое произведение */
+    /*
     printf("\n-------------------- Cartesian Product --------------------\n\n"); 
     CartesianProduct(memberArrV, memberArrM, cartesianProductArr);
     for (int i = 0; i < sizeof(cartesianProductArr)/sizeof(double); i++) {
         printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
-    }
+    } 
+    */
 }

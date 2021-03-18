@@ -65,13 +65,13 @@ void DrawGrid()
     glColor3f(0.3,0.3,0.3);
     glLineWidth(2);
     glBegin(GL_LINES);
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < arrLength; i++) {
             glVertex2f(i, 0); 
             glVertex2f(i, 1);
         }
-        for (double i = 0; i <= 1; i += 0.1) {
+        for (double i = 0; i < 1; i += 0.1) {
             glVertex2f(0, i); 
-            glVertex2f(6, i);
+            glVertex2f(arrLength-1, i);
         }
     glEnd();
 }
@@ -127,9 +127,9 @@ void AlphaMessage(struct nk_context *ctx, double arr[], const char curArr[])
     sprintf(menuName, "%s Cut: %4.3f", curArr, alphaCut);
     if (nk_begin(ctx, menuName, 
             nk_rect(398+280+6, 6, 230, 200),
-            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
-            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
-            NK_WINDOW_NO_SCROLLBAR ))
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER  
+            | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE  
+            /* | NK_WINDOW_NO_SCROLLBAR */ ))
     {
         for (int i = 0; i < arrLength; i++) {
             if (Alpha(arr[i], alphaCut)) {
@@ -170,10 +170,11 @@ void DataMessage(struct nk_context *ctx, struct obj data[])
     }
 
     if (nk_begin(ctx, menuName, 
-            nk_rect(398, 6, 280, 550),
-            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
-            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
-            NK_WINDOW_NO_SCROLLBAR ))
+            nk_rect(398, 6, 280, 480),
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER
+            | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE
+            | NK_WINDOW_SCALABLE
+            /* NK_WINDOW_NO_SCROLLBAR */ ))
     {
         for (int i = 0; i < arrLength; i++) {
             sprintf(elemName, "(x%i) - %9s:", i+1, data[i].name);
@@ -201,24 +202,33 @@ void DataMessage(struct nk_context *ctx, struct obj data[])
 
 void IndexMessage(struct nk_context *ctx)
 {
-    static char menuName[20] = "Fuzzy Indices:";
-    char str[2][40];
+    #define __arraySize 6
+    #define __stringSize 40
 
-    sprintf(str[0], "%10s %5.3f", "Capacity:", linearFuzzyIndexV);
-    sprintf(str[1], "%10s %5.3f", "Mass:", linearFuzzyIndexM);
+    const static char menuName[] = "Fuzzy Indices:";
+    char str[__arraySize][__stringSize];
+
+    sprintf(str[0], "Linear Fuzzy Index:");
+    sprintf(str[1], "%10s %5.3f", "Capacity:", linearFuzzyIndexV);
+    sprintf(str[2], "%10s %5.3f", "Mass:", linearFuzzyIndexM);
+
+    sprintf(str[3], "Quadro Fuzzy Index:");
+    sprintf(str[4], "%10s %5.3f", "Capacity:", quadroFuzzyIndexV);
+    sprintf(str[5], "%10s %5.3f", "Mass:", quadroFuzzyIndexM);
 
     if (nk_begin(ctx, menuName, 
             nk_rect(398+280+6+230+6, 6, 230, 200),
-            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER | 
-            NK_WINDOW_TITLE | NK_WINDOW_MOVABLE | 
-            NK_WINDOW_NO_SCROLLBAR ))
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER 
+            | NK_WINDOW_TITLE  | NK_WINDOW_MOVABLE))
     {
-        nk_layout_row_dynamic(ctx, 1, layoutSpacing);
-        nk_spacing(ctx, 0);
-        nk_layout_row_dynamic(ctx, 15, 1);
-        nk_label(ctx, "Linear Fuzzy Indices", NK_TEXT_CENTERED);
-        nk_label(ctx, str[0], NK_TEXT_LEFT);
-        nk_label(ctx, str[1], NK_TEXT_LEFT);
+        for (int i = 0; i < __arraySize; i+=3) {
+            nk_layout_row_dynamic(ctx, 2, layoutSpacing);
+            nk_spacing(ctx, 0);
+            nk_layout_row_dynamic(ctx, 12, 1);
+            nk_label_colored(ctx, str[i], NK_TEXT_LEFT, nk_rgb(240,240,240));
+            nk_label(ctx, str[i+1], NK_TEXT_LEFT);
+            nk_label(ctx, str[i+2], NK_TEXT_LEFT);
+        }
     } else indexMessage = 0;
     nk_end(ctx);
 }

@@ -87,27 +87,21 @@ double Near(double x)
     else  return 0;
 }
 
-/* Расстояние Хемминга */
-void HammingDistance(double x[], double y[], double res[])
-{
-    for (int i = 0; i < arrLength; i++) {
-        res[i] = sqrt((x[i] - y[i])*(x[i] - y[i]));
-    }
-}
-
 /* Линейный индекс нечеткости */
-double LinearFuzzyIndex(double x[])
+double LinearFuzzyIndex(double x[], double y[])
 {
     double sum = 0;
     for (int i = 0; i < arrLength; i++)
-        sum += x[i];
+        sum += sqrt((x[i] - y[i])*(x[i] - y[i]));
     return 2.0 * sum / arrLength;
 }
 
 /* Квадратичный индекс нечеткости */
-void QuadroIndex(double egerDist[], double res[])
+double QuadroFuzzyIndex(double x[], double y[])
 {
+    double sum;
     for (int i = 0; i < arrLength; i++) {
-        res[i] = (2.0 / sqrt(arrLength)) * egerDist[i];
+        sum += (x[i] - y[i])*(x[i] - y[i]);
     }
+    return 2.0 * sqrt(sum) / sqrt(arrLength);
 }

@@ -80,11 +80,8 @@ double memberArrV[arrLength], memberArrM[arrLength];
 double supplementArrV[arrLength], supplementArrM[arrLength];
 
 double nearArrV[arrLength], nearArrM[arrLength];
-double hammingDistV[arrLength], hammingDistM[arrLength];
-double generalizedHammingDistV, generalizedHammingDistM;
-
 double linearFuzzyIndexV, linearFuzzyIndexM;
-//double quadroFuzzyIndexV, quadroFuzzyIndexM;
+double quadroFuzzyIndexV, quadroFuzzyIndexM;
 
 double intersectionArr[arrLength];
 double unionArr[arrLength];
@@ -92,4 +89,4 @@ double limitedAmountArr[arrLength];
 double differenceArr_VM[arrLength];
 double differenceArr_MV[arrLength];
 double multiplicationArr[arrLength];
-double cartesianProductArr[arrLength*arrLength];
+/* double cartesianProductArr[arrLength*arrLength]; */
