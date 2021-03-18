@@ -13,7 +13,6 @@ int main(void)
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
     SDL_GLContext glContext;
-    SDL_Event evt;
 
     drawSet = 0;
     dataMessage = 0;
@@ -52,7 +51,7 @@ int main(void)
     nk_style_set_font(ctx, &font->handle);
 
     /* --------------- Loop --------------- */
-    while (PollEvent(&camera, ctx, evt))
+    while (PollEvent(&camera, ctx))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 

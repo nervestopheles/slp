@@ -1,7 +1,8 @@
 /* ----------------- Graphics Foo ----------------- */
 
-int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
+int PollEvent(struct glRegion *camera, struct nk_context *ctx)
 {
+    static SDL_Event evt;
     nk_input_begin(ctx);
     while(SDL_PollEvent(&evt)) {
         switch (evt.type) {
