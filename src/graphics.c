@@ -11,8 +11,8 @@ int PollEvent(struct glRegion *camera, struct nk_context *ctx)
             case SDL_KEYDOWN:
                 switch (evt.key.keysym.sym) {
                     case SDLK_o:
-                        if (camera->xL+cameraStepX*zoomBorderMax < 
-                                camera->xR-cameraStepX*zoomBorderMax) {
+                        if (sqrt((camera->xR - camera->xL)*(camera->xR - camera->xL)) > zoomWidthMin) 
+                        {
                             camera->xL += cameraStepX;
                             camera->xR -= cameraStepX;
                             camera->yD += cameraStepY;
@@ -20,7 +20,8 @@ int PollEvent(struct glRegion *camera, struct nk_context *ctx)
                         }
                         break;
                     case SDLK_i: 
-                        if (camera->xR - camera->xL < zoomBorderMin) {
+                        if (sqrt((camera->xR - camera->xL)*(camera->xR - camera->xL)) < zoomWidthMax) 
+                        {
                             camera->xL -= cameraStepX;
                             camera->xR += cameraStepX;
                             camera->yD -= cameraStepY;
@@ -101,9 +102,12 @@ void FillGraph(int length, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
+    //const float gradIndex = 1.5;
     glBegin(GL_QUAD_STRIP);
     for (int i = 0; i < length; i++) {
+        //glColor3f(0, 0.1/gradIndex, 0.1/gradIndex);
         glVertex2f(i, 0);
+        //glColor3f(0, set[i]/gradIndex, set[i]/gradIndex);
         glVertex2f(i, set[i]);
     }
     glEnd();

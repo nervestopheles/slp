@@ -12,10 +12,8 @@
 #define colorGraph_V 0.6, 0, 0
 #define colorGraph_M 0, 0.6, 0
 #define colorGraph_VM 0, 0.6, 0.6
-#define colorForFill 0, 0.1, 0.15
+#define colorForFill 0, 0.12, 0.16
 
-#define layoutSpacing 5
-#define arrLength 7
 #define _empty 0
 #define _membership 1
 #define _supplement 2
@@ -25,6 +23,9 @@
 #define _differenceVM 6
 #define _differenceMV 7
 #define _multiplication 8
+
+#define layoutSpacing 5
+#define arrLength 7
 
 #define defaultData \
     { "K/SQ 2"   , 0.3  , 110  }, \
@@ -43,8 +44,7 @@ struct obj { char name[12]; double V, M; };
 struct bgColor { double r, g, b; };
 struct glRegion { double xL, xR, yD, yU; };
 
-const struct glRegion defaultGlRegion = 
-    { -3, 6.05, -0.01, 1.008 };
+const struct glRegion defaultGlRegion = { -3, arrLength+0.05-1, -0.01, 1.008 };
 
 struct obj data[arrLength] = {defaultData};
 
@@ -52,8 +52,8 @@ const char *appName = "Lab One";
 const char *fontPath = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 const char *setsArr[] =  {"Capacity (V)", "Mass (M)"};
 
-const int zoomBorderMin = 12;
-const int zoomBorderMax = 8;
+const double zoomWidthMax = 2*arrLength;
+const double zoomWidthMin = 2;
 const double cameraStepX = 0.1;
 const double cameraStepY = 0.01;
 
