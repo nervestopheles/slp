@@ -27,6 +27,8 @@ int main(void)
     /* --------------- Setup --------------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
     window = SDL_CreateWindow(
             appName, 
@@ -42,6 +44,7 @@ int main(void)
 
     gluOrtho2D(camera.xL, camera.xR, camera.yD, camera.yU);
     glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_MULTISAMPLE);
     glClearColor(bg.r, bg.g, bg.b, 1);
 
     struct nk_font_atlas *atlas;
