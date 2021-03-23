@@ -32,8 +32,9 @@ int main(void)
             appName, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             winWidth, winHeight, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN 
-                              | SDL_WINDOW_RESIZABLE);
+            SDL_WINDOW_OPENGL           | SDL_WINDOW_SHOWN     | 
+            SDL_RENDERER_ACCELERATED    | SDL_WINDOW_RESIZABLE |
+            SDL_RENDERER_PRESENTVSYNC   );
     glContext = SDL_GL_CreateContext(window);
 
     glewInit();
@@ -51,18 +52,10 @@ int main(void)
     nk_style_set_font(ctx, &font->handle);
 
     /* --------------- Loop --------------- */
-    while (PollEvent(&camera, ctx))
+    while (PollEvent(&camera, ctx, window))
     {
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        GraphRenderingCondition(drawSet);
-        MainMenu(ctx);
-        Messages(ctx);
-
-        glFlush();
-        nk_sdl_render(NK_ANTI_ALIASING_ON, 
-            MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
-        SDL_GL_SwapWindow(window);
+        RefreshRender(ctx, window);
+        SDL_Delay(18);
     }
 
     /* --------------- Exit --------------- */

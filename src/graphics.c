@@ -1,67 +1,5 @@
 /* ----------------- Graphics Foo ----------------- */
 
-int PollEvent(struct glRegion *camera, struct nk_context *ctx)
-{
-    static SDL_Event evt;
-    nk_input_begin(ctx);
-    while(SDL_PollEvent(&evt)) {
-        switch (evt.type) {
-            case SDL_QUIT: 
-                return 0;
-            case SDL_KEYDOWN:
-                switch (evt.key.keysym.sym) {
-                    case SDLK_o:
-                        if (sqrt((camera->xR - camera->xL)*(camera->xR - camera->xL)) > zoomWidthMin) 
-                        {
-                            camera->xL += cameraStepX;
-                            camera->xR -= cameraStepX;
-                            camera->yD += cameraStepY;
-                            camera->yU -= cameraStepY;
-                        }
-                        break;
-                    case SDLK_i: 
-                        if (sqrt((camera->xR - camera->xL)*(camera->xR - camera->xL)) < zoomWidthMax) 
-                        {
-                            camera->xL -= cameraStepX;
-                            camera->xR += cameraStepX;
-                            camera->yD -= cameraStepY;
-                            camera->yU += cameraStepY;
-                        }
-                        break;
-                    case SDLK_h:
-                        camera->xL -= cameraStepX;
-                        camera->xR -= cameraStepX;
-                        break;
-                    case SDLK_j:
-                        camera->yD -= cameraStepY;
-                        camera->yU -= cameraStepY;
-                        break;
-                    case SDLK_k:
-                        camera->yD += cameraStepY;
-                        camera->yU += cameraStepY;
-                        break;
-                    case SDLK_l:
-                        camera->xL += cameraStepX;
-                        camera->xR += cameraStepX;
-                        break;
-                    case SDLK_d:
-                        *camera = defaultGlRegion;
-                        break;
-                    case SDLK_q:
-                        return 0;
-                } 
-                glLoadIdentity();
-                gluOrtho2D(camera->xL, camera->xR, camera->yD, camera->yU);
-                glMatrixMode(GL_MODELVIEW);
-                break;
-            default:
-                break;
-        }
-        nk_sdl_handle_event(&evt);
-    } nk_input_end(ctx); 
-    return 1;
-}
-
 void DrawGrid()
 {
     glColor3f(0.3,0.3,0.3);
@@ -125,7 +63,7 @@ void SetCut(struct nk_context *ctx, double *cut)
 
 void AlphaMessage(struct nk_context *ctx, double arr[], const char curArr[])
 {
-    static char* names[12];
+    static char* names[arrLength];
     static char menuName[40];
     static char strName[40];
 
@@ -238,6 +176,22 @@ void IndexMessage(struct nk_context *ctx)
     nk_end(ctx);
 }
 
+void Messages(struct nk_context *ctx)
+{
+    if (alphaMessage) {
+        if (currentArr == 0) 
+            AlphaMessage(ctx, memberArrV, setsArr[currentArr]);
+        else if (currentArr == 1)
+            AlphaMessage(ctx, memberArrM, setsArr[currentArr]);
+    }
+    if (dataMessage) {
+        DataMessage(ctx, data);
+    }
+    if (indexMessage) {
+        IndexMessage(ctx);
+    }
+}
+
 void MainMenu(struct nk_context *ctx)
 {
     if (nk_begin(ctx, "Menu", nk_rect(defaultNkPosition),
@@ -253,12 +207,12 @@ void MainMenu(struct nk_context *ctx)
         nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
 
-        nk_layout_row_dynamic(ctx, 40, 1);
-        if (nk_button_label(ctx, "Current Data")) 
-            dataMessage = !dataMessage;
         nk_layout_row_dynamic(ctx, 40, 2);
+            if (nk_button_label(ctx, "Current Data")) 
+                dataMessage = !dataMessage;
             if (nk_button_label(ctx, "Calc of Sets")) 
                 CalcOfSets();
+        nk_layout_row_dynamic(ctx, 30, 1);
             if (nk_button_label(ctx, "Clear Graph")) 
                 drawSet = _empty;
 
@@ -286,8 +240,8 @@ void MainMenu(struct nk_context *ctx)
         nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
         nk_layout_row_dynamic(ctx, 30, 1);
-        if (nk_button_label(ctx, "Fuzzy Indices"))
-            indexMessage = !indexMessage;
+            if (nk_button_label(ctx, "Fuzzy Indices"))
+                indexMessage = !indexMessage;
 
         nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
@@ -301,23 +255,7 @@ void MainMenu(struct nk_context *ctx)
     } nk_end(ctx); 
 }
 
-void Messages(struct nk_context *ctx)
-{
-    if (alphaMessage) {
-        if (currentArr == 0) 
-            AlphaMessage(ctx, memberArrV, setsArr[currentArr]);
-        else if (currentArr == 1)
-            AlphaMessage(ctx, memberArrM, setsArr[currentArr]);
-    }
-    if (dataMessage) {
-        DataMessage(ctx, data);
-    }
-    if (indexMessage) {
-        IndexMessage(ctx);
-    }
-}
-
-void GraphRenderingCondition(int drawSet)
+void GraphRendering(int drawSet)
 {
     switch (drawSet)
     {
@@ -376,4 +314,81 @@ void GraphRenderingCondition(int drawSet)
         default:
             DrawGrid();
     }
+}
+
+int KeyDown(struct glRegion *camera, struct nk_context *ctx, SDL_Event evt)
+{
+    #define regionWidth sqrt((camera->xR - camera->xL)*(camera->xR - camera->xL))
+    switch (evt.type) {
+        case SDL_QUIT: 
+            return 0;
+        case SDL_KEYDOWN:
+            switch (evt.key.keysym.sym) {
+                case SDLK_o:
+                    if (regionWidth > zoomWidthMin) {
+                        camera->xL += cameraStepX;
+                        camera->xR -= cameraStepX;
+                        camera->yD += cameraStepY;
+                        camera->yU -= cameraStepY;
+                    } break;
+                case SDLK_i: 
+                    if (regionWidth < zoomWidthMax) {
+                        camera->xL -= cameraStepX;
+                        camera->xR += cameraStepX;
+                        camera->yD -= cameraStepY;
+                        camera->yU += cameraStepY;
+                    } break;
+                case SDLK_h:
+                    camera->xL -= cameraStepX;
+                    camera->xR -= cameraStepX;
+                    break;
+                case SDLK_j:
+                    camera->yD -= cameraStepY;
+                    camera->yU -= cameraStepY;
+                    break;
+                case SDLK_k:
+                    camera->yD += cameraStepY;
+                    camera->yU += cameraStepY;
+                    break;
+                case SDLK_l:
+                    camera->xL += cameraStepX;
+                    camera->xR += cameraStepX;
+                    break;
+                case SDLK_d:
+                    *camera = defaultGlRegion;
+                    break;
+                case SDLK_q:
+                    return 0;
+            } 
+            glLoadIdentity();
+            gluOrtho2D(camera->xL, camera->xR, camera->yD, camera->yU);
+            glMatrixMode(GL_MODELVIEW);
+            break;
+        default:
+            break;
+    } nk_sdl_handle_event(&evt);
+    return 1;
+}
+
+void RefreshRender(struct nk_context *ctx, SDL_Window *window)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    GraphRendering(drawSet);
+    MainMenu(ctx);
+    Messages(ctx);
+
+    glFlush();
+    nk_sdl_render(NK_ANTI_ALIASING_ON, 
+        MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
+    SDL_GL_SwapWindow(window);
+}
+
+int PollEvent(struct glRegion *camera, struct nk_context *ctx, SDL_Window *window)
+{
+    static SDL_Event evt;
+    nk_input_begin(ctx);
+    while(SDL_PollEvent(&evt)) 
+        if (!KeyDown(camera, ctx, evt)) return 0;
+    nk_input_end(ctx); 
+    return 1;
 }
