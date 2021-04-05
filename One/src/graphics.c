@@ -145,7 +145,7 @@ void DataMessage(struct nk_context *ctx, struct obj data[])
 
 void IndexMessage(struct nk_context *ctx)
 {
-    #define __arraySize 6
+    #define __arraySize 15
     #define __stringSize 40
 
     const static char menuName[] = "Fuzzy Indices:";
@@ -159,8 +159,20 @@ void IndexMessage(struct nk_context *ctx)
     sprintf(str[4], "%10s %5.3f", "Capacity:", quadroFuzzyIndexV);
     sprintf(str[5], "%10s %5.3f", "Mass:", quadroFuzzyIndexM);
 
+    sprintf(str[6], "Eger Fuzzy Measure (p=1):");
+    sprintf(str[7], "%10s %5.3f", "Capacity:", fuzOneV);
+    sprintf(str[8], "%10s %5.3f", "Mass:", fuzOneM);
+
+    sprintf(str[9], "Eger Fuzzy Measure (p=2):");
+    sprintf(str[10], "%10s %5.3f", "Capacity:", fuzTwoV);
+    sprintf(str[11], "%10s %5.3f", "Mass:", fuzTwoM);
+
+    sprintf(str[12], "Kosko Fuzzy Measure:");
+    sprintf(str[13], "%10s %5.3f", "Capacity:", koskoV);
+    sprintf(str[14], "%10s %5.3f", "Mass:", koskoM);
+
     if (nk_begin(ctx, menuName, 
-            nk_rect(398+280+6+230+6, 6, 230, 200),
+            nk_rect(398+280+6+230+6, 6, 220, 335),
             NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER 
             | NK_WINDOW_TITLE  | NK_WINDOW_MOVABLE))
     {
@@ -195,9 +207,9 @@ void Messages(struct nk_context *ctx)
 void MainMenu(struct nk_context *ctx)
 {
     if (nk_begin(ctx, "Menu", nk_rect(defaultNkPosition),
-            NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | 
-            NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR | 
-            NK_WINDOW_BACKGROUND)) 
+            NK_WINDOW_BORDER     | NK_WINDOW_MINIMIZABLE  | 
+            NK_WINDOW_TITLE      | NK_WINDOW_NO_SCROLLBAR | 
+            NK_WINDOW_BACKGROUND | NK_WINDOW_SCALABLE)) 
     {
         nk_layout_row_dynamic(ctx, 18, 4);
         nk_label(ctx, "Legend:", NK_TEXT_LEFT);
