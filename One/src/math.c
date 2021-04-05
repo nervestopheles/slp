@@ -1,68 +1,85 @@
 /* ----------------- Math Foo ----------------- */
 
 /* Функции Принадлежности */
-double Membership(double x, 
-    double min, double mid, double max, char choice)
+void MembershipHigh(double x[], double res[],
+    double min, double mid, double max)
 {
-    if (choice) {
-        if (x <= min) return 0;
-        else if (x > min && x <= mid) 
-            return 2.0*((x-min)/(max-min))*((x-min)/(max-min));
-        else if (x > mid && x <  max) 
-            return 1.0-2.0*((x-max)/(max-min))*((x-max)/(max-min));
-        else return 1.0;
-    } else {
-        if (x <= min) return 1.0;
-        else if (x > min && x <= mid) 
-            return 1.0+2.0*((x-max)/(max-min))*((x-min)/(max-min));
-        else if (x > mid && x <  max) 
-            return 2.0*((x-min)/(max-min))*((x-max)/(max-min));
-        else return 0;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] <= min) res[i] = 0;
+        else if (x[i] > min && x[i] <= mid) 
+            res[i] = 2.0*((x[i]-min)/(max-min))*((x[i]-min)/(max-min));
+        else if (x[i] > mid && x[i] < max) 
+            res[i] = 1.0-2.0*((x[i]-max)/(max-min))*((x[i]-max)/(max-min));
+        else res[i] = 1.0;
     }
-    return -1;
+}
+
+void MembershipLow(double x[], double res[],
+    double min, double mid, double max)
+{
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] <= min) res[i] = 1.0;
+        else if (x[i] > min && x[i] <= mid) 
+            res[i] = 1.0+2.0*((x[i]-max)/(max-min))*((x[i]-min)/(max-min));
+        else if (x[i] > mid && x[i] < max) 
+            res[i] = 2.0*((x[i]-min)/(max-min))*((x[i]-max)/(max-min));
+        else res[i] = 0;
+    }
 }
 
 /* Дополнение | Инверсия */
-double Supplement(double x) 
-{ 
-    return 1-x; 
+void Supplement(double x[], double res[]) 
+{
+    for (int i = 0; i < arrLength; i++) {
+        res[i] = 1 - x[i];
+    }
 }
 
 /* Алгебраическое произведение */
-double Multiplication(double x, double y) 
-{ 
-    return x*y; 
+void Multiplication(double x[], double y[], double res[]) 
+{
+    for (int i = 0; i < arrLength; i++) {
+        res[i] = x[i] * y[i]; 
+    }
 }
 
 /* Ограниченная Сумма */
-double LimitedAmount(double x, double y)
+void LimitedAmount(double x[], double y[], double res[])
 {
-    if (x+y > 1) return 1;
-    else return x+y;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] + y[i] > 1) res[i] = 1;
+        else res[i] = x[i] + y[i];
+    }
 }
 
 /* Пересечение | MIN */
-double Intersection(double x, double y) 
+void Intersection(double x[], double y[], double res[]) 
 {
-    if (x > y) return y;
-    else return x;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] > y[i]) res[i] = y[i];
+        else res[i] = x[i];
+    }
 }
 
 /* Объединение | MAX */
-double Union(double x, double y) 
+void Union(double x[], double y[], double res[]) 
 {
-    if (x > y) return x;
-    else return y;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] > y[i]) res[i] = x[i];
+        else res[i] = y[i];
+    }
 }
 
 /* Разность */
-double Difference(double x, double y) 
-{ 
-    return Intersection(x, Supplement(y)); 
+void Difference(double x[], double y[], double res[]) 
+{
+    double un_y[arrLength];
+    Supplement(y, un_y);
+    Intersection(x, un_y, res); 
 }
 
 /* Декартово | Прямое произведение */
-void CartesianProduct(double arrX[], double arrY[], double res[])
+/* void CartesianProduct(double arrX[], double arrY[], double res[])
 {
     int step = 0;
     for (int i = 0; i < arrLength; i++) {
@@ -71,7 +88,7 @@ void CartesianProduct(double arrX[], double arrY[], double res[])
             step++;
         }
     }
-}
+} */
 
 /* Альфа Срез */
 int Alpha(double x, double cut)
@@ -81,10 +98,12 @@ int Alpha(double x, double cut)
 }
 
 /* Нахождение ближайшего четекого множества */
-double Near(double x)
+void Near(double x[], double res[])
 {
-    if (x >= 0.5) return 1;
-    else  return 0;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] >= 0.5) res[i] = 1;
+        else res[i] = 0;
+    }
 }
 
 /* Линейный индекс нечеткости */
@@ -104,4 +123,43 @@ double QuadroFuzzyIndex(double x[], double y[])
         sum += (x[i] - y[i])*(x[i] - y[i]);
     }
     return 2.0 * sqrt(sum) / sqrt(arrLength);
+}
+
+/* Степень нечеткости Егера при p=1 */
+double FUZone(double x[])
+{
+    double sum = 0;
+    for (int i = 0; i < arrLength; i++) {
+        sum += sqrt((2*x[i]-1)*(2*x[i]-1));
+    }
+    return 1 - sum / arrLength;
+}
+
+/* Степень нечеткости Егера при p=2 */
+double FUZtwo(double x[])
+{
+    double sum = 0;
+    for (int i = 0; i < 5; i++) {
+        sum += (2*x[i]-1)*(2*x[i]-1);
+    } sum = sqrt(sum);
+    return 1 - sum / sqrt(5);
+}
+
+/* Кардинальное число */
+double Cardinalis(double x[])
+{
+    double cardinal = 0;
+    for (int i = 0; i < arrLength; i++) {
+        cardinal += x[i];
+    } return cardinal;
+}
+
+/* Степень нечеткости Коско */
+double Kosko(double x[])
+{
+    double supplementX[arrLength]; 
+    double intersectionX[arrLength];
+    Supplement(x, supplementX);
+    Intersection(x, supplementX, intersectionX);
+    return Cardinalis(intersectionX);
 }

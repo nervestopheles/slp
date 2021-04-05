@@ -11,27 +11,32 @@ void CalcOfSets()
 
     /* Функции Принадлежности */
     printf("\n-------------------- Membership Functions --------------------\n\n"); 
+    double dataV[arrLength], dataM[arrLength];
     for (int i = 0; i < arrLength; i++) {
-        memberArrV[i] = Membership(data[i].V, minV, midV, maxV, 1);
-        memberArrM[i] = Membership(data[i].M, minM, midM, maxM, 0);
+       dataV[i] = data[i].V;
+       dataM[i] = data[i].M;
+    }
+    MembershipHigh(dataV, memberArrV, minV, midV, maxV);
+    MembershipLow(dataM, memberArrM, minM, midM, maxM);
+    for (int i = 0; i < arrLength; i++) {
         printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                data[i].name, i+1, memberArrV[i], memberArrM[i]);
+            data[i].name, i+1, memberArrV[i], memberArrM[i]);
     }
 
     /* Дополнение | Инверсия */
     printf("\n-------------------- Supplement --------------------\n\n"); 
+    Supplement(memberArrV, supplementArrV);
+    Supplement(memberArrM, supplementArrM);
     for (int i = 0; i < arrLength; i++) {
-        supplementArrV[i] = Supplement(memberArrV[i]);
-        supplementArrM[i] = Supplement(memberArrM[i]);
         printf("%10s: (x%i) | %5.3f | %5.3f \n", 
-                data[i].name, i+1, supplementArrV[i], supplementArrM[i]);
+            data[i].name, i+1, supplementArrV[i], supplementArrM[i]);
     }
 
     /* Нахождение ближайшего четкого множества */
     printf("\n-------------------- Near --------------------\n\n"); 
+    Near(memberArrV, nearArrV);
+    Near(memberArrM, nearArrM);
     for (int i = 0; i < arrLength; i++) {
-        nearArrV[i] = Near(memberArrV[i]);
-        nearArrM[i] = Near(memberArrM[i]);
         printf("%10s: (x%i) | %1.0f | %1.0f \n", 
             data[i].name, i+1, nearArrV[i], nearArrM[i]);
     }
@@ -50,54 +55,61 @@ void CalcOfSets()
     printf("  Capacity: %5.3f\n", quadroFuzzyIndexV); 
     printf("  Mass: %5.3f\n", quadroFuzzyIndexM);
 
+    /* Мера нечеткости Егера */
+    printf("\n-------------------- Eger Fuzzy Measure --------------------\n\n"); 
+    fuzOneV = FUZone(memberArrV), fuzTwoV = FUZtwo(memberArrV);
+    fuzOneM = FUZone(memberArrM), fuzTwoM = FUZtwo(memberArrM);
+    printf("  FUZone Capacity: %5.3f\n", fuzOneV);
+    printf("  FUZone Mass: %5.3f\n", fuzOneM);
+    printf("  FUZtwo Capacity: %5.3f\n", fuzTwoV);
+    printf("  FUZtwo Mass: %5.3f\n", fuzTwoM);
+
     /* Пересечение | MIN */
     printf("\n-------------------- Intersection --------------------\n\n"); 
+    Intersection(memberArrV, memberArrM, intersectionArr);
     for (int i = 0; i < arrLength; i++) {
-        intersectionArr[i] = Intersection(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, intersectionArr[i]);
     }
 
     /* Объединение | MAX */
     printf("\n-------------------- Union --------------------\n\n"); 
+    Union(memberArrV, memberArrM, unionArr);
     for (int i = 0; i < arrLength; i++) {
-        unionArr[i] = Union(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, unionArr[i]);
     }
 
     /* Разность V от M */
     printf("\n-------------------- Difference V - M --------------------\n\n"); 
+    Difference(memberArrV, memberArrM, differenceArr_VM);
     for (int i = 0; i < arrLength; i++) {
-        differenceArr_VM[i] = Difference(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, differenceArr_VM[i]);
     }
 
     /* Разность M от V */
     printf("\n-------------------- Difference M - V --------------------\n\n"); 
+    Difference(memberArrM, memberArrV, differenceArr_MV);
     for (int i = 0; i < arrLength; i++) {
-        differenceArr_MV[i] = Difference(memberArrM[i], memberArrV[i]);
         printf("  (x%i) | %5.3f \n", i+1, differenceArr_MV[i]);
     }
 
     /* Ограниченная Сумма */
     printf("\n-------------------- Limited Amount --------------------\n\n"); 
+    LimitedAmount(memberArrV, memberArrM, limitedAmountArr);
     for (int i = 0; i < arrLength; i++) {
-        limitedAmountArr[i] = LimitedAmount(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, limitedAmountArr[i]);
     }
 
     /* Алгебраическое произведение */
     printf("\n-------------------- Multiplication --------------------\n\n"); 
+    Multiplication(memberArrV, memberArrM, multiplicationArr);
     for (int i = 0; i < arrLength; i++) {
-        multiplicationArr[i] = Multiplication(memberArrV[i], memberArrM[i]);
         printf("  (x%i) | %5.3f \n", i+1, multiplicationArr[i]);
     }
 
     /* Декартово | Прямое произведение */
-    /*
-    printf("\n-------------------- Cartesian Product --------------------\n\n"); 
+    /* printf("\n-------------------- Cartesian Product --------------------\n\n"); 
     CartesianProduct(memberArrV, memberArrM, cartesianProductArr);
     for (int i = 0; i < sizeof(cartesianProductArr)/sizeof(double); i++) {
         printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
-    } 
-    */
+    } */
 }

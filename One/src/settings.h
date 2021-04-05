@@ -82,6 +82,8 @@ double supplementArrV[arrLength], supplementArrM[arrLength];
 double nearArrV[arrLength], nearArrM[arrLength];
 double linearFuzzyIndexV, linearFuzzyIndexM;
 double quadroFuzzyIndexV, quadroFuzzyIndexM;
+double fuzOneV, fuzTwoV, fuzOneM, fuzTwoM;
+double koskoFuzzyIndexV, egerFuzzyIndexM;
 
 double intersectionArr[arrLength];
 double unionArr[arrLength];
@@ -89,4 +91,5 @@ double limitedAmountArr[arrLength];
 double differenceArr_VM[arrLength];
 double differenceArr_MV[arrLength];
 double multiplicationArr[arrLength];
+
 /* double cartesianProductArr[arrLength*arrLength]; */
