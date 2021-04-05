@@ -159,7 +159,9 @@ double Kosko(double x[])
 {
     double supplementX[arrLength]; 
     double intersectionX[arrLength];
+    double unionX[arrLength];
     Supplement(x, supplementX);
     Intersection(x, supplementX, intersectionX);
-    return Cardinalis(intersectionX);
+    Union(x, supplementX, unionX);
+    return Cardinalis(intersectionX) / Cardinalis(unionX);
 }

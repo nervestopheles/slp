@@ -59,10 +59,18 @@ void CalcOfSets()
     printf("\n-------------------- Eger Fuzzy Measure --------------------\n\n"); 
     fuzOneV = FUZone(memberArrV), fuzTwoV = FUZtwo(memberArrV);
     fuzOneM = FUZone(memberArrM), fuzTwoM = FUZtwo(memberArrM);
-    printf("  FUZone Capacity: %5.3f\n", fuzOneV);
-    printf("  FUZone Mass: %5.3f\n", fuzOneM);
-    printf("  FUZtwo Capacity: %5.3f\n", fuzTwoV);
-    printf("  FUZtwo Mass: %5.3f\n", fuzTwoM);
+    printf("  p = 1:\n");
+    printf("  Capacity: %5.3f\n", fuzOneV);
+    printf("  Mass: %5.3f\n\n", fuzOneM);
+    printf("  p = 2:\n");
+    printf("  Capacity: %5.3f\n", fuzTwoV);
+    printf("  Mass: %5.3f\n", fuzTwoM);
+
+    printf("\n-------------------- Kosko Fuzzy Measure --------------------\n\n"); 
+    koskoV = Kosko(memberArrV);
+    koskoM = Kosko(memberArrM);
+    printf("  Capacity: %5.3f\n", koskoV);
+    printf("  Mass: %5.3f\n", koskoM);
 
     /* Пересечение | MIN */
     printf("\n-------------------- Intersection --------------------\n\n"); 

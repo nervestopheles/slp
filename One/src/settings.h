@@ -83,7 +83,7 @@ double nearArrV[arrLength], nearArrM[arrLength];
 double linearFuzzyIndexV, linearFuzzyIndexM;
 double quadroFuzzyIndexV, quadroFuzzyIndexM;
 double fuzOneV, fuzTwoV, fuzOneM, fuzTwoM;
-double koskoFuzzyIndexV, egerFuzzyIndexM;
+double koskoV, koskoM;
 
 double intersectionArr[arrLength];
 double unionArr[arrLength];
