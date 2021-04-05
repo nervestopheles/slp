@@ -209,7 +209,8 @@ void MainMenu(struct nk_context *ctx)
     if (nk_begin(ctx, "Menu", nk_rect(defaultNkPosition),
             NK_WINDOW_BORDER     | NK_WINDOW_MINIMIZABLE  | 
             NK_WINDOW_TITLE      | NK_WINDOW_NO_SCROLLBAR | 
-            NK_WINDOW_BACKGROUND | NK_WINDOW_SCALABLE)) 
+            NK_WINDOW_BACKGROUND | NK_WINDOW_SCALABLE     |
+            NK_WINDOW_MOVABLE)) 
     {
         nk_layout_row_dynamic(ctx, 18, 4);
         nk_label(ctx, "Legend:", NK_TEXT_LEFT);
