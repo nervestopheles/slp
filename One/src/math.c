@@ -165,3 +165,28 @@ double Kosko(double x[])
     Union(x, supplementX, unionX);
     return Cardinalis(intersectionX) / Cardinalis(unionX);
 }
+
+int Comparison(double x[], double y[])
+{
+    int flag;
+
+    flag = 0;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] <= y[i]) flag++;
+        else break;
+    } if (flag == arrLength) return _compXinY;
+
+    flag = 0;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] >= y[i]) flag++;
+        else break;
+    } if (flag == arrLength) return _compYinX;
+
+    flag = 0;
+    for (int i = 0; i < arrLength; i++) {
+        if (x[i] == y[i]) flag++; 
+        else break;
+    } if (flag == arrLength) return _compEqual;
+
+    return -1;
+}

@@ -40,12 +40,12 @@ void FillGraph(int length, double set[],
         double colorR, double colorG, double colorB) 
 {
     glColor3f(colorR, colorG, colorB);
-    //const float gradIndex = 1.5;
+    /* const float gradIndex = 1.5; */
     glBegin(GL_QUAD_STRIP);
     for (int i = 0; i < length; i++) {
-        //glColor3f(0, 0.1/gradIndex, 0.1/gradIndex);
+        /* glColor3f(0, 0.1/gradIndex, 0.1/gradIndex); */
         glVertex2f(i, 0);
-        //glColor3f(0, set[i]/gradIndex, set[i]/gradIndex);
+        /* glColor3f(0, set[i]/gradIndex, set[i]/gradIndex); */
         glVertex2f(i, set[i]);
     }
     glEnd();
@@ -188,6 +188,23 @@ void IndexMessage(struct nk_context *ctx)
     nk_end(ctx);
 }
 
+void ComparisonMessage(struct nk_context *ctx) 
+{
+    const static char menuName[] = "Comparison of sets:";
+    if (nk_begin(ctx, menuName, 
+            nk_rect(398, winHeight-80-8, 365, 80),
+            NK_WINDOW_CLOSABLE | NK_WINDOW_BORDER  |
+            NK_WINDOW_TITLE    | NK_WINDOW_MOVABLE |
+            NK_WINDOW_NO_SCROLLBAR))
+    {
+        nk_layout_row_dynamic(ctx, layoutSpacing, 1);
+            nk_spacing(ctx, 0);
+        nk_layout_row_dynamic(ctx, 10, 1);
+            nk_label(ctx, compStr, NK_TEXT_CENTERED);
+    } else comparisonMessage = 0;
+    nk_end(ctx);
+}
+
 void Messages(struct nk_context *ctx)
 {
     if (alphaMessage) {
@@ -201,6 +218,9 @@ void Messages(struct nk_context *ctx)
     }
     if (indexMessage) {
         IndexMessage(ctx);
+    }
+    if (comparisonMessage) {
+        ComparisonMessage(ctx);
     }
 }
 
@@ -252,9 +272,11 @@ void MainMenu(struct nk_context *ctx)
 
         nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);
-        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_layout_row_dynamic(ctx, 30, 2);
             if (nk_button_label(ctx, "Fuzzy Indices"))
                 indexMessage = !indexMessage;
+            if (nk_button_label(ctx, "Comparison"))
+                comparisonMessage = !comparisonMessage;
 
         nk_layout_row_dynamic(ctx, layoutSpacing, 1);
             nk_spacing(ctx, 0);

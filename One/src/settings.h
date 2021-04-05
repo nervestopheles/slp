@@ -24,6 +24,10 @@
 #define _differenceMV 7
 #define _multiplication 8
 
+#define _compEqual 0
+#define _compXinY 1
+#define _compYinX 2
+
 #define layoutSpacing 5
 #define arrLength 7
 
@@ -64,12 +68,15 @@ const int fontSize = 14;
 const int winWidth = 1200;
 const int winHeight = 800;
 
+char *compStr; int compFlag;
+
 int currentArr;
 int drawSet;
 
 int dataMessage;
 int indexMessage;
 int alphaMessage;
+int comparisonMessage;
 
 double alphaCut;
 

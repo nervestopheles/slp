@@ -66,6 +66,7 @@ void CalcOfSets()
     printf("  Capacity: %5.3f\n", fuzTwoV);
     printf("  Mass: %5.3f\n", fuzTwoM);
 
+    /* Мера нечеткости Коско */
     printf("\n-------------------- Kosko Fuzzy Measure --------------------\n\n"); 
     koskoV = Kosko(memberArrV);
     koskoM = Kosko(memberArrM);
@@ -113,6 +114,15 @@ void CalcOfSets()
     for (int i = 0; i < arrLength; i++) {
         printf("  (x%i) | %5.3f \n", i+1, multiplicationArr[i]);
     }
+
+    /* Сравнение нечетких множеств */
+    printf("\n-------------------- Comparison of sets --------------------\n\n"); 
+    compFlag = Comparison(memberArrV, memberArrM);
+    if (compFlag == _compXinY) compStr = "Set V(capacity) is contained in set M(mass).";
+    else if (compFlag == _compYinX) compStr = "Set M(mass) is contained in set V(capacity).";
+    else if (compFlag == _compEqual) compStr = "Sets are equal.";
+    else compStr = "Nothing.";
+    printf("  %s\n", compStr);
 
     /* Декартово | Прямое произведение */
     /* printf("\n-------------------- Cartesian Product --------------------\n\n"); 

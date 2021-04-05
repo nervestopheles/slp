@@ -10,6 +10,7 @@ int main(void)
     minV = 1, maxV = 12; midV = (minV + maxV) / 2;
     minM = 300, maxM = 1200; midM = (minM + maxM) / 2;
 
+    compStr = "Not initialized.";
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
     SDL_GLContext glContext;
@@ -18,6 +19,7 @@ int main(void)
     dataMessage = 0;
     alphaMessage = 0;
     indexMessage = 0;
+    comparisonMessage = 0;
     alphaCut = 0;
 
     struct nk_context *ctx;
