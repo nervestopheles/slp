@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "settings.c"
 #include "math.c"
 #include "calculation.c"
 #include "graphics.c"
@@ -11,6 +11,7 @@ int main(void)
     minM = 300, maxM = 1200; midM = (minM + maxM) / 2;
 
     compStr = "Not initialized.";
+
     /* --------------- Graphics Vars --------------- */
     SDL_Window *window;
     SDL_GLContext glContext;

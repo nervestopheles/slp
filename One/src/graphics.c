@@ -37,7 +37,7 @@ void DrawGraph(int length, double set[],
 }
 
 void FillGraph(int length, double set[],
-        double colorR, double colorG, double colorB) 
+        double colorR, double colorG, double colorB) /* Cool gradient in comment) */
 {
     glColor3f(colorR, colorG, colorB);
     /* const float gradIndex = 1.5; */

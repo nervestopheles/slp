@@ -1,11 +1,16 @@
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
+
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_IMPLEMENTATION
-#define NK_SDL_GL3_IMPLEMENTATION
+
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
+
+#include <nuklear.h>
+#include <nuklear_sdl_gl3.h>
 
 #define defaultBgColor 0.08, 0.08, 0.1
 #define defaultNkPosition 6, 6, 385, winHeight-6*2
@@ -39,10 +44,6 @@
     { "CM-489 B" , 8    , 1220 }, \
     { "K/SQ 7"   , 13.5 , 1230 }, \
     { "K/SQ 10"  , 38   , 2700 } 
-
-#include <GL/glew.h>
-#include "../include/nuklear.h"
-#include "../include/nuklear_sdl_gl3.h"
 
 struct obj { char name[12]; double V, M; };
 struct bgColor { double r, g, b; };

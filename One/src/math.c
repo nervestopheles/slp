@@ -97,7 +97,7 @@ int Alpha(double x, double cut)
     return 0;
 }
 
-/* Нахождение ближайшего четекого множества */
+/* Нахождение ближайшего четкого множества */
 void Near(double x[], double res[])
 {
     for (int i = 0; i < arrLength; i++) {

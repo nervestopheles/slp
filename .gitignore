@@ -1,7 +1,7 @@
 *.swp
+*.so
+*.o
+
 build/
-release/
-debug/
-backup/
-old/
-doc/
+Two/
+
