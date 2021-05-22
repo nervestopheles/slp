@@ -1,5 +1,3 @@
-/* ----------------- Graphics Foo ----------------- */
-
 void DrawGrid()
 {
     glColor3f(0.3,0.3,0.3);
@@ -37,7 +35,8 @@ void DrawGraph(int length, double set[],
 }
 
 void FillGraph(int length, double set[],
-        double colorR, double colorG, double colorB) /* Cool gradient in comment) */
+        double colorR, double colorG, double colorB) 
+    /* Cool gradient in comment) */
 {
     glColor3f(colorR, colorG, colorB);
     /* const float gradIndex = 1.5; */

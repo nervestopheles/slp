@@ -99,5 +99,3 @@ double limitedAmountArr[arrLength];
 double differenceArr_VM[arrLength];
 double differenceArr_MV[arrLength];
 double multiplicationArr[arrLength];
-
-/* double cartesianProductArr[arrLength*arrLength]; */

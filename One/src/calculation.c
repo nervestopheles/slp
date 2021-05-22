@@ -123,11 +123,4 @@ void CalcOfSets()
     else if (compFlag == _compEqual) compStr = "Sets are equal.";
     else compStr = "Nothing.";
     printf("  %s\n", compStr);
-
-    /* Декартово | Прямое произведение */
-    /* printf("\n-------------------- Cartesian Product --------------------\n\n"); 
-    CartesianProduct(memberArrV, memberArrM, cartesianProductArr);
-    for (int i = 0; i < sizeof(cartesianProductArr)/sizeof(double); i++) {
-        printf("  (x%2i) | %5.3f \n", i+1, *(cartesianProductArr + i));
-    } */
 }

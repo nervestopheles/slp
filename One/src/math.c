@@ -78,18 +78,6 @@ void Difference(double x[], double y[], double res[])
     Intersection(x, un_y, res); 
 }
 
-/* Декартово | Прямое произведение */
-/* void CartesianProduct(double arrX[], double arrY[], double res[])
-{
-    int step = 0;
-    for (int i = 0; i < arrLength; i++) {
-        for (int j = 0; j < arrLength; j++) {
-            *(res+step) = arrX[i] * arrY[j];
-            step++;
-        }
-    }
-} */
-
 /* Альфа Срез */
 int Alpha(double x, double cut)
 {

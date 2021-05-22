@@ -1,5 +1,3 @@
-/* ----------------- GUI ----------------- */
-
 void SetCut(struct nk_context *ctx, double *cut)
 {
     static int len = 5;
