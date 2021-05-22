@@ -1,5 +1,5 @@
-AppName = AppOne
-LibName = NuklearBin
+AppName = labOne
+LibName = NS2G3#  Nuklear, SDL2, GL3
 BuildDir = ./build
 
 SRC = ./src/main.c
@@ -20,19 +20,11 @@ debug: $(SRC) $(SO)
 	$(CC) $(SRC) $(CFlagsDebug) $(Libs)
 	$(RunScript)
 
-install: $(SO)
-	cp $(BuildDir)/$(AppName) /usr/bin/
-	cp $(SO) /usr/lib/
-
-uninstall:
-	rm -f /usr/bin/$(AppName)
-	rm -f /usr/lib/lib$(LibName).so
-
 clean:
 	rm -rf $(BuildDir)
 
 $(SO):
 	mkdir -p $(BuildDir)
-	$(CC) -c -fpic -o $(BuildDir)/$(LibName).o -O2 -Wall ./src/nuklear.c
+	$(CC) -c -fpic -o $(BuildDir)/$(LibName).o -O2 -Wall ./lib/nuklear.c
 	$(CC) -shared -o $(SO) $(BuildDir)/$(LibName).o
-	rm -f $(BuildDir)/$(LibName).o
+	rm -f $(BuildDir)/$(LibName).o && chmod -x $(SO)

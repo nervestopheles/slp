@@ -1,3 +1,5 @@
+/* Compiling a shared library Nuklear */
+
 #include <GL/glew.h>
 
 #define NK_IMPLEMENTATION
