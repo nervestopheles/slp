@@ -1,39 +1,38 @@
-BIN = LabOneApp
-DIR = ./build
+AppName = AppOne
+LibName = NuklearBin
+BuildDir = ./build
+
 SRC = ./src/main.c
+SO = $(BuildDir)/lib$(LibName).so
 
-so-name = LabOneGui
-SO = $(DIR)/lib$(so-name).so
-
-RUN-CMD = echo "export LD_LIBRARY_PATH='.' && ./$(BIN)" > $(DIR)/run.sh
 CC = gcc
+CFlagsDebug = -O0 -o $(BuildDir)/$(AppName) -Wall -g3
+CFlagsRelease = -O2 -o $(BuildDir)/$(AppName)
+Libs = -L"$(BuildDir)" -l$(LibName) -lSDL2 -lGLEW -lGLU -lGL -lm
 
-CFLAGS-DEBUG = -O0 -o $(DIR)/$(BIN) -Wall -g3
-CFLAGS-RELEASE = -O0 -o $(DIR)/$(BIN)
-LIBS = -L"$(DIR)" -l$(so-name) -lSDL2 -lGLEW -lGLU -lGL -lm
+RunScript = echo "export LD_LIBRARY_PATH='.' && ./$(AppName)" > $(BuildDir)/run.sh
 
-release: $(SRC) $(DIR) $(SO)
-	$(CC) $(SRC) $(CFLAGS-RELEASE) $(LIBS)
-	$(RUN-CMD)
+release: $(SRC) $(SO)
+	$(CC) $(SRC) $(CFlagsRelease) $(Libs)
+	$(RunScript)
 
-debug: $(SRC) $(DIR) $(SO)
-	$(CC) $(SRC) $(CFLAGS-DEBUG) $(LIBS)
-	$(RUN-CMD)
+debug: $(SRC) $(SO)
+	$(CC) $(SRC) $(CFlagsDebug) $(Libs)
+	$(RunScript)
 
 install: $(SO)
-	cp $(DIR)/$(BIN) /usr/bin/
+	cp $(BuildDir)/$(AppName) /usr/bin/
 	cp $(SO) /usr/lib/
 
 uninstall:
-	rm -f /usr/bin/$(BIN)
-	rm -f /usr/lib/lib$(so-name).so
+	rm -f /usr/bin/$(AppName)
+	rm -f /usr/lib/lib$(LibName).so
 
 clean:
-	rm -rf $(DIR)
-
-$(DIR):
-	mkdir -p $(DIR)
+	rm -rf $(BuildDir)
 
 $(SO):
-	$(CC) -c -fpic -o ./build/$(so-name).o -O2 -Wall ./src/nuklear.c
-	$(CC) -shared -o $(SO) ./build/$(so-name).o
+	mkdir -p $(BuildDir)
+	$(CC) -c -fpic -o $(BuildDir)/$(LibName).o -O2 -Wall ./src/nuklear.c
+	$(CC) -shared -o $(SO) $(BuildDir)/$(LibName).o
+	rm -f $(BuildDir)/$(LibName).o
