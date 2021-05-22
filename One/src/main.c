@@ -2,6 +2,7 @@
 #include "math.c"
 #include "calculation.c"
 #include "graphics.c"
+#include "gui.c"
 
 int main(void) 
 {
