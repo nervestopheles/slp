@@ -11,9 +11,11 @@
 #include <nuklear.h>
 #include <nuklear_sdl_gl3.h>
 
-#define screen_width 800
-#define screen_height 600
-#define gaps 6
+#define default_screen_gaps 12
 
 const char *application_name = "Lab Two";
 const char *font_path = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
+
+int screen_width = 650;
+int screen_height = 450;
+int screen_gaps = 560;

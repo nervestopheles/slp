@@ -27,25 +27,13 @@ int main(void)
     glClear(GL_COLOR_BUFFER_BIT); glFlush();
     SDL_GL_SwapWindow(window);
 
+    SDL_Delay(100);
+    Hello(window, nk_ctx);
+
     /* ------- Main Loop  ------- */
     while (GetEvent(window, nk_ctx))
     {
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        nk_begin(nk_ctx, "",
-            nk_rect(gaps, gaps,
-                screen_width-gaps*2+1,
-                screen_height-gaps*2+1),
-            NK_WINDOW_BORDER
-            | NK_WINDOW_NO_SCROLLBAR
-            | NK_WINDOW_BACKGROUND);
-        nk_end(nk_ctx);
-
-        nk_sdl_render(
-            NK_ANTI_ALIASING_OFF,
-            MAX_VERTEX_MEMORY,
-            MAX_ELEMENT_MEMORY);
-        SDL_GL_SwapWindow(window);
+        Drawing(window, nk_ctx);
     };
 
     SDL_GL_DeleteContext(gl_ctx);
