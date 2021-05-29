@@ -4,7 +4,7 @@
 #include "graphics.c"
 #include "gui.c"
 
-int main(void) 
+int main(void)
 {
     /* --------------- Sets Vars --------------- */
     currentArr = 0;
@@ -35,10 +35,10 @@ int main(void)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
     window = SDL_CreateWindow(
-            appName, 
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-            winWidth, winHeight, 
-            SDL_WINDOW_OPENGL           | SDL_WINDOW_SHOWN     | 
+            appName,
+            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            winWidth, winHeight,
+            SDL_WINDOW_OPENGL           | SDL_WINDOW_SHOWN     |
             SDL_RENDERER_ACCELERATED    | SDL_WINDOW_RESIZABLE |
             SDL_RENDERER_PRESENTVSYNC   );
     glContext = SDL_GL_CreateContext(window);

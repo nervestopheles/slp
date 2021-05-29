@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <SDL2/SDL.h>
 
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_FONT_BAKING
