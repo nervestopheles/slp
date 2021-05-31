@@ -22,7 +22,7 @@ void MembershipLow(double x[], double res[],
         else if (x[i] > min && x[i] <= mid) 
             res[i] = 1.0+2.0*((x[i]-max)/(max-min))*((x[i]-min)/(max-min));
         else if (x[i] > mid && x[i] < max) 
-            res[i] = 2.0*((x[i]-min)/(max-min))*((x[i]-max)/(max-min));
+            res[i] = fabs(2.0*((x[i]-min)/(max-min))*((x[i]-max)/(max-min)));
         else res[i] = 0;
     }
 }

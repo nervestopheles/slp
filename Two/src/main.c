@@ -6,16 +6,32 @@ int main(void)
 {
     const int furnace_count = sizeof(furnace)/sizeof(furnace[0]);
 
-    int performance_stat[furnace_count][furnace_count];
-    int volume_stat[furnace_count][furnace_count];
-
+    /* ------- Performance ------- */
+    float performance_stat[furnace_count][furnace_count];
     GetPerformanceDiff(furnace_count, performance_stat);
-    GetVolumeDiff(furnace_count, volume_stat);
+
+    float min_perf = 50; float max_perf = 500;
+    float performance_membership[furnace_count][furnace_count];
+    GetPerformanceMembership(min_perf, max_perf, furnace_count, 
+        performance_stat, performance_membership);
 
     printf("Performance diff:\n");
     PrintingSquarArray(furnace_count, performance_stat);
+    printf("\nPerformance Membership:\n");
+    PrintingSquarArray(furnace_count, performance_membership);
+
+    /* ------- Volume ------- */
+    float volume_stat[furnace_count][furnace_count];
+    GetVolumeDiff(furnace_count, volume_stat);
+
+    float min_vol = 0; float max_vol = 35;
+    float volume_membership[furnace_count][furnace_count];
+    GetVolumeMembership(min_vol, max_vol, furnace_count,
+        volume_stat, volume_membership);
     printf("\nVolume diff:\n");
     PrintingSquarArray(furnace_count, volume_stat);
+    printf("\nVolume Membership:\n");
+    PrintingSquarArray(furnace_count, volume_membership);
 
     /* ------- Setup ------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
@@ -53,6 +69,6 @@ int main(void)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    printf("\nGoodbye.\n");
+    printf("\nGoodbye.\n\n");
     return 0;
 }
