@@ -42,6 +42,22 @@ struct {
     { "СМК-158А-10" ,  350 ,  41.0 }
 };
 
+struct Properties {
+    char ref_status;
+    char sym_status;
+    char trs_status;
+};
+
+#define REFLECTIVE      0x11
+#define NOT_REFLECTIVE  0x12
+#define ANTIREFLECTIVE  0x13
+
+#define SYMMETRIC       0x21
+#define NOT_SYMMETRIC   0x22
+
+#define TRANSITIVE      0x31
+#define NOT_TRANSITIVE  0x32
+
 #define main_menu_gaps \
     screen_gaps, screen_gaps,\
     screen_width-screen_gaps*2+1,\

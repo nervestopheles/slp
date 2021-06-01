@@ -45,6 +45,54 @@ void GetVolumeMembership(float min, float max, int length,
     }
 }
 
+char ReflectiveStatus(int count, float array[count][count])
+{
+    char check;
+
+    check = 0;
+    for (int i = 0; i < count && array[i][i] == 1; i++)
+        check++;
+    if (check == count) return REFLECTIVE;
+
+    check = 0;
+    for (int i = 0; i < count && array[i][i] == 0; i++)
+        check++;
+    if (check == count) return ANTIREFLECTIVE;
+
+    return NOT_REFLECTIVE;
+}
+
+char SymmetricStatus(int count, float array[count][count])
+{
+    for (int i = 0; i < count; i++)
+        for (int j = 0; j < count; j++)
+            if (array[i][j] == array[j][i]) {}
+            else return NOT_SYMMETRIC;
+    return SYMMETRIC;
+}
+
+float Min(float x, float y) { return (x < y) ? x : y; }
+
+char TransitiveStatus(int count, float array[count][count])
+{
+    float buf;
+    float tmp[count];
+
+    for (int i = 0; i < count; i++) {
+        for (int j = 0; j < count; j++) {
+            for (int k = 0; k < count; k++) {
+                tmp[k] = Min(array[i][k], array[k][j]);
+            }
+            buf = tmp[0];
+            for (int i = 1; i < count; i++) {
+                if (buf < tmp[i]) buf = tmp[i];
+            }
+            if (array[i][j] < buf) return NOT_TRANSITIVE;
+        }
+    }
+    return TRANSITIVE;
+}
+
 void GetPerformanceFurnaceDiff(int count, float array[count][count])
 {
     for (int i = 0; i < count; i++)
