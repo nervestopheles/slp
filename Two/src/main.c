@@ -1,6 +1,7 @@
 #include "settings.c"
-#include "reductions.c"
-#include "logic.c"
+#include "engine.c"
+#include "math.c"
+#include "gui.c"
 
 int main(void)
 {
@@ -8,7 +9,7 @@ int main(void)
 
     /* ------- Performance ------- */
     float performance_stat[furnace_count][furnace_count];
-    GetPerformanceDiff(furnace_count, performance_stat);
+    GetPerformanceFurnaceDiff(furnace_count, performance_stat);
 
     float min_perf = 50; float max_perf = 500;
     float performance_membership[furnace_count][furnace_count];
@@ -22,7 +23,7 @@ int main(void)
 
     /* ------- Volume ------- */
     float volume_stat[furnace_count][furnace_count];
-    GetVolumeDiff(furnace_count, volume_stat);
+    GetVolumeFurnaceDiff(furnace_count, volume_stat);
 
     float min_vol = 0; float max_vol = 35;
     float volume_membership[furnace_count][furnace_count];
@@ -54,7 +55,8 @@ int main(void)
     glewInit();
     struct nk_context *nk_ctx = nk_sdl_init(window);
 
-    SetFont(nk_ctx, font_path);
+    char font_size = 60;
+    SetFont(nk_ctx, font_path, font_size);
     glClearColor(0.1, 0.1, 0.1, 1);
 
     Intro(window, nk_ctx);

@@ -45,20 +45,18 @@ void GetVolumeMembership(float min, float max, int length,
     }
 }
 
-void PrintingSquarArray(int count, float array[count][count])
+void GetPerformanceFurnaceDiff(int count, float array[count][count])
 {
-    printf("%9c", ' ');
     for (int i = 0; i < count; i++)
-        printf("x%i%7c", i, ' ');
-    printf("\n");
+        for (int j = 0; j < count; j++)
+            array[i][j] = furnace[j].performance - furnace[i].performance;
+}
 
-    for (int i = 0; i < count; i++) {
-        printf("x%i: ", i);
-        for (int j = 0; j < count; j++) {
-            printf("%10.5f ", array[i][j]);
-        }
-        printf("\n");
-    }
+void GetVolumeFurnaceDiff(int count, float array[count][count])
+{
+    for (int i = 0; i < count; i++)
+        for (int j = 0; j < count; j++)
+            array[i][j] = furnace[j].volume - furnace[i].volume;
 }
 
 void SquarArrayZeroing(int count, float array[count][count])
@@ -68,16 +66,18 @@ void SquarArrayZeroing(int count, float array[count][count])
             array[i][j] = 0;
 }
 
-void GetPerformanceDiff(int count, float array[count][count])
+void PrintingSquarArray(int count, float array[count][count])
 {
+    printf("%9c", ' ');
     for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
-            array[i][j] = furnace[j].performance - furnace[i].performance;
-}
+        printf("x%i%9c", i, ' ');
+    printf("\n");
 
-void GetVolumeDiff(int count, float array[count][count])
-{
-    for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
-            array[i][j] = furnace[j].volume - furnace[i].volume;
+    for (int i = 0; i < count; i++) {
+        printf("x%i: ", i);
+        for (int j = 0; j < count; j++) {
+            printf("%10.5f ", array[i][j]);
+        }
+        printf("\n");
+    }
 }

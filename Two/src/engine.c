@@ -1,16 +1,19 @@
-void SetFont(struct nk_context *nk_ctx, const char *font_path)
-{
-    struct nk_font_atlas *atlas;
-    nk_sdl_font_stash_begin(&atlas);
-    struct nk_font *font = nk_font_atlas_add_from_file(atlas, font_path, 70, 0);
-    nk_sdl_font_stash_end();
-    nk_style_set_font(nk_ctx, &font->handle);
-}
-
-void UpdateMenuPosition(struct nk_rect *menu, int x, int y, int w, int h)
+void UpdateMenuPosition(struct nk_rect *menu,
+    int x, int y, int w, int h)
 {
     menu->x = x; menu->y = y;
     menu->w = w; menu->h = h;
+}
+
+void SetFont(struct nk_context *nk_ctx,
+    const char *font_path, const unsigned char font_size)
+{
+    struct nk_font_atlas *atlas;
+    nk_sdl_font_stash_begin(&atlas);
+    struct nk_font *font = nk_font_atlas_add_from_file(
+        atlas, font_path, font_size, 0);
+    nk_sdl_font_stash_end();
+    nk_style_set_font(nk_ctx, &font->handle);
 }
 
 int Event(SDL_Window *window, SDL_Event evt)
@@ -74,23 +77,4 @@ void Render(SDL_Window *window, struct nk_context* nk_ctx)
         MAX_VERTEX_MEMORY,
         MAX_ELEMENT_MEMORY);
     SDL_GL_SwapWindow(window);
-}
-
-void Intro(SDL_Window *window, struct nk_context* nk_ctx)
-{
-    if (screen_width >= screen_height) screen_gaps = screen_width;
-    else if (screen_width < screen_height) screen_gaps = screen_height;
-
-    struct nk_color table[NK_COLOR_COUNT];
-    table[NK_COLOR_WINDOW] = nk_rgba(60, 60, 60, 25);
-    table[NK_COLOR_TEXT] = nk_rgba(180, 180, 180, 255);
-    nk_style_from_table(nk_ctx, table);
-
-    while (screen_gaps > default_screen_gaps)
-    {
-        GetEvent(window, nk_ctx);
-        screen_gaps -= gaps_step;
-        UpdateMenuPosition(&main_menu, main_menu_gaps);
-        Render(window, nk_ctx);
-    }
 }
