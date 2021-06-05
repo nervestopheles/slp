@@ -45,7 +45,7 @@ void GetVolumeMembership(float min, float max, int length,
     }
 }
 
-char ReflectiveStatus(int count, float array[count][count])
+char GetReflectiveStatus(int count, float array[count][count])
 {
     char check;
 
@@ -62,7 +62,7 @@ char ReflectiveStatus(int count, float array[count][count])
     return NOT_REFLECTIVE;
 }
 
-char SymmetricStatus(int count, float array[count][count])
+char GetSymmetricStatus(int count, float array[count][count])
 {
     for (int i = 0; i < count; i++)
         for (int j = 0; j < count; j++)
@@ -73,7 +73,7 @@ char SymmetricStatus(int count, float array[count][count])
 
 float Min(float x, float y) { return (x < y) ? x : y; }
 
-char TransitiveStatus(int count, float array[count][count])
+char GetTransitiveStatus(int count, float array[count][count])
 {
     float buf;
     float tmp[count];
@@ -91,6 +91,14 @@ char TransitiveStatus(int count, float array[count][count])
         }
     }
     return TRANSITIVE;
+}
+
+void UpdateProperties(int count,
+    float src[count][count], struct Properties *res)
+{
+    res->ref_status = GetReflectiveStatus(count, src);
+    res->sym_status = GetSymmetricStatus(count, src);
+    res->trs_status = GetTransitiveStatus(count, src);
 }
 
 void GetPerformanceFurnaceDiff(int count, float array[count][count])
