@@ -44,13 +44,10 @@ int GetEvent(SDL_Window *window, struct nk_context *nk_ctx)
 
 void Render(SDL_Window *window, struct nk_context* nk_ctx)
 {
-    //static struct nk_rect menu = {default_screen_gaps, default_screen_gaps, 75*10+10, 40*10+10};
-
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //Canvas(window, nk_ctx);
-    //ViewMatrix(nk_ctx, &menu);
-    DataEditor(nk_ctx, &main_menu, performance_membership);
+    Canvas(window, nk_ctx);
+    ViewMatr(nk_ctx, &main_menu);
 
     nk_sdl_render(
         NK_ANTI_ALIASING_OFF,

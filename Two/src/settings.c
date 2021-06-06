@@ -5,8 +5,8 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 
-#define MAX_VERTEX_MEMORY 256 * 1024
-#define MAX_ELEMENT_MEMORY 512 * 1024
+#define MAX_VERTEX_MEMORY 1024 * 1024
+#define MAX_ELEMENT_MEMORY 1024 * 1024
 
 #include <nuklear.h>
 #include <nuklear_sdl_gl3.h>

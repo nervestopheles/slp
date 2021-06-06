@@ -1,5 +1,3 @@
-float perf_memb[10][10];
-
 #include "settings.c"
 #include "math.c"
 #include "data.c"
@@ -33,6 +31,7 @@ int main(void)
 
     char font_size = 15;
     SetFont(nk_ctx, font_path, font_size);
+    SetMenuColor(nk_ctx);
     glClearColor(0.1, 0.1, 0.1, 1);
 
     UpdateMenuPosition(&main_menu, main_menu_gaps);
