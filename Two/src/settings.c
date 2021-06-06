@@ -5,8 +5,8 @@
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 
-#define MAX_VERTEX_MEMORY 64 * 1024
-#define MAX_ELEMENT_MEMORY 64 * 1024
+#define MAX_VERTEX_MEMORY 256 * 1024
+#define MAX_ELEMENT_MEMORY 512 * 1024
 
 #include <nuklear.h>
 #include <nuklear_sdl_gl3.h>
@@ -22,6 +22,8 @@ int screen_height = 600;
 
 int screen_gaps = default_screen_gaps;
 int gaps_step = default_gaps_step;
+
+int matrix_width = 0;
 
 struct nk_rect main_menu;
 
@@ -62,3 +64,15 @@ struct Properties {
     screen_gaps, screen_gaps,\
     screen_width-screen_gaps*2+1,\
     screen_height-screen_gaps*2+1
+
+#define furnace_count 10
+
+float min_perf = 50; float max_perf = 500;
+float performance_stat[furnace_count][furnace_count];
+float performance_membership[furnace_count][furnace_count];
+struct Properties performance_properties;
+
+float min_vol = 0; float max_vol = 35;
+float volume_stat[furnace_count][furnace_count];
+float volume_membership[furnace_count][furnace_count];
+struct Properties volume_properties;

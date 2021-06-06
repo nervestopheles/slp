@@ -1,20 +1,4 @@
-void UpdateMenuPosition(struct nk_rect *menu,
-    int x, int y, int w, int h)
-{
-    menu->x = x; menu->y = y;
-    menu->w = w; menu->h = h;
-}
-
-void SetFont(struct nk_context *nk_ctx,
-    const char *font_path, const unsigned char font_size)
-{
-    struct nk_font_atlas *atlas;
-    nk_sdl_font_stash_begin(&atlas);
-    struct nk_font *font = nk_font_atlas_add_from_file(
-        atlas, font_path, font_size, 0);
-    nk_sdl_font_stash_end();
-    nk_style_set_font(nk_ctx, &font->handle);
-}
+#include "gui.h"
 
 int Event(SDL_Window *window, SDL_Event evt)
 {
@@ -60,17 +44,13 @@ int GetEvent(SDL_Window *window, struct nk_context *nk_ctx)
 
 void Render(SDL_Window *window, struct nk_context* nk_ctx)
 {
+    //static struct nk_rect menu = {default_screen_gaps, default_screen_gaps, 75*10+10, 40*10+10};
+
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (nk_begin(nk_ctx, "", main_menu,
-            NK_WINDOW_BORDER
-            | NK_WINDOW_NO_SCROLLBAR
-            | NK_WINDOW_BACKGROUND)) {
-        nk_layout_row_dynamic(nk_ctx, (screen_height-screen_gaps*2.0)/5.0, 1);
-        nk_spacing(nk_ctx, 2);
-        nk_label(nk_ctx, "Hello World!", NK_TEXT_CENTERED);
-    }
-    nk_end(nk_ctx);
+    //Canvas(window, nk_ctx);
+    //ViewMatrix(nk_ctx, &menu);
+    DataEditor(nk_ctx, &main_menu, performance_membership);
 
     nk_sdl_render(
         NK_ANTI_ALIASING_OFF,

@@ -1,3 +1,5 @@
+float perf_memb[10][10];
+
 #include "settings.c"
 #include "math.c"
 #include "data.c"
@@ -6,8 +8,7 @@
 
 int main(void)
 {
-    const int furnace_count = sizeof(furnace)/sizeof(furnace[0]);
-    DataCalculation(furnace_count);
+    DataCalculation();
 
     /* ------- Setup ------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
