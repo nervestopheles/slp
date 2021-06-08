@@ -16,9 +16,9 @@ void DataCalculation()
     PrintingSquarArray(furnace_count, performance_membership);
 
     printf("\nPerformance Properties:\n");
-    printf("    Ref status code: %#x\n", performance_properties.ref_status);
-    printf("    Sym status code: %#x\n", performance_properties.sym_status);
-    printf("    Trs status code: %#x\n", performance_properties.trs_status);
+    printf("    Ref status: %s\n", performance_properties.ref_status);
+    printf("    Sym status: %s\n", performance_properties.sym_status);
+    printf("    Trs status: %s\n", performance_properties.trs_status);
 
     /* ------- Volume ------- */
     GetVolumeFurnaceDiff(furnace_count, volume_stat);
@@ -36,7 +36,7 @@ void DataCalculation()
     PrintingSquarArray(furnace_count, volume_membership);
 
     printf("\nVolume Properties:\n");
-    printf("    Ref status code: %#x\n", volume_properties.ref_status);
-    printf("    Sym status code: %#x\n", volume_properties.sym_status);
-    printf("    Trs status code: %#x\n", volume_properties.trs_status);
+    printf("    Ref status: %s\n", volume_properties.ref_status);
+    printf("    Sym status: %s\n", volume_properties.sym_status);
+    printf("    Trs status: %s\n", volume_properties.trs_status);
 }

@@ -45,7 +45,7 @@ void GetVolumeMembership(float min, float max, int length,
     }
 }
 
-char GetReflectiveStatus(int count, float array[count][count])
+char * GetReflectiveStatus(int count, float array[count][count])
 {
     char check;
 
@@ -59,21 +59,21 @@ char GetReflectiveStatus(int count, float array[count][count])
         check++;
     if (check == count) return ANTIREFLECTIVE;
 
-    return NOT_REFLECTIVE;
+    return NON_REFLECTIVE;
 }
 
-char GetSymmetricStatus(int count, float array[count][count])
+char * GetSymmetricStatus(int count, float array[count][count])
 {
     for (int i = 0; i < count; i++)
         for (int j = 0; j < count; j++)
             if (array[i][j] == array[j][i]) {}
-            else return NOT_SYMMETRIC;
+            else return NON_SYMMETRIC;
     return SYMMETRIC;
 }
 
 float Min(float x, float y) { return (x < y) ? x : y; }
 
-char GetTransitiveStatus(int count, float array[count][count])
+char * GetTransitiveStatus(int count, float array[count][count])
 {
     float buf;
     float tmp[count];
@@ -87,7 +87,7 @@ char GetTransitiveStatus(int count, float array[count][count])
             for (int i = 1; i < count; i++) {
                 if (buf < tmp[i]) buf = tmp[i];
             }
-            if (array[i][j] < buf) return NOT_TRANSITIVE;
+            if (array[i][j] < buf) return NON_TRANSITIVE;
         }
     }
     return TRANSITIVE;

@@ -45,20 +45,20 @@ struct {
 };
 
 struct Properties {
-    char ref_status;
-    char sym_status;
-    char trs_status;
+    char *ref_status;
+    char *sym_status;
+    char *trs_status;
 };
 
-#define REFLECTIVE      0x11
-#define NOT_REFLECTIVE  0x12
-#define ANTIREFLECTIVE  0x13
+#define REFLECTIVE     "Reflective"
+#define NON_REFLECTIVE "Non reflective"
+#define ANTIREFLECTIVE "Antireflective"
 
-#define SYMMETRIC       0x21
-#define NOT_SYMMETRIC   0x22
+#define SYMMETRIC      "Symmetric"
+#define NON_SYMMETRIC  "Non symmetric"
 
-#define TRANSITIVE      0x31
-#define NOT_TRANSITIVE  0x32
+#define TRANSITIVE     "Transitive"
+#define NON_TRANSITIVE "Non transitive"
 
 #define main_menu_gaps \
     screen_gaps, screen_gaps,\
