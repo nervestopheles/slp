@@ -1,4 +1,4 @@
-void SetMenuColor(struct nk_context *nk_ctx);
+void SetMenuColor(struct nk_context *nk_ctx, int color);
 
 void UpdateMenuPosition(struct nk_rect *menu, int x, int y, int w, int h);
 
