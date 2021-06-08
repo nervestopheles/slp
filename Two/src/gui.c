@@ -5,8 +5,6 @@ void UpdateMenuPosition(struct nk_rect *menu,
 {
     menu->x = x; menu->y = y;
     menu->w = w; menu->h = h;
-
-    matrix_width = screen_width - screen_gaps * 2;
 }
 
 void SetFont(struct nk_context *nk_ctx,
@@ -23,10 +21,10 @@ void SetFont(struct nk_context *nk_ctx,
 void SetMenuColor(struct nk_context *nk_ctx)
 {
     struct nk_color table[NK_COLOR_COUNT];
-        table[NK_COLOR_TEXT] = nk_rgba(190, 190, 190, 255);
-        table[NK_COLOR_WINDOW] = nk_rgba(30, 33, 40, 215);
+        table[NK_COLOR_WINDOW] = nk_rgba(60, 60, 60, 30);
+        table[NK_COLOR_TEXT] = nk_rgba(180, 180, 180, 255);
         table[NK_COLOR_HEADER] = nk_rgba(181, 45, 69, 220);
-        table[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 255);
+        table[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 180);
         table[NK_COLOR_BUTTON] = nk_rgba(181, 45, 69, 255);
         table[NK_COLOR_BUTTON_HOVER] = nk_rgba(190, 50, 70, 255);
         table[NK_COLOR_BUTTON_ACTIVE] = nk_rgba(195, 55, 75, 255);
@@ -56,16 +54,7 @@ void SetMenuColor(struct nk_context *nk_ctx)
 
 void Intro(SDL_Window *window, struct nk_context* nk_ctx)
 {
-    if (screen_width >= screen_height)
-        screen_gaps = screen_width;
-    else if (screen_width < screen_height)
-        screen_gaps = screen_height;
-
-    struct nk_color table[NK_COLOR_COUNT];
-    table[NK_COLOR_WINDOW] = nk_rgba(60, 60, 60, 25);
-    table[NK_COLOR_TEXT] = nk_rgba(180, 180, 180, 255);
-    nk_style_from_table(nk_ctx, table);
-
+    screen_gaps = screen_width-100;
     while (screen_gaps > default_screen_gaps)
     {
         GetEvent(window, nk_ctx);
@@ -151,12 +140,6 @@ void ViewRes(struct nk_context * nk_ctx,
 
 void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
 {
-
-/*
-    if (menu->w < matrix_width) menu->w += gaps_step;
-    else if (menu->w > matrix_width) menu->w -= gaps_step;
-*/
-
     #define _performance_matrix 0x1
     #define _volume_matrix      0x2
 
@@ -170,8 +153,8 @@ void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
     if (!view_flag) nk_flags |= NK_WINDOW_CLOSED;
 
     if (nk_begin(nk_ctx, "Data Editor", *region, nk_flags)) {
-        nk_layout_row_dynamic(nk_ctx, 40, 2);
-        matrix = nk_option_label(nk_ctx, "Performance", 
+        nk_layout_row_dynamic(nk_ctx, 20, 1);
+        matrix = nk_option_label(nk_ctx, "Performance",
             matrix == _performance_matrix) ? _performance_matrix : matrix;
         matrix = nk_option_label(nk_ctx, "Volume",
             matrix == _volume_matrix) ? _volume_matrix : matrix;

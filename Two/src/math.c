@@ -129,13 +129,6 @@ void GetVolumeFurnaceDiff(float array[furnace_count][furnace_count])
             array[i][j] = volume_stat[j] - volume_stat[i];
 }
 
-void SquarArrayZeroing(float array[furnace_count][furnace_count])
-{
-    for (int i = 0; i < furnace_count; i++)
-        for (int j = 0; j < furnace_count; j++)
-            array[i][j] = 0;
-}
-
 void PrintingSquarArray(float array[furnace_count][furnace_count])
 {
     printf("%9c", ' ');

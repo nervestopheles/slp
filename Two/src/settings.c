@@ -23,8 +23,6 @@ int screen_height = 920;
 int screen_gaps = default_screen_gaps;
 int gaps_step = default_gaps_step;
 
-int matrix_width = 0;
-
 struct nk_rect main_menu;
 
 struct {
@@ -61,9 +59,9 @@ struct Properties {
 #define NON_TRANSITIVE "    Non transitive"
 
 #define main_menu_gaps \
-    screen_gaps, screen_gaps,\
+    default_screen_gaps, default_screen_gaps,\
     screen_width-screen_gaps*2+1,\
-    screen_height-screen_gaps*2+1
+    screen_height-default_screen_gaps*2
 
 #define furnace_count 10
 

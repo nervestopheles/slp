@@ -35,7 +35,7 @@ int main(void)
     glClearColor(0.1, 0.1, 0.1, 1);
 
     UpdateMenuPosition(&main_menu, main_menu_gaps);
-    //Intro(window, nk_ctx);
+    Intro(window, nk_ctx);
 
     /* ------- Main Loop ------- */
     while (GetEvent(window, nk_ctx))
