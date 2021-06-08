@@ -45,27 +45,27 @@ void GetVolumeMembership(float min, float max, int length,
     }
 }
 
-char * GetReflectiveStatus(int count, float array[count][count])
+char * GetReflectiveStatus(float array[furnace_count][furnace_count])
 {
     char check;
 
     check = 0;
-    for (int i = 0; i < count && array[i][i] == 1; i++)
+    for (int i = 0; i < furnace_count && array[i][i] == 1; i++)
         check++;
-    if (check == count) return REFLECTIVE;
+    if (check == furnace_count) return REFLECTIVE;
 
     check = 0;
-    for (int i = 0; i < count && array[i][i] == 0; i++)
+    for (int i = 0; i < furnace_count && array[i][i] == 0; i++)
         check++;
-    if (check == count) return ANTIREFLECTIVE;
+    if (check == furnace_count) return ANTIREFLECTIVE;
 
     return NON_REFLECTIVE;
 }
 
-char * GetSymmetricStatus(int count, float array[count][count])
+char * GetSymmetricStatus(float array[furnace_count][furnace_count])
 {
-    for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
             if (array[i][j] == array[j][i]) {}
             else return NON_SYMMETRIC;
     return SYMMETRIC;
@@ -73,18 +73,18 @@ char * GetSymmetricStatus(int count, float array[count][count])
 
 float Min(float x, float y) { return (x < y) ? x : y; }
 
-char * GetTransitiveStatus(int count, float array[count][count])
+char * GetTransitiveStatus(float array[furnace_count][furnace_count])
 {
     float buf;
-    float tmp[count];
+    float tmp[furnace_count];
 
-    for (int i = 0; i < count; i++) {
-        for (int j = 0; j < count; j++) {
-            for (int k = 0; k < count; k++) {
+    for (int i = 0; i < furnace_count; i++) {
+        for (int j = 0; j < furnace_count; j++) {
+            for (int k = 0; k < furnace_count; k++) {
                 tmp[k] = Min(array[i][k], array[k][j]);
             }
             buf = tmp[0];
-            for (int i = 1; i < count; i++) {
+            for (int i = 1; i < furnace_count; i++) {
                 if (buf < tmp[i]) buf = tmp[i];
             }
             if (array[i][j] < buf) return NON_TRANSITIVE;
@@ -93,12 +93,12 @@ char * GetTransitiveStatus(int count, float array[count][count])
     return TRANSITIVE;
 }
 
-void UpdateProperties(int count,
-    float src[count][count], struct Properties *res)
+void UpdateProperties(float src[furnace_count][furnace_count], 
+    struct Properties *res)
 {
-    res->ref_status = GetReflectiveStatus(count, src);
-    res->sym_status = GetSymmetricStatus(count, src);
-    res->trs_status = GetTransitiveStatus(count, src);
+    res->ref_status = GetReflectiveStatus(src);
+    res->sym_status = GetSymmetricStatus(src);
+    res->trs_status = GetTransitiveStatus(src);
 }
 
 void GetPerforanceFurnaceStat(float array[furnace_count])
@@ -115,37 +115,37 @@ void GetVolumeFurnaceStat(float array[furnace_count])
     }
 }
 
-void GetPerformanceFurnaceDiff(int count, float array[count][count])
+void GetPerformanceFurnaceDiff(float array[furnace_count][furnace_count])
 {
-    for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
-            array[i][j] = furnace[j].performance - furnace[i].performance;
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
+            array[i][j] = performance_stat[j] - performance_stat[i];
 }
 
-void GetVolumeFurnaceDiff(int count, float array[count][count])
+void GetVolumeFurnaceDiff(float array[furnace_count][furnace_count])
 {
-    for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
-            array[i][j] = furnace[j].volume - furnace[i].volume;
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
+            array[i][j] = volume_stat[j] - volume_stat[i];
 }
 
-void SquarArrayZeroing(int count, float array[count][count])
+void SquarArrayZeroing(float array[furnace_count][furnace_count])
 {
-    for (int i = 0; i < count; i++)
-        for (int j = 0; j < count; j++)
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
             array[i][j] = 0;
 }
 
-void PrintingSquarArray(int count, float array[count][count])
+void PrintingSquarArray(float array[furnace_count][furnace_count])
 {
     printf("%9c", ' ');
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < furnace_count; i++)
         printf("x%i%9c", i, ' ');
     printf("\n");
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < furnace_count; i++) {
         printf("x%i: ", i);
-        for (int j = 0; j < count; j++) {
+        for (int j = 0; j < furnace_count; j++) {
             printf("%10.5f ", array[i][j]);
         }
         printf("\n");

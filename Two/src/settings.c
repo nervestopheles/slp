@@ -17,8 +17,8 @@
 const char *application_name = "Lab Two";
 const char *font_path = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
-int screen_width = 720;
-int screen_height = 800;
+int screen_width = 780;
+int screen_height = 920;
 
 int screen_gaps = default_screen_gaps;
 int gaps_step = default_gaps_step;
@@ -50,15 +50,15 @@ struct Properties {
     char *trs_status;
 };
 
-#define REFLECTIVE     "Reflective"
-#define NON_REFLECTIVE "Non reflective"
-#define ANTIREFLECTIVE "Antireflective"
+#define REFLECTIVE     "    Reflective"
+#define NON_REFLECTIVE "    Non reflective"
+#define ANTIREFLECTIVE "    Antireflective"
 
-#define SYMMETRIC      "Symmetric"
-#define NON_SYMMETRIC  "Non symmetric"
+#define SYMMETRIC      "    Symmetric"
+#define NON_SYMMETRIC  "    Non symmetric"
 
-#define TRANSITIVE     "Transitive"
-#define NON_TRANSITIVE "Non transitive"
+#define TRANSITIVE     "    Transitive"
+#define NON_TRANSITIVE "    Non transitive"
 
 #define main_menu_gaps \
     screen_gaps, screen_gaps,\
@@ -72,9 +72,13 @@ float performance_stat[furnace_count];
 float performance_diff[furnace_count][furnace_count];
 float performance_membership[furnace_count][furnace_count];
 struct Properties performance_properties;
+int perf_src_len[furnace_count];
+char perf_src_buf[furnace_count][20];
 
 float min_vol = 0; float max_vol = 35;
 float volume_stat[furnace_count];
 float volume_diff[furnace_count][furnace_count];
 float volume_membership[furnace_count][furnace_count];
 struct Properties volume_properties;
+int volu_src_len[furnace_count];
+char volu_src_buf[furnace_count][20];
