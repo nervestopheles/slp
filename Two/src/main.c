@@ -1,12 +1,15 @@
 #include "settings.c"
 #include "math.c"
-#include "data.c"
 #include "engine.c"
 #include "gui.c"
 
 int main(void)
 {
-    DataCalculation();
+    GetPerforanceFurnaceStat(performance_stat);
+    InitDataLength(performance_stat, perf_src_buf, perf_src_len);
+
+    GetPerforanceFurnaceStat(volume_stat);
+    InitDataLength(volume_stat, volu_src_buf, volu_src_len);
 
     /* ------- Setup ------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
