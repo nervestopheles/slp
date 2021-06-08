@@ -8,6 +8,6 @@ void Intro  (SDL_Window *, struct nk_context *);
 void Canvas (SDL_Window *, struct nk_context *);
 void ViewMatrix (struct nk_context * nk_ctx, struct nk_rect * menu);
 void ViewData(struct nk_context * nk_ctx,
-    float data[furnace_count][furnace_count]);
+    float data[furnace_count][furnace_count], struct Properties);
 
 void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region);

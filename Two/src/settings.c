@@ -17,8 +17,8 @@
 const char *application_name = "Lab Two";
 const char *font_path = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
-int screen_width = 800;
-int screen_height = 600;
+int screen_width = 720;
+int screen_height = 800;
 
 int screen_gaps = default_screen_gaps;
 int gaps_step = default_gaps_step;
@@ -68,11 +68,13 @@ struct Properties {
 #define furnace_count 10
 
 float min_perf = 50; float max_perf = 500;
-float performance_stat[furnace_count][furnace_count];
+float performance_stat[furnace_count];
+float performance_diff[furnace_count][furnace_count];
 float performance_membership[furnace_count][furnace_count];
 struct Properties performance_properties;
 
 float min_vol = 0; float max_vol = 35;
-float volume_stat[furnace_count][furnace_count];
+float volume_stat[furnace_count];
+float volume_diff[furnace_count][furnace_count];
 float volume_membership[furnace_count][furnace_count];
 struct Properties volume_properties;

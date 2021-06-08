@@ -46,7 +46,6 @@ void Render(SDL_Window *window, struct nk_context* nk_ctx)
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    Canvas(window, nk_ctx);
     ViewMatr(nk_ctx, &main_menu);
 
     nk_sdl_render(

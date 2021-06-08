@@ -1,16 +1,15 @@
 void DataCalculation()
 {
     /* ------- Performance ------- */
-    GetPerformanceFurnaceDiff(furnace_count, performance_stat);
-
+    GetPerforanceFurnaceStat(performance_stat);
+    GetPerformanceFurnaceDiff(furnace_count, performance_diff);
     GetPerformanceMembership(min_perf, max_perf, furnace_count, 
-        performance_stat, performance_membership);
-
+        performance_diff, performance_membership);
     UpdateProperties(furnace_count,
         performance_membership, &performance_properties);
 
     printf("\nPerformance diff:\n");
-    PrintingSquarArray(furnace_count, performance_stat);
+    PrintingSquarArray(furnace_count, performance_diff);
 
     printf("\nPerformance Membership:\n");
     PrintingSquarArray(furnace_count, performance_membership);
@@ -21,16 +20,15 @@ void DataCalculation()
     printf("    Trs status: %s\n", performance_properties.trs_status);
 
     /* ------- Volume ------- */
-    GetVolumeFurnaceDiff(furnace_count, volume_stat);
-
+    GetVolumeFurnaceStat(volume_stat);
+    GetVolumeFurnaceDiff(furnace_count, volume_diff);
     GetVolumeMembership(min_vol, max_vol, furnace_count,
-        volume_stat, volume_membership);
-
+        volume_diff, volume_membership);
     UpdateProperties(furnace_count, 
         volume_membership, &volume_properties);
 
     printf("\nVolume diff:\n");
-    PrintingSquarArray(furnace_count, volume_stat);
+    PrintingSquarArray(furnace_count, volume_diff);
 
     printf("\nVolume Membership:\n");
     PrintingSquarArray(furnace_count, volume_membership);

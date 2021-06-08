@@ -101,6 +101,20 @@ void UpdateProperties(int count,
     res->trs_status = GetTransitiveStatus(count, src);
 }
 
+void GetPerforanceFurnaceStat(float array[furnace_count])
+{
+    for (int i = 0; i < furnace_count; i++) {
+        array[i] = furnace[i].performance;
+    }
+}
+
+void GetVolumeFurnaceStat(float array[furnace_count])
+{
+    for (int i = 0; i < furnace_count; i++) {
+        array[i] = furnace[i].volume;
+    }
+}
+
 void GetPerformanceFurnaceDiff(int count, float array[count][count])
 {
     for (int i = 0; i < count; i++)

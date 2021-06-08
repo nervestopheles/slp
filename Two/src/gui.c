@@ -75,25 +75,33 @@ void Intro(SDL_Window *window, struct nk_context* nk_ctx)
     }
 }
 
-int view_flag = 0;
-nk_bool status = nk_false;
-void Canvas(SDL_Window *window, struct nk_context* nk_ctx)
+void ViewSrc(struct nk_context * nk_ctx, 
+    float data[furnace_count])
 {
-   if (nk_begin(nk_ctx, "", main_menu,
-            NK_WINDOW_BORDER
-            | NK_WINDOW_NO_SCROLLBAR
-            | NK_WINDOW_BACKGROUND)) 
-    {
-        nk_layout_row_dynamic(nk_ctx, (screen_height-screen_gaps*2.0)/5.0, 1);
-        nk_spacing(nk_ctx, 2);
-        nk_label(nk_ctx, "Hello World!", NK_TEXT_CENTERED);
-        if (nk_checkbox_label(nk_ctx, "View", &status)) view_flag = !view_flag;
+    static int data_len[furnace_count];
+    static char data_buf[furnace_count][50];
+    static char data_number[furnace_count][10];
+
+    for (int i = 0; i < furnace_count; i++) {
+        sprintf(data_number[i], "x%i ", i+1);
+        data_len[i] = sprintf(data_buf[i], "%4f", data[i]);
     }
-    nk_end(nk_ctx);
+    
+    nk_layout_row_dynamic(nk_ctx, 40, 1);
+        nk_label(nk_ctx, "Source data:", NK_TEXT_LEFT);
+    nk_layout_row_static(nk_ctx, 40, 50, 11);
+        nk_spacing(nk_ctx, 1);
+        for (int i = 0; i < furnace_count; i++) {
+            nk_edit_string(nk_ctx, NK_EDIT_READ_ONLY,
+                data_buf[i], &data_len[i], 6, nk_filter_float);
+        }
+        nk_spacing(nk_ctx, 1);
+        for (int i = 0; i < furnace_count; i++)
+            nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
 }
 
-void ViewData(struct nk_context * nk_ctx,
-    float data[furnace_count][furnace_count])
+void ViewRes(struct nk_context * nk_ctx,
+    float data[furnace_count][furnace_count], struct Properties prop)
 {
     static int data_len[furnace_count][furnace_count];
     static char data_buf[furnace_count][furnace_count][50];
@@ -105,20 +113,27 @@ void ViewData(struct nk_context * nk_ctx,
             data_len[i][j] = sprintf(data_buf[i][j], "%4.3f", data[i][j]);
     }
 
+    nk_layout_row_dynamic(nk_ctx, 40, 1);
+        nk_label(nk_ctx, "Membership matrix:", NK_TEXT_LEFT);
+
     nk_layout_row_static(nk_ctx, 40, 50, 11);
         nk_spacing(nk_ctx, 1);
 
     for (int i = 0; i < furnace_count; i++)
-        nk_text(nk_ctx, data_number[i], 3, NK_TEXT_CENTERED);
-
+        nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
     for (int i = 0; i < furnace_count; i++) {
-        nk_text(nk_ctx, data_number[i], 3, NK_TEXT_CENTERED);
+        nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
         for (int j = 0; j < furnace_count; j++) {
             nk_edit_string(nk_ctx, NK_EDIT_READ_ONLY,
                 data_buf[i][j], &data_len[i][j], 6, nk_filter_float);
             data_buf[i][j][data_len[i][j]] = '\0';
         }
     }
+
+    nk_layout_row_dynamic(nk_ctx, 20, 1);
+        nk_label(nk_ctx, prop.ref_status, NK_TEXT_LEFT);
+        nk_label(nk_ctx, prop.sym_status, NK_TEXT_LEFT);
+        nk_label(nk_ctx, prop.trs_status, NK_TEXT_LEFT);
 }
 
 void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
@@ -142,19 +157,20 @@ void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
     if (!view_flag) nk_flags |= NK_WINDOW_CLOSED;
 
     if (nk_begin(nk_ctx, "Data Editor", *region, nk_flags)) {
-        nk_layout_row_dynamic(nk_ctx, 25, 1);
+        nk_layout_row_dynamic(nk_ctx, 20, 2);
         matrix = nk_option_label(nk_ctx, "Performance", 
             matrix == _performance_matrix) ? _performance_matrix : matrix;
         matrix = nk_option_label(nk_ctx, "Volume",
             matrix == _volume_matrix) ? _volume_matrix : matrix;
 
-        switch (matrix)
-        {
+        switch (matrix) {
             case _performance_matrix:
-                ViewData(nk_ctx, performance_membership);
+                ViewSrc(nk_ctx, performance_stat);
+                ViewRes(nk_ctx, performance_membership, performance_properties);
                 break;
             case _volume_matrix:
-                ViewData(nk_ctx, volume_membership);
+                ViewSrc(nk_ctx, volume_stat);
+                ViewRes(nk_ctx, volume_membership, volume_properties);
                 break;
         }
     } nk_end(nk_ctx);
