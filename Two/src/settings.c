@@ -11,14 +11,14 @@
 #include <nuklear.h>
 #include <nuklear_sdl_gl3.h>
 
-#define default_screen_gaps 10
-#define default_gaps_step 5
-
 const char *application_name = "Lab Two";
 const char *font_path = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
 int screen_width = 780;
 int screen_height = 920;
+
+#define default_screen_gaps 10
+#define default_gaps_step 5
 
 int screen_gaps = default_screen_gaps;
 int gaps_step = default_gaps_step;
@@ -42,12 +42,6 @@ struct {
     { "СМК-158А-10" ,  350 ,  41.0 }
 };
 
-struct Properties {
-    char *ref_status;
-    char *sym_status;
-    char *trs_status;
-};
-
 #define REFLECTIVE     "    Reflective"
 #define NON_REFLECTIVE "    Non reflective"
 #define ANTIREFLECTIVE "    Antireflective"
@@ -58,6 +52,20 @@ struct Properties {
 #define TRANSITIVE     "    Transitive"
 #define NON_TRANSITIVE "    Non transitive"
 
+struct Properties {
+    char *ref_status;
+    char *sym_status;
+    char *trs_status;
+};
+
+#define _performance 0x1
+#define _volume      0x2
+#define _membership  0x3
+#define _difference  0x4
+
+int sets = _performance;
+int value = _membership;
+
 #define main_menu_gaps \
     default_screen_gaps, default_screen_gaps,\
     screen_width-screen_gaps*2+1,\
@@ -65,7 +73,7 @@ struct Properties {
 
 #define furnace_count 10
 
-float min_perf = 50; float max_perf = 500;
+float min_perf = 110; float max_perf = 580;
 float performance_stat[furnace_count];
 float performance_diff[furnace_count][furnace_count];
 float performance_membership[furnace_count][furnace_count];

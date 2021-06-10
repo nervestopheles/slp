@@ -101,7 +101,7 @@ void InitDataLength(float data[furnace_count],
     char data_buf[furnace_count][20], int data_len[furnace_count])
 {
     for (int i = 0; i < furnace_count; i++)
-        data_len[i] = sprintf(data_buf[i], "%5f", data[i]);
+        data_len[i] = sprintf(data_buf[i], "%5.4f", data[i]);
 }
 
 void ViewSrc(struct nk_context * nk_ctx, float data[furnace_count],
@@ -117,7 +117,7 @@ void ViewSrc(struct nk_context * nk_ctx, float data[furnace_count],
         } init = 0;
     } 
     
-    nk_layout_row_dynamic(nk_ctx, 35, 1);
+    nk_layout_row_static(nk_ctx, 40, 200, 1);
         nk_label(nk_ctx, "  Source data:", NK_TEXT_LEFT);
     nk_layout_row_static(nk_ctx, 40, 60, 11);
         nk_spacing(nk_ctx, 1);
@@ -144,15 +144,17 @@ void ViewRes(struct nk_context * nk_ctx,
     for (int i = 0; i < furnace_count; i++) {
         sprintf(data_number[i], "x%i ", i+1);
         for (int j = 0; j < furnace_count; j++)
-            data_len[i][j] = sprintf(data_buf[i][j], "%4.3f", data[i][j]);
+            data_len[i][j] = sprintf(data_buf[i][j], "%5.4f", data[i][j]);
     }
 
     nk_layout_row_dynamic(nk_ctx, 20, 1);
-        nk_label(nk_ctx, "  Membership matrix:", NK_TEXT_LEFT);
+    value = nk_option_label(nk_ctx, "Membership",
+        value == _membership) ? _membership : value;
+    value = nk_option_label(nk_ctx, "Difference",
+        value == _difference) ? _difference : value;
 
     nk_layout_row_static(nk_ctx, 40, 60, 11);
         nk_spacing(nk_ctx, 1);
-
     for (int i = 0; i < furnace_count; i++)
         nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
     for (int i = 0; i < furnace_count; i++) {
@@ -163,11 +165,10 @@ void ViewRes(struct nk_context * nk_ctx,
             else SetMenuColor(nk_ctx, 0);
 
             nk_edit_string(nk_ctx, NK_EDIT_READ_ONLY,
-                data_buf[i][j], &data_len[i][j], 6, nk_filter_float);
+                data_buf[i][j], &data_len[i][j], 7, nk_filter_float);
             data_buf[i][j][data_len[i][j]] = '\0';
         }
     }
-
     nk_layout_row_dynamic(nk_ctx, 10, 1);
         nk_spacing(nk_ctx, 1);
     nk_layout_row_dynamic(nk_ctx, 20, 1);
@@ -179,11 +180,6 @@ void ViewRes(struct nk_context * nk_ctx,
 
 void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
 {
-    #define _performance_matrix 0x1
-    #define _volume_matrix      0x2
-
-    static int matrix = _performance_matrix;
-
     static int view_flag = 1;
     nk_flags nk_flags = \
         NK_WINDOW_BORDER
@@ -193,27 +189,45 @@ void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)
 
     if (nk_begin(nk_ctx, "Data Editor", *region, nk_flags)) {
         nk_layout_row_dynamic(nk_ctx, 20, 1);
-        matrix = nk_option_label(nk_ctx, "Performance",
-            matrix == _performance_matrix) ? _performance_matrix : matrix;
-        matrix = nk_option_label(nk_ctx, "Volume",
-            matrix == _volume_matrix) ? _volume_matrix : matrix;
+        sets = nk_option_label(nk_ctx, "Performance",
+            sets == _performance) ? _performance : sets;
+        sets = nk_option_label(nk_ctx, "Volume",
+            sets == _volume) ? _volume : sets;
 
-        switch (matrix) {
-            case _performance_matrix:
+        switch (sets) {
+            case _performance:
                 GetPerformanceFurnaceDiff(performance_diff);
-                GetPerformanceMembership(min_perf, max_perf, furnace_count, 
+                GetPerformanceMembership(min_perf, max_perf, furnace_count,
                     performance_diff, performance_membership);
                 UpdateProperties(performance_membership, &performance_properties);
                 ViewSrc(nk_ctx, performance_stat, perf_src_buf, perf_src_len);
-                ViewRes(nk_ctx, performance_membership, performance_properties);
+                switch (value) {
+                    case _membership:
+                        ViewRes(nk_ctx, performance_membership,
+                            performance_properties);
+                        break;
+                    case _difference:
+                        ViewRes(nk_ctx, performance_diff,
+                            performance_properties);
+                        break;
+                }
                 break;
-            case _volume_matrix:
+            case _volume:
                 GetVolumeFurnaceDiff(volume_diff);
                 GetVolumeMembership(min_vol, max_vol, furnace_count,
                     volume_diff, volume_membership);
                 UpdateProperties(volume_membership, &volume_properties);
                 ViewSrc(nk_ctx, volume_stat, volu_src_buf, volu_src_len);
-                ViewRes(nk_ctx, volume_membership, volume_properties);
+                switch (value) {
+                    case _membership:
+                        ViewRes(nk_ctx, volume_membership, 
+                            volume_properties);
+                        break;
+                    case _difference:
+                        ViewRes(nk_ctx, volume_diff, 
+                            volume_properties);
+                        break;
+                }
                 break;
         }
     } nk_end(nk_ctx);
