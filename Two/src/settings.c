@@ -15,7 +15,7 @@ const char *application_name = "Lab Two";
 const char *font_path = "/usr/share/fonts/truetype/hack/Hack-Bold.ttf";
 
 int screen_width = 780;
-int screen_height = 920;
+int screen_height = 900;
 
 #define default_screen_gaps 10
 #define default_gaps_step 5
@@ -73,7 +73,10 @@ int value = _membership;
 
 #define furnace_count 10
 
-float min_perf = 110; float max_perf = 580;
+float min_perf = 110;   float max_perf = 580;
+int min_perf_len;       int max_perf_len;
+char min_perf_buf[8];   char max_perf_buf[8];
+
 float performance_stat[furnace_count];
 float performance_diff[furnace_count][furnace_count];
 float performance_membership[furnace_count][furnace_count];
@@ -81,7 +84,10 @@ struct Properties performance_properties;
 int perf_src_len[furnace_count];
 char perf_src_buf[furnace_count][20];
 
-float min_vol = 0; float max_vol = 35;
+float min_vol = 0;      float max_vol = 35;
+int min_vol_len;        int max_vol_len;
+char min_vol_buf[8];    char max_vol_buf[8];
+
 float volume_stat[furnace_count];
 float volume_diff[furnace_count][furnace_count];
 float volume_membership[furnace_count][furnace_count];

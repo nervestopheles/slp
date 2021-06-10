@@ -104,6 +104,37 @@ void InitDataLength(float data[furnace_count],
         data_len[i] = sprintf(data_buf[i], "%5.4f", data[i]);
 }
 
+void ViewRange(struct nk_context * nk_ctx)
+{
+    nk_layout_row_static(nk_ctx, 35, 60, 3);
+    nk_label(nk_ctx, "Range:", NK_TEXT_LEFT);
+    switch (sets) {
+        case _performance:
+            nk_edit_string(nk_ctx, NK_EDIT_SIMPLE,
+                min_perf_buf, &min_perf_len, 7, nk_filter_float);
+            min_perf_buf[min_perf_len] = '\0';
+            min_perf = atof(min_perf_buf);
+            nk_edit_string(nk_ctx, NK_EDIT_SIMPLE,
+                max_perf_buf, &max_perf_len, 7, nk_filter_float);
+            max_perf_buf[max_perf_len] = '\0';
+            max_perf = atof(max_perf_buf);
+            break;
+        case _volume:
+            nk_edit_string(nk_ctx, NK_EDIT_SIMPLE,
+                min_vol_buf, &min_vol_len, 7, nk_filter_float);
+            min_vol_buf[min_vol_len] = '\0';
+            min_vol = atof(min_vol_buf);
+            nk_edit_string(nk_ctx, NK_EDIT_SIMPLE,
+                max_vol_buf, &max_vol_len, 7, nk_filter_float);
+            max_vol_buf[max_vol_len] = '\0';
+            max_vol = atof(max_vol_buf);
+            break;
+    }
+    nk_spacing(nk_ctx, 1);
+    nk_label(nk_ctx, "min", NK_TEXT_CENTERED);
+    nk_label(nk_ctx, "max", NK_TEXT_CENTERED);
+}
+
 void ViewSrc(struct nk_context * nk_ctx, float data[furnace_count],
     char data_buf[furnace_count][20], int data_len[furnace_count])
 {
@@ -117,9 +148,9 @@ void ViewSrc(struct nk_context * nk_ctx, float data[furnace_count],
         } init = 0;
     } 
     
-    nk_layout_row_static(nk_ctx, 40, 200, 1);
-        nk_label(nk_ctx, "  Source data:", NK_TEXT_LEFT);
-    nk_layout_row_static(nk_ctx, 40, 60, 11);
+    nk_layout_row_static(nk_ctx, 28, 200, 1);
+        nk_label(nk_ctx, "Source data:", NK_TEXT_LEFT);
+    nk_layout_row_static(nk_ctx, 35, 60, 11);
         nk_spacing(nk_ctx, 1);
         for (int i = 0; i < furnace_count; i++) {
             nk_edit_string(nk_ctx, NK_EDIT_SIMPLE,
@@ -130,8 +161,7 @@ void ViewSrc(struct nk_context * nk_ctx, float data[furnace_count],
         nk_spacing(nk_ctx, 1);
         for (int i = 0; i < furnace_count; i++)
             nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
-    nk_layout_row_dynamic(nk_ctx, 10, 1);
-        nk_spacing(nk_ctx, 1);
+    ViewRange(nk_ctx);
 }
 
 void ViewRes(struct nk_context * nk_ctx,
@@ -153,7 +183,7 @@ void ViewRes(struct nk_context * nk_ctx,
     value = nk_option_label(nk_ctx, "Difference",
         value == _difference) ? _difference : value;
 
-    nk_layout_row_static(nk_ctx, 40, 60, 11);
+    nk_layout_row_static(nk_ctx, 35, 60, 11);
         nk_spacing(nk_ctx, 1);
     for (int i = 0; i < furnace_count; i++)
         nk_label(nk_ctx, data_number[i], NK_TEXT_CENTERED);
@@ -172,7 +202,7 @@ void ViewRes(struct nk_context * nk_ctx,
     nk_layout_row_dynamic(nk_ctx, 10, 1);
         nk_spacing(nk_ctx, 1);
     nk_layout_row_dynamic(nk_ctx, 20, 1);
-        nk_label(nk_ctx, "  Relationship properties:", NK_TEXT_LEFT);
+        nk_label(nk_ctx, "Relationship properties:", NK_TEXT_LEFT);
         nk_label(nk_ctx, prop.ref_status, NK_TEXT_LEFT);
         nk_label(nk_ctx, prop.sym_status, NK_TEXT_LEFT);
         nk_label(nk_ctx, prop.trs_status, NK_TEXT_LEFT);

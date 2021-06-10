@@ -7,9 +7,13 @@ int main(void)
 {
     GetPerforanceFurnaceStat(performance_stat);
     InitDataLength(performance_stat, perf_src_buf, perf_src_len);
+    min_perf_len = sprintf(min_perf_buf, "%5.4f", min_perf);
+    max_perf_len = sprintf(max_perf_buf, "%5.4f", max_perf);
 
     GetVolumeFurnaceStat(volume_stat);
     InitDataLength(volume_stat, volu_src_buf, volu_src_len);
+    min_vol_len = sprintf(min_vol_buf, "%5.4f", min_vol);
+    max_vol_len = sprintf(max_vol_buf, "%5.4f", max_vol);
 
     /* ------- Setup ------- */
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
