@@ -8,7 +8,7 @@ int main(void)
     GetPerforanceFurnaceStat(performance_stat);
     InitDataLength(performance_stat, perf_src_buf, perf_src_len);
 
-    GetPerforanceFurnaceStat(volume_stat);
+    GetVolumeFurnaceStat(volume_stat);
     InitDataLength(volume_stat, volu_src_buf, volu_src_len);
 
     /* ------- Setup ------- */
