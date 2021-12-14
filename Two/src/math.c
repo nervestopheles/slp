@@ -47,28 +47,60 @@ void GetVolumeMembership(float min, float max, int length,
 
 char * GetReflectiveStatus(float array[furnace_count][furnace_count])
 {
-    char check;
+    int check;
 
     check = 0;
     for (int i = 0; i < furnace_count && array[i][i] == 1; i++)
         check++;
-    if (check == furnace_count) return REFLECTIVE;
+    if (check == furnace_count) {
+        check = 0;
+        for (int i = 0; i < furnace_count; i++) 
+            for (int j = 0; j < furnace_count; j++) 
+                if (array[i][j] != 1 && j != i) check++;
+        if (check == pow(furnace_count,2)-furnace_count)
+            return STRONG_REFLECTIVE;
+        else
+            return WEAK_REFLECTIVE;
+    };
 
     check = 0;
     for (int i = 0; i < furnace_count && array[i][i] == 0; i++)
         check++;
-    if (check == furnace_count) return ANTIREFLECTIVE;
+    if (check == furnace_count) {
+        check = 0;
+        for (int i = 0; i < furnace_count; i++) 
+            for (int j = 0; j < furnace_count; j++) 
+                if (array[i][j] != 0 && j != i) check++;
+        if (check == pow(furnace_count, 2)-furnace_count)
+            return STRONG_ANTIREFLECTIVE;
+        else
+            return WEAK_ANTIREFLECTIVE;
+    };
 
-    return NON_REFLECTIVE;
+    return "Reflective Status: Error!";
 }
 
 char * GetSymmetricStatus(float array[furnace_count][furnace_count])
 {
+    int check;
+
+    check = 0;
     for (int i = 0; i < furnace_count; i++)
         for (int j = 0; j < furnace_count; j++)
-            if (array[i][j] == array[j][i]) {}
-            else return NON_SYMMETRIC;
-    return SYMMETRIC;
+            if (array[i][j] == array[j][i]) 
+                check++;
+    if (check == pow(furnace_count,2)) return SYMMETRIC;
+
+    /*
+    check = 0;
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count && j != i; j++)
+            if (array[i][j] != array[j][i])
+                check++;
+    if (check == pow(furnace_count, 2)-furnace_count) return ANTI_SYMMETRIC;
+    */
+
+    return ASYMMETRIC;
 }
 
 float Min(float x, float y) { return (x < y) ? x : y; }
@@ -93,15 +125,39 @@ char * GetTransitiveStatus(float array[furnace_count][furnace_count])
     return TRANSITIVE;
 }
 
+float max(float x, float y) { return x > y ? x : y; }
+
+char * GetLinearStatus(float array[furnace_count][furnace_count])
+{
+    int check;
+    
+    check = 0;
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
+            if (max(array[i][j], array[j][i]) == 1)
+                check++;
+    if (check == furnace_count * furnace_count) return STRONG_LINEAR;
+
+    check = 0;
+    for (int i = 0; i < furnace_count; i++)
+        for (int j = 0; j < furnace_count; j++)
+            if (max(array[i][j], array[j][i]) > 0)
+                check++;
+    if (check == furnace_count * furnace_count) return WEAK_LINEAR;
+
+    return NON_LINEAR;
+}
+
 void UpdateProperties(float src[furnace_count][furnace_count], 
     struct Properties *res)
 {
     res->ref_status = GetReflectiveStatus(src);
     res->sym_status = GetSymmetricStatus(src);
     res->trs_status = GetTransitiveStatus(src);
+    res->lnr_status = GetLinearStatus(src);
 }
 
-void GetPerforanceFurnaceStat(float array[furnace_count])
+void GetPerformanceFurnaceStat(float array[furnace_count])
 {
     for (int i = 0; i < furnace_count; i++) {
         array[i] = furnace[i].performance;

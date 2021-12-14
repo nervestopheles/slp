@@ -206,6 +206,7 @@ void ViewRes(struct nk_context * nk_ctx,
         nk_label(nk_ctx, prop.ref_status, NK_TEXT_LEFT);
         nk_label(nk_ctx, prop.sym_status, NK_TEXT_LEFT);
         nk_label(nk_ctx, prop.trs_status, NK_TEXT_LEFT);
+        nk_label(nk_ctx, prop.lnr_status, NK_TEXT_LEFT);
 }
 
 void ViewMatr(struct nk_context * nk_ctx, struct nk_rect * region)

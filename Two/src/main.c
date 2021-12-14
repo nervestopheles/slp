@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    GetPerforanceFurnaceStat(performance_stat);
+    GetPerformanceFurnaceStat(performance_stat);
     InitDataLength(performance_stat, perf_src_buf, perf_src_len);
     min_perf_len = sprintf(min_perf_buf, "%5.4f", min_perf);
     max_perf_len = sprintf(max_perf_buf, "%5.4f", max_perf);

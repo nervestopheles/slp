@@ -39,27 +39,38 @@ struct {
     { "571-7"       ,  200 ,  19.0 },
     { "1030-8"      ,  800 ,  73.8 },
     { "CMK-158A-9"  ,  400 ,  41.0 },
-    { "СМК-158А-10" ,  350 ,  41.0 }
+    { "СМК-158А-10" ,  350 ,  42.0 }
 };
 
-#define REFLECTIVE     "    Reflective"
-#define NON_REFLECTIVE "    Non reflective"
-#define ANTIREFLECTIVE "    Antireflective"
+#define STRONG_REFLECTIVE     "    Strong Reflective"
+#define WEAK_REFLECTIVE       "    Weak Reflective"
+// #define NON_REFLECTIVE        "    Non Reflective"
+
+#define STRONG_ANTIREFLECTIVE "    Strong Antireflective"
+#define WEAK_ANTIREFLECTIVE   "    Weak Antireflective"
+// #define NON_ANTIREFLECTIVE    "    Non Antireflective"
 
 #define SYMMETRIC      "    Symmetric"
-#define NON_SYMMETRIC  "    Non symmetric"
+#define ANTI_SYMMETRIC "    Anti Symmetric"
+#define ASYMMETRIC     "    Asymmetric"
 
 #define TRANSITIVE     "    Transitive"
 #define NON_TRANSITIVE "    Non transitive"
+
+#define STRONG_LINEAR  "    Strong Linear"
+#define WEAK_LINEAR    "    Weak Linear"
+#define NON_LINEAR     "    Non Linear"
 
 struct Properties {
     char *ref_status;
     char *sym_status;
     char *trs_status;
+    char *lnr_status;
 };
 
 #define _performance 0x1
 #define _volume      0x2
+
 #define _membership  0x3
 #define _difference  0x4
 
@@ -73,7 +84,7 @@ int value = _membership;
 
 #define furnace_count 10
 
-float min_perf = 110;   float max_perf = 580;
+float min_perf = 0;   float max_perf = 750;
 int min_perf_len;       int max_perf_len;
 char min_perf_buf[8];   char max_perf_buf[8];
 
@@ -84,7 +95,7 @@ struct Properties performance_properties;
 int perf_src_len[furnace_count];
 char perf_src_buf[furnace_count][20];
 
-float min_vol = 0;      float max_vol = 35;
+float min_vol = 0;      float max_vol = 69.7;
 int min_vol_len;        int max_vol_len;
 char min_vol_buf[8];    char max_vol_buf[8];
 
