@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'soma_rnd_code'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=soma_rnd_code",
+                    "--package=soma_rnd_code"
+                ],
+                "filter": {
+                    "name": "soma_rnd_code",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'soma_rnd_code'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=soma_rnd_code",
+                    "--package=soma_rnd_code"
+                ],
+                "filter": {
+                    "name": "soma_rnd_code",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
