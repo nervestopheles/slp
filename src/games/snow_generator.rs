@@ -2,7 +2,7 @@ use rand::Rng;
 use std::io::Write;
 
 const WIDTH: usize = 120;
-const HEIGHT: usize = 32;
+const HEIGHT: usize = 24;
 
 fn show(screen: [[char; WIDTH]; HEIGHT]) {
     for (idx, string) in screen.iter().enumerate() {

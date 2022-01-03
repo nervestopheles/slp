@@ -4,15 +4,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'soma_rnd_code'",
+            "name": "Debug executable 'slp'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=soma_rnd_code",
-                    "--package=soma_rnd_code"
+                    "--bin=slp",
+                    "--package=slp"
                 ],
                 "filter": {
-                    "name": "soma_rnd_code",
+                    "name": "slp",
                     "kind": "bin"
                 }
             },
@@ -22,16 +22,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'soma_rnd_code'",
+            "name": "Debug unit tests in executable 'slp'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=soma_rnd_code",
-                    "--package=soma_rnd_code"
+                    "--bin=slp",
+                    "--package=slp"
                 ],
                 "filter": {
-                    "name": "soma_rnd_code",
+                    "name": "slp",
                     "kind": "bin"
                 }
             },

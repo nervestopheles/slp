@@ -1,4 +1,5 @@
 use rand::Rng;
+use std::io::Write;
 
 fn get_guess_str() -> String {
     let err: &str = "Failed to read line.";
@@ -12,9 +13,10 @@ pub fn foo() {
     let secret_number: i32 = rand::thread_rng().gen_range(0..99);
 
     println!("Guess the number!");
-    println!("Please input your guess: ");
-
     loop {
+        print!("Please input your guess: ");
+        std::io::stdout().flush().expect("Flush output error.");
+
         let guess: i32 = match get_guess_str().trim().parse() {
             Ok(number) => number,
             Err(_) => {

@@ -72,7 +72,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "soma_rnd_code"
+name = "slp"
 version = "0.0.0"
 dependencies = [
  "rand",
