@@ -4,6 +4,6 @@ mod algorithms;
 fn main() {
     algorithms::fibonacci_numbers();
     games::guess_the_number();
-    games::snow();
+    games::snow_generator();
     return;
 }

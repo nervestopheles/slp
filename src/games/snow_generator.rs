@@ -51,7 +51,7 @@ fn move_snow(screen: &mut [[char; WIDTH]; HEIGHT]) {
     }
 }
 
-pub fn game() {
+pub fn foo() {
     let mut screen = [[' '; WIDTH]; HEIGHT];
     loop {
         print!("\x1B[2J\x1B[1;1H");

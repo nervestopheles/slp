@@ -8,7 +8,7 @@ fn get_guess_str() -> String {
     return guess;
 }
 
-pub fn game() {
+pub fn foo() {
     let secret_number: i32 = rand::thread_rng().gen_range(0..99);
 
     println!("Guess the number!");
