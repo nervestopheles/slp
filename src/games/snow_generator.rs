@@ -4,7 +4,7 @@ use std::io::Write;
 const WIDTH: usize = 120;
 const HEIGHT: usize = 24;
 
-fn show(screen: [[char; WIDTH]; HEIGHT]) {
+fn show(screen: &Vec<Vec<char>>) {
     for (idx, string) in screen.iter().enumerate() {
         let s: String = string.iter().collect();
         print!("{}", s);
@@ -16,7 +16,7 @@ fn show(screen: [[char; WIDTH]; HEIGHT]) {
     }
 }
 
-fn gen_snow(screen: &mut [[char; WIDTH]; HEIGHT]) {
+fn gen_snow(screen: &mut Vec<Vec<char>>) {
     for chr in screen[0].iter_mut() {
         if rand::thread_rng().gen_range(0..100) % 10 == 0 {
             *chr = '*';
@@ -24,7 +24,7 @@ fn gen_snow(screen: &mut [[char; WIDTH]; HEIGHT]) {
     }
 }
 
-fn move_snow(screen: &mut [[char; WIDTH]; HEIGHT]) {
+fn move_snow(screen: &mut Vec<Vec<char>>) {
     for i in (0..(HEIGHT)).rev() {
         for j in 0..(WIDTH) {
             if screen[i][j] == '*' {
@@ -52,12 +52,12 @@ fn move_snow(screen: &mut [[char; WIDTH]; HEIGHT]) {
 }
 
 pub fn foo() {
-    let mut screen = [[' '; WIDTH]; HEIGHT];
+    let mut screen = vec![vec![' '; WIDTH]; HEIGHT];
     loop {
         print!("\x1B[2J\x1B[1;1H");
         move_snow(&mut screen);
         gen_snow(&mut screen);
-        show(screen);
+        show(&screen);
         std::thread::sleep(std::time::Duration::from_millis(150));
     }
 }
