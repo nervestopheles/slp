@@ -1,25 +1,23 @@
 use rand::Rng;
 use std::io::Write;
 
-const WIDTH: usize = 120;
-const HEIGHT: usize = 24;
-
 pub fn foo() {
-    let mut screen = vec![vec![' '; WIDTH]; HEIGHT];
+    let ts: termsize::Size = termsize::get().unwrap();
+    let mut screen = vec![vec![' '; ts.cols as usize]; ts.rows as usize];
     loop {
         print!("\x1B[2J\x1B[1;1H");
-        move_snow(&mut screen);
+        move_snow(&mut screen, &ts);
         gen_snow(&mut screen);
-        show_snow(&screen);
+        show_snow(&screen, &ts);
         std::thread::sleep(std::time::Duration::from_millis(150));
     }
 }
 
-fn show_snow(screen: &Vec<Vec<char>>) {
+fn show_snow(screen: &Vec<Vec<char>>, ts: &termsize::Size) {
     for (idx, string) in screen.iter().enumerate() {
         let s: String = string.iter().collect();
         print!("{}", s);
-        if idx == HEIGHT - 1 {
+        if idx == ts.rows as usize - 1 {
             std::io::stdout().flush().expect("Output error.");
         } else {
             println!();
@@ -35,26 +33,26 @@ fn gen_snow(screen: &mut Vec<Vec<char>>) {
     }
 }
 
-fn move_snow(screen: &mut Vec<Vec<char>>) {
-    for i in (0..(HEIGHT)).rev() {
-        for j in 0..(WIDTH) {
+fn move_snow(screen: &mut Vec<Vec<char>>, ts: &termsize::Size) {
+    for i in (0..(ts.rows as usize)).rev() {
+        for j in 0..(ts.cols as usize) {
             if screen[i][j] == '*' {
                 screen[i][j] = ' ';
                 let mut dx = j;
                 if rand::thread_rng().gen_range(0..100) % 2 == 0 {
-                    if dx == WIDTH - 1 {
+                    if dx == ts.cols as usize - 1 {
                         dx = 0;
                     } else {
                         dx += 1;
                     }
                 } else if rand::thread_rng().gen_range(0..100) % 2 == 0 {
                     if dx == 0 {
-                        dx = WIDTH - 1;
+                        dx = ts.cols as usize - 1;
                     } else {
                         dx -= 1;
                     }
                 }
-                if i + 1 < HEIGHT {
+                if i + 1 < ts.rows as usize {
                     screen[i + 1][dx] = '*';
                 }
             }
