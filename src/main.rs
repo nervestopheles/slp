@@ -1,5 +1,5 @@
-mod games;
 mod algorithms;
+mod games;
 
 fn main() {
     algorithms::fibonacci_numbers();

@@ -4,11 +4,22 @@ use std::io::Write;
 const WIDTH: usize = 120;
 const HEIGHT: usize = 24;
 
-fn show(screen: &Vec<Vec<char>>) {
+pub fn foo() {
+    let mut screen = vec![vec![' '; WIDTH]; HEIGHT];
+    loop {
+        print!("\x1B[2J\x1B[1;1H");
+        move_snow(&mut screen);
+        gen_snow(&mut screen);
+        show_snow(&screen);
+        std::thread::sleep(std::time::Duration::from_millis(150));
+    }
+}
+
+fn show_snow(screen: &Vec<Vec<char>>) {
     for (idx, string) in screen.iter().enumerate() {
         let s: String = string.iter().collect();
         print!("{}", s);
-        if idx == HEIGHT-1 {
+        if idx == HEIGHT - 1 {
             std::io::stdout().flush().expect("Output error.");
         } else {
             println!();
@@ -48,16 +59,5 @@ fn move_snow(screen: &mut Vec<Vec<char>>) {
                 }
             }
         }
-    }
-}
-
-pub fn foo() {
-    let mut screen = vec![vec![' '; WIDTH]; HEIGHT];
-    loop {
-        print!("\x1B[2J\x1B[1;1H");
-        move_snow(&mut screen);
-        gen_snow(&mut screen);
-        show(&screen);
-        std::thread::sleep(std::time::Duration::from_millis(150));
     }
 }

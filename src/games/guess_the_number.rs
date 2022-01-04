@@ -1,14 +1,6 @@
 use rand::Rng;
 use std::io::Write;
 
-fn get_guess_str() -> String {
-    let err: &str = "Failed to read line.";
-    let mut guess: String = String::new();
-
-    std::io::stdin().read_line(&mut guess).expect(err);
-    return guess;
-}
-
 pub fn foo() {
     let secret_number: i32 = rand::thread_rng().gen_range(0..99);
 
@@ -37,4 +29,12 @@ pub fn foo() {
             println!("Your guess ({}) is to small.", guess);
         }
     }
+}
+
+fn get_guess_str() -> String {
+    let err: &str = "Failed to read line.";
+    let mut guess: String = String::new();
+
+    std::io::stdin().read_line(&mut guess).expect(err);
+    return guess;
 }
