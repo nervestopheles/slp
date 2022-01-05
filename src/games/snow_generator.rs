@@ -5,7 +5,7 @@ pub fn foo() {
     let ts: termsize::Size = termsize::get().unwrap();
     let mut screen = vec![vec![' '; ts.cols as usize]; ts.rows as usize];
     loop {
-        print!("\x1B[2J\x1B[1;1H");
+        print!("\x1B[2J\x1B[1;1H"); /* clear linux terminal */
         move_snow(&mut screen, &ts);
         gen_snow(&mut screen);
         show_snow(&screen, &ts);

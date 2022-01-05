@@ -24,9 +24,9 @@ pub fn foo() {
             );
             break;
         } else if guess > secret_number {
-            println!("Your guess ({}) is to bigger.", guess);
+            println!("Your guess ({}) is to bigger.\n", guess);
         } else if guess < secret_number {
-            println!("Your guess ({}) is to small.", guess);
+            println!("Your guess ({}) is to small.\n", guess);
         }
     }
 }
