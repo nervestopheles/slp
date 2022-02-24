@@ -3,10 +3,6 @@ use std::io::{BufReader, BufWriter, Read, Write};
 
 pub const EPERM_DEN: &str = "Create or open weight file error.\nPermission denied?";
 
-pub const WEIGHTS_FILE_PATH: &str = "/home/soma/tmp/weights.bin";
-pub const IMG_FILE_PATH: &str = "/home/soma/Work/Learning/NeuroNetwork/images/1.bmp";
-pub const MATRIX_SIZE: usize = 250;
-
 pub fn weights_init(weights: &mut Vec<Vec<f32>>) {
     let mut rng = rand::thread_rng();
     for vector in weights {
