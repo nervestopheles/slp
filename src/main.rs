@@ -5,16 +5,17 @@ mod other;
 use other::*;
 
 const WEIGHTS_FILE_PATH: &str = "/home/soma/tmp/weights.bin";
-const IMG_FILE_PATH: &str = "/home/soma/Work/Learning/NeuroNetwork/images/small-20.bmp";
 const MATRIX_SIZE: usize = 80;
 
 //TODO:
-//  1. передача путей к файлам через аргументы
-//  2. коррекция весов
+//  1. коррекция весов
 
 fn main() {
-    let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
-    image_read(IMG_FILE_PATH, &mut input);
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.len() < 1 {
+        println!("Null input. Plese enter path to bmp file.");
+        std::process::exit(0);
+    }
 
     let weights_path = std::path::Path::new(WEIGHTS_FILE_PATH);
     let mut weights = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
@@ -27,9 +28,14 @@ fn main() {
         };
     }
 
-    let neuron = neuron_power(&input, &weights);
-    println!("Neuron power: {}", neuron);
-    println!("Neuron activation value: {}", activation(neuron));
+    let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
+    for arg in &args {
+        image_read(arg, &mut input);
+        let neuron = neuron_power(&input, &weights);
+        println!("Neuron power: {}", neuron);
+        println!("Neuron activation value: {}", activation(neuron));
+        println!()
+    }
 
     weights_write(WEIGHTS_FILE_PATH, weights);
     println!("Sayonara.");
