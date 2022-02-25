@@ -19,7 +19,7 @@ const MATRIX_SIZE: usize = 80;
 
 const INCREASE_VALUE: f32 = 0.8;
 const DECREASE_VALUE: f32 = 0.3;
-const ALPHA_VALUE: f32 = 0.34;
+const ALPHA_VALUE: f32 = 0.17;
 
 fn main() {
     let mut args: Vec<String> = std::env::args().skip(1).collect();
@@ -60,7 +60,6 @@ fn main() {
     let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
 
     let mut era_count: u64 = 0;
-    let mut faile_count: u64 = 1;
     match mode {
         RunMode::Normal => {
             for arg in args.iter() {
@@ -69,31 +68,31 @@ fn main() {
             }
         }
         RunMode::Increase => {
-            while faile_count != 0 {
-                faile_count = 0;
-                for arg in args.iter() {
-                    let (np, na) = work(arg.as_str(), &weights, &mut input);
-                    if na < correct_value {
-                        change_w(&correct_value, &np, &na, &mut weights, &input);
-                        faile_count += 1;
-                    }
-                    print_info(arg, &np, &na);
+            for arg in args.iter() {
+                image_read(arg, &mut input);
+                let mut np = neuron_power(&input, &weights);
+                let mut na = activation(&np);
+                while na < correct_value {
+                    weight_correction(&np, &na, &correct_value, &input, &mut weights);
+                    np = neuron_power(&input, &weights);
+                    na = activation(&np);
+                    era_count += 1;
                 }
-                era_count += 1;
+                print_info(arg, &np, &na);
             }
         }
         RunMode::Decrease => {
-            while faile_count != 0 {
-                faile_count = 0;
-                for arg in args.iter() {
-                    let (np, na) = work(arg.as_str(), &weights, &mut input);
-                    if na > correct_value {
-                        change_w(&correct_value, &np, &na, &mut weights, &input);
-                        faile_count += 1;
-                    }
-                    print_info(arg, &np, &na);
+            for arg in args.iter() {
+                image_read(arg, &mut input);
+                let mut np = neuron_power(&input, &weights);
+                let mut na = activation(&np);
+                while na > correct_value {
+                    weight_correction(&np, &na, &correct_value, &input, &mut weights);
+                    np = neuron_power(&input, &weights);
+                    na = activation(&np);
+                    era_count += 1;
                 }
-                era_count += 1;
+                print_info(arg, &np, &na);
             }
         }
     }
@@ -102,7 +101,6 @@ fn main() {
     if mode != RunMode::Normal {
         println!("Counts of eras: {}", era_count);
     }
-    println!("Sayonara.");
 }
 
 fn work(arg: &str, weights: &Vec<Vec<f32>>, input: &mut Vec<Vec<f32>>) -> (f32, f32) {
@@ -114,12 +112,12 @@ fn work(arg: &str, weights: &Vec<Vec<f32>>, input: &mut Vec<Vec<f32>>) -> (f32, 
     (np, na)
 }
 
-fn change_w(
-    correct_value: &f32,
+fn weight_correction(
     np: &f32,
     na: &f32,
-    weights: &mut Vec<Vec<f32>>,
+    correct_value: &f32,
     input: &Vec<Vec<f32>>,
+    weights: &mut Vec<Vec<f32>>,
 ) {
     let delta = na - correct_value;
     let derivative = activation_derivative(np);
