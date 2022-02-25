@@ -97,7 +97,9 @@ fn main() {
         }
     }
 
-    weights_write(WEIGHTS_FILE_PATH, weights);
+    learning(&mut input, &mut weights);
+
+    weights_write(WEIGHTS_FILE_PATH, &weights);
     if mode != RunMode::Normal {
         println!("Counts of eras: {}", era_count);
     }
@@ -126,4 +128,52 @@ fn weight_correction(
             weights[i][j] = weights[i][j] - ALPHA_VALUE * 2.0 * delta * derivative * input[i][j];
         }
     }
+}
+
+fn learning(input: &mut Vec<Vec<f32>>, weights: &mut Vec<Vec<f32>>) {
+    let mut increases: Vec<String> = vec![];
+    for obj in std::fs::read_dir("/home/soma/Work/Learning/NeuroNetwork/images/crosses").unwrap() {
+        increases.push(obj.unwrap().path().display().to_string());
+    }
+
+    let mut decreases: Vec<String> = vec![];
+    for obj in std::fs::read_dir("/home/soma/Work/Learning/NeuroNetwork/images/other").unwrap() {
+        decreases.push(obj.unwrap().path().display().to_string());
+    }
+
+    let mut loops: u64 = 0;
+    let mut err: u64 = 0;
+
+    let mut errors: u64 = 1;
+
+    while errors != 0 {
+        errors = 0;
+        for arg in increases.iter() {
+            image_read(arg, input);
+            let mut np = neuron_power(&input, &weights);
+            let mut na = activation(&np);
+            while na < INCREASE_VALUE {
+                weight_correction(&np, &na, &INCREASE_VALUE, &input, weights);
+                np = neuron_power(&input, &weights);
+                na = activation(&np);
+                errors += 1; err += 1;
+            }
+            // print_info(arg, &np, &na);
+        }
+        for arg in decreases.iter() {
+            image_read(arg, input);
+            let mut np = neuron_power(&input, &weights);
+            let mut na = activation(&np);
+            while na > DECREASE_VALUE {
+                weight_correction(&np, &na, &DECREASE_VALUE, &input, weights);
+                np = neuron_power(&input, &weights);
+                na = activation(&np);
+                errors += 1; err += 1;
+            }
+            // print_info(arg, &np, &na);
+        }
+        loops += 1;
+    }
+    println!("Loops: {}", &loops);
+    println!("All errors: {}", &err);
 }

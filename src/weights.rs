@@ -30,7 +30,7 @@ pub fn weights_read(path: &std::path::Path, weights: &mut Vec<Vec<f32>>) {
     }
 }
 
-pub fn weights_write(path: &str, weights: Vec<Vec<f32>>) {
+pub fn weights_write(path: &str, weights: &Vec<Vec<f32>>) {
     let file = std::fs::File::options()
         .write(true)
         .open(path)
