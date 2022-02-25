@@ -20,6 +20,7 @@
                 }
             },
             "args": ["/home/soma/.tmp/cross.bmp", "/home/soma/.tmp/other.bmp"],
+            //"args": ["--inc", "/home/soma/.tmp/cross.bmp"],
             "cwd": "${workspaceFolder}"
         },
         {
