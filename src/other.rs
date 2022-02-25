@@ -1,9 +1,15 @@
-pub fn activation(x: f32) -> f32 {
+pub fn activation(x: &f32) -> f32 {
     sigmoid(x)
 }
+pub fn activation_derivative(x: &f32) -> f32 {
+    siqmoid_derivative(x)
+}
 
-fn sigmoid(x: f32) -> f32 {
+fn sigmoid(x: &f32) -> f32 {
     1.0 / (1.0 + (-x).exp())
+}
+fn siqmoid_derivative(x: &f32) -> f32 {
+    sigmoid(x) * (1.0 - sigmoid(x))
 }
 
 pub fn image_read(path: &str, matrix: &mut Vec<Vec<f32>>) {
@@ -14,7 +20,7 @@ pub fn image_read(path: &str, matrix: &mut Vec<Vec<f32>>) {
     for (x, rows) in matrix.iter_mut().enumerate() {
         for (y, value) in rows.iter_mut().enumerate() {
             let px = bmp.get_pixel(x as u32, y as u32);
-            *value = (px.r as f32 * px.g as f32 * px.b as f32) / (255*255*255) as f32;
+            *value = (px.r as f32 * px.g as f32 * px.b as f32) / (255 * 255 * 255) as f32;
         }
     }
 }
