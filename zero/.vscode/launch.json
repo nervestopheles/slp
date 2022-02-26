@@ -1,0 +1,46 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "debug",
+            "cargo": {
+                "args": [
+                    "build"
+                ],
+                "filter": {
+                    "name": "zero",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "/home/soma/.tmp/other.bmp"
+            ],
+            // "args": [
+            //     "--inc",
+            //     "/home/soma/.tmp/cross.bmp"
+            // ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "release",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--release"
+                ],
+                "filter": {
+                    "name": "zero",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "/home/soma/.tmp/other.bmp"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
