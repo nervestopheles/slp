@@ -39,8 +39,7 @@ pub fn neuron_power(input: &Vec<Vec<f32>>, weights: &Vec<Vec<f32>>) -> f32 {
 pub fn print_info(arg: &String, np: &f32, na: &f32) {
     println!("Image name: {}", arg);
     println!("Neuron power: {}", &np);
-    println!("Neuron activation value: {}", &na);
-    println!()
+    print!("Neuron activation value: {} -> ", &na);
 }
 
 pub fn prog_exit() -> ! {

@@ -1,7 +1,12 @@
 [package]
-name = "lab_zero"
-version = "0.1.0"
+name = "zero"
+version = "0.0.1"
 edition = "2021"
+authors = ["Christina Soma"]
+license = "MIT"
+
+[profile.release]
+strip = true
 
 [dependencies]
 rand = "*"
