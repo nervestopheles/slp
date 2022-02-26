@@ -4,9 +4,9 @@ use weights::*;
 mod other;
 use other::*;
 
+const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
-const MODE_LEARNING: &str = "--learn";
 
 #[derive(PartialEq)]
 enum RunMode {
@@ -60,48 +60,54 @@ fn main() {
         _ => 0.0,
     };
 
+
     let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
 
-    let mut era_count: u64 = 0;
+    let mut eras: u64 = 0;
+    let mut errors: u64 = 0;
+    let mut correcting: u64 = 1;
+
     match mode {
         RunMode::Normal => {
-            for arg in args.iter() {
-                let (np, na) = work(arg.as_str(), &weights, &mut input);
-                print_info(arg, &np, &na);
-                println!("{}", &na);
-                println!();
+            for path in args.iter() {
+                image_read(path, &mut input);
+                let np = neuron_power(&input, &weights);
+                let na = activation(&np);
+                println!("Image name: {}", path);
+                println!("Neuron power: {}", &np);
+                println!("Neuron activation value: {}\n", &na);
             }
         }
         RunMode::Increase => {
-            for arg in args.iter() {
-                image_read(arg, &mut input);
+            for path in args.iter() {
+                image_read(path, &mut input);
                 let mut np = neuron_power(&input, &weights);
                 let mut na = activation(&np);
-                print_info(arg, &np, &na);
-                while na < correct_value {
+                // print_info(arg, &np, &na); // debug print
+                while (100.0 * na).round() / 100.0 < correct_value {
                     weight_correction(&np, &na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
-                    era_count += 1;
+                    errors += 1;
                 }
-                println!("{}", &na);
-                println!();
+                // println!("{}", &na);
+                // println!();
             }
         }
         RunMode::Decrease => {
-            for arg in args.iter() {
-                image_read(arg, &mut input);
+            for path in args.iter() {
+                image_read(path, &mut input);
                 let mut np = neuron_power(&input, &weights);
                 let mut na = activation(&np);
-                print_info(arg, &np, &na);
-                while na > correct_value {
+                // print_info(path, &np, &na);
+                while (100.0 * na).round() / 100.0 > correct_value {
                     weight_correction(&np, &na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
-                    era_count += 1;
+                    errors += 1;
                 }
-                println!("{}", &na);
-                println!();
+                // println!("{}", &na);
+                // println!();
             }
         }
         RunMode::Learning => {
@@ -131,10 +137,6 @@ fn main() {
             let decreases_files: Vec<String> = get_files(DECREASES_PATH);
             let decrases_matrxs: Vec<Vec<Vec<f32>>> = get_matrxs(&decreases_files);
 
-            let mut eras: u64 = 0;
-            let mut errors: u64 = 0;
-            let mut correcting: u64 = 1;
-
             while correcting != 0 {
                 correcting = 0;
                 for matrx in increases_matrxs.iter() {
@@ -145,7 +147,7 @@ fn main() {
                         weight_correction(&np, &na, &INCREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
-                        println!("Inc - np: {}, na: {}", &np, &na);
+                        // println!("Inc - np: {}, na: {}", &np, &na); // debug print
                     }
                 }
                 for matrx in decrases_matrxs.iter() {
@@ -156,32 +158,22 @@ fn main() {
                         weight_correction(&np, &na, &DECREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
-                        println!("Dec - np: {}, na: {}", &np, &na);
+                        // println!("Dec - np: {}, na: {}", &np, &na); // debug print
                     }
                 }
                 eras += 1;
             }
-            println!("Counts of eras: {}", &eras);
-            println!("All errors: {}", &errors);
         }
     }
 
     weights_write(WEIGHTS_FILE_PATH, &weights);
-    if mode != RunMode::Normal && mode != RunMode::Learning {
-        println!("Counts of eras: {}", era_count);
+    if mode != RunMode::Normal {
+        println!("Counts of eras: {}", &eras);
+        println!("All errors: {}", &errors);
     }
 }
 
 /* ------------ foos ------------*/
-
-fn work(arg: &str, weights: &Vec<Vec<f32>>, input: &mut Vec<Vec<f32>>) -> (f32, f32) {
-    let np = {
-        image_read(arg, input);
-        neuron_power(input, weights)
-    };
-    let na = activation(&np);
-    (np, na)
-}
 
 fn weight_correction(
     np: &f32,

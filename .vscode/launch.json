@@ -15,7 +15,6 @@
                 }
             },
             "args": [
-                "--inc",
                 "/home/soma/.tmp/other.bmp"
             ],
             // "args": [

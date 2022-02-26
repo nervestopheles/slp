@@ -36,11 +36,11 @@ pub fn neuron_power(input: &Vec<Vec<f32>>, weights: &Vec<Vec<f32>>) -> f32 {
     return neuron;
 }
 
-pub fn print_info(arg: &String, np: &f32, na: &f32) {
-    println!("Image name: {}", arg);
-    println!("Neuron power: {}", &np);
-    print!("Neuron activation value: {} -> ", &na);
-}
+// pub fn print_info(arg: &String, np: &f32, na: &f32) {
+//     println!("Image name: {}", arg);
+//     println!("Neuron power: {}", &np);
+//     print!("Neuron activation value: {} -> ", &na);
+// }
 
 pub fn prog_exit() -> ! {
     println!("Null input. Plese enter path to bmp file.");
