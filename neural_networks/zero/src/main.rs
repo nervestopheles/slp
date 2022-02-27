@@ -8,7 +8,7 @@ const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
 
-const INCREASE_VALUE: f32 = 0.95;
+const INCREASE_VALUE: f32 = 0.9;
 const DECREASE_VALUE: f32 = 0.1;
 
 #[derive(PartialEq)]
@@ -47,6 +47,8 @@ fn main() {
         } else {
             std::fs::File::create(WEIGHTS_FILE_PATH).expect(EPERM_DEN);
             weights_init(&mut weights);
+            weights_write_bin(WEIGHTS_FILE_PATH, &weights);
+            weights_write_bmp(&weights);
         };
     }
 
@@ -68,9 +70,14 @@ fn main() {
                 image_read(path, &mut input);
                 let np = neuron_power(&input, &weights);
                 let na = activation(&np);
-                println!("Image name: {}", path);
-                println!("Neuron power: {:.4}", &np);
-                println!("Neuron activation value: {:.4}\n", &na);
+                println!(
+                    "\
+                    Image name: {}\n\
+                    Neuron power: {:.4}\n\
+                    Neuron activation value: {:.4}\n\
+                ",
+                    path, &np, &na
+                );
             }
         }
         RunMode::Increase => {
@@ -78,15 +85,12 @@ fn main() {
                 image_read(path, &mut input);
                 let mut np = neuron_power(&input, &weights);
                 let mut na = activation(&np);
-                // print_info(arg, &np, &na); // debug print
                 while (100.0 * na).round() / 100.0 < correct_value {
                     weight_correction(&na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
                     errors += 1;
                 }
-                // println!("{}", &na);
-                // println!();
             }
         }
         RunMode::Decrease => {
@@ -94,15 +98,12 @@ fn main() {
                 image_read(path, &mut input);
                 let mut np = neuron_power(&input, &weights);
                 let mut na = activation(&np);
-                // print_info(path, &np, &na);
                 while (100.0 * na).round() / 100.0 > correct_value {
                     weight_correction(&na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
                     errors += 1;
                 }
-                // println!("{}", &na);
-                // println!();
             }
         }
         RunMode::Learning => {
@@ -113,7 +114,6 @@ fn main() {
                 }
                 files
             };
-
             let get_matrxs = |files: &Vec<String>| -> Vec<Vec<Vec<f32>>> {
                 let mut matrxs: Vec<Vec<Vec<f32>>> =
                     vec![vec![vec![0.0; MATRIX_SIZE]; MATRIX_SIZE]; files.len()];
@@ -139,7 +139,6 @@ fn main() {
                         weight_correction(&na, &INCREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
-                        // println!("Inc - np: {}, na: {}", &np, &na); // debug print
                     }
                 }
                 for matrx in decrases_matrxs.iter() {
@@ -150,7 +149,6 @@ fn main() {
                         weight_correction(&na, &DECREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
-                        // println!("Dec - np: {}, na: {}", &np, &na); // debug print
                     }
                 }
                 eras += 1;
@@ -158,10 +156,9 @@ fn main() {
         }
     }
 
-    weights_write_bmp(&weights);
-    weights_write_bin(WEIGHTS_FILE_PATH, &weights);
-
     if mode != RunMode::Normal {
+        weights_write_bin(WEIGHTS_FILE_PATH, &weights);
+        weights_write_bmp(&weights);
         println!("Counts of eras: {}", &eras);
         println!("All errors: {}", &errors);
     }
