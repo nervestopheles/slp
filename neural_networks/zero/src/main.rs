@@ -1,22 +1,15 @@
-mod weights;
-use weights::*;
-
-mod other;
+pub mod other;
 use other::*;
+
+pub mod weights;
+use weights::*;
 
 const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
 
-const WEIGHTS_FILE_PATH: &str = "./.tmp/weights.bin";
-const INCREASES_PATH: &str = "./.tmp/images/crosses";
-const DECREASES_PATH: &str = "./.tmp/images/other";
-
-const MATRIX_SIZE: usize = 80;
-
 const INCREASE_VALUE: f32 = 0.95;
 const DECREASE_VALUE: f32 = 0.1;
-const ALPHA_VALUE: f32 = 0.05;
 
 #[derive(PartialEq)]
 enum RunMode {
@@ -62,7 +55,6 @@ fn main() {
         RunMode::Decrease => DECREASE_VALUE,
         _ => 0.0,
     };
-
 
     let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
 
@@ -114,8 +106,6 @@ fn main() {
             }
         }
         RunMode::Learning => {
-
-
             let get_files = |path: &str| -> Vec<String> {
                 let mut files: Vec<String> = vec![];
                 for obj in std::fs::read_dir(path).unwrap() {
@@ -168,26 +158,11 @@ fn main() {
         }
     }
 
-    weights_write(WEIGHTS_FILE_PATH, &weights);
+    weights_write_bmp(&weights);
+    weights_write_bin(WEIGHTS_FILE_PATH, &weights);
+
     if mode != RunMode::Normal {
         println!("Counts of eras: {}", &eras);
         println!("All errors: {}", &errors);
-    }
-}
-
-/* ------------ foos ------------*/
-
-fn weight_correction(
-    na: &f32,
-    correct_value: &f32,
-    input: &Vec<Vec<f32>>,
-    weights: &mut Vec<Vec<f32>>,
-) {
-    let delta = na - correct_value;
-    let derivative = activation_derivative(na);
-    for (i, vectors) in input.iter().enumerate() {
-        for (j, _value) in vectors.iter().enumerate() {
-            weights[i][j] -= ALPHA_VALUE * 2.0 * delta * derivative * input[i][j];
-        }
     }
 }

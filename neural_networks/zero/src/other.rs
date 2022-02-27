@@ -25,7 +25,6 @@ pub fn image_read(path: &str, matrix: &mut Vec<Vec<f32>>) {
     }
 }
 
-// Агрегирую все входящие в нейрон данные
 pub fn neuron_power(input: &Vec<Vec<f32>>, weights: &Vec<Vec<f32>>) -> f32 {
     let mut neuron: f32 = 0.0;
     for (i, rows) in input.iter().enumerate() {
@@ -36,13 +35,13 @@ pub fn neuron_power(input: &Vec<Vec<f32>>, weights: &Vec<Vec<f32>>) -> f32 {
     return neuron;
 }
 
+pub fn prog_exit() -> ! {
+    println!("Null input. Plese enter path to bmp file.");
+    std::process::exit(0)
+}
+
 // pub fn print_info(arg: &String, np: &f32, na: &f32) {
 //     println!("Image name: {}", arg);
 //     println!("Neuron power: {}", &np);
 //     print!("Neuron activation value: {} -> ", &na);
 // }
-
-pub fn prog_exit() -> ! {
-    println!("Null input. Plese enter path to bmp file.");
-    std::process::exit(0)
-}
