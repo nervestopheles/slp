@@ -8,8 +8,8 @@ pub fn activation_derivative(x: &f32) -> f32 {
 fn sigmoid(x: &f32) -> f32 {
     1.0 / (1.0 + (-x).exp())
 }
-fn siqmoid_derivative(x: &f32) -> f32 {
-    sigmoid(x) * (1.0 - sigmoid(x))
+fn siqmoid_derivative(sigmoid: &f32) -> f32 {
+    sigmoid * (1.0 - sigmoid)
 }
 
 pub fn image_read(path: &str, matrix: &mut Vec<Vec<f32>>) {

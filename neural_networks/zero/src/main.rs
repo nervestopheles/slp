@@ -8,6 +8,16 @@ const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
 
+const WEIGHTS_FILE_PATH: &str = "./.tmp/weights.bin";
+const INCREASES_PATH: &str = "./.tmp/images/crosses";
+const DECREASES_PATH: &str = "./.tmp/images/other";
+
+const MATRIX_SIZE: usize = 80;
+
+const INCREASE_VALUE: f32 = 0.95;
+const DECREASE_VALUE: f32 = 0.1;
+const ALPHA_VALUE: f32 = 0.05;
+
 #[derive(PartialEq)]
 enum RunMode {
     Normal,
@@ -15,13 +25,6 @@ enum RunMode {
     Decrease,
     Learning,
 }
-
-const WEIGHTS_FILE_PATH: &str = "/home/soma/.tmp/weights.bin";
-const MATRIX_SIZE: usize = 80;
-
-const INCREASE_VALUE: f32 = 0.95;
-const DECREASE_VALUE: f32 = 0.1;
-const ALPHA_VALUE: f32 = 0.05;
 
 fn main() {
     let mut args: Vec<String> = std::env::args().skip(1).collect();
@@ -74,8 +77,8 @@ fn main() {
                 let np = neuron_power(&input, &weights);
                 let na = activation(&np);
                 println!("Image name: {}", path);
-                println!("Neuron power: {}", &np);
-                println!("Neuron activation value: {}\n", &na);
+                println!("Neuron power: {:.4}", &np);
+                println!("Neuron activation value: {:.4}\n", &na);
             }
         }
         RunMode::Increase => {
@@ -85,7 +88,7 @@ fn main() {
                 let mut na = activation(&np);
                 // print_info(arg, &np, &na); // debug print
                 while (100.0 * na).round() / 100.0 < correct_value {
-                    weight_correction(&np, &na, &correct_value, &input, &mut weights);
+                    weight_correction(&na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
                     errors += 1;
@@ -101,7 +104,7 @@ fn main() {
                 let mut na = activation(&np);
                 // print_info(path, &np, &na);
                 while (100.0 * na).round() / 100.0 > correct_value {
-                    weight_correction(&np, &na, &correct_value, &input, &mut weights);
+                    weight_correction(&na, &correct_value, &input, &mut weights);
                     np = neuron_power(&input, &weights);
                     na = activation(&np);
                     errors += 1;
@@ -111,8 +114,7 @@ fn main() {
             }
         }
         RunMode::Learning => {
-            const INCREASES_PATH: &str = "/home/soma/Work/Learning/NeuroNetwork/images/crosses";
-            const DECREASES_PATH: &str = "/home/soma/Work/Learning/NeuroNetwork/images/other";
+
 
             let get_files = |path: &str| -> Vec<String> {
                 let mut files: Vec<String> = vec![];
@@ -144,7 +146,7 @@ fn main() {
                     let na = activation(&np);
                     // Произвожу округление 'na' для избежания ошибки представления float чисел.
                     if (100.0 * na).round() / 100.0 < INCREASE_VALUE {
-                        weight_correction(&np, &na, &INCREASE_VALUE, matrx, &mut weights);
+                        weight_correction(&na, &INCREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
                         // println!("Inc - np: {}, na: {}", &np, &na); // debug print
@@ -155,7 +157,7 @@ fn main() {
                     let na = activation(&np);
                     // Произвожу округление 'na' для избежания ошибки представления float чисел.
                     if (100.0 * na).round() / 100.0 > DECREASE_VALUE {
-                        weight_correction(&np, &na, &DECREASE_VALUE, matrx, &mut weights);
+                        weight_correction(&na, &DECREASE_VALUE, matrx, &mut weights);
                         correcting += 1;
                         errors += 1;
                         // println!("Dec - np: {}, na: {}", &np, &na); // debug print
@@ -176,17 +178,16 @@ fn main() {
 /* ------------ foos ------------*/
 
 fn weight_correction(
-    np: &f32,
     na: &f32,
     correct_value: &f32,
     input: &Vec<Vec<f32>>,
     weights: &mut Vec<Vec<f32>>,
 ) {
     let delta = na - correct_value;
-    let derivative = activation_derivative(np);
+    let derivative = activation_derivative(na);
     for (i, vectors) in input.iter().enumerate() {
         for (j, _value) in vectors.iter().enumerate() {
-            weights[i][j] = weights[i][j] - ALPHA_VALUE * 2.0 * delta * derivative * input[i][j];
+            weights[i][j] -= ALPHA_VALUE * 2.0 * delta * derivative * input[i][j];
         }
     }
 }
