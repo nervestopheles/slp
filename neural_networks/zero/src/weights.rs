@@ -13,7 +13,7 @@ pub const INCREASES_PATH: &str = "./.tmp/learning/crosses";
 pub const DECREASES_PATH: &str = "./.tmp/learning/other";
 
 pub const MATRIX_SIZE: usize = 80;
-pub const ALPHA: f32 = 0.8;
+pub const ALPHA: f32 = 0.65;
 
 pub fn weights_init(weights: &mut Vec<Vec<f32>>) {
     let mut rng = rand::thread_rng();

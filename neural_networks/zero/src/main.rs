@@ -4,6 +4,11 @@ use other::*;
 pub mod weights;
 use weights::*;
 
+pub mod imgs;
+use imgs::*;
+
+use rand::prelude::SliceRandom;
+
 const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
@@ -52,8 +57,10 @@ fn main() {
         } else {
             std::fs::File::create(WEIGHTS_FILE_PATH).expect(EPERM_DEN);
             weights_init(&mut weights);
-            weights_write_bin(WEIGHTS_FILE_PATH, &weights);
-            weights_write_bmp(&weights);
+            if mode != RunMode::Learning {
+                weights_write_bin(WEIGHTS_FILE_PATH, &weights);
+                weights_write_bmp(&weights);
+            }
         };
     }
 
@@ -112,51 +119,72 @@ fn main() {
             }
         }
         RunMode::Learning => {
-            let get_files = |path: &str| -> Vec<String> {
+            let files: Vec<String> = {
                 let mut files: Vec<String> = vec![];
-                for obj in std::fs::read_dir(path).unwrap() {
-                    files.push(obj.unwrap().path().display().to_string());
+                for path in [INCREASES_PATH, DECREASES_PATH] {
+                    for obj in std::fs::read_dir(path).unwrap() {
+                        files.push(obj.unwrap().path().display().to_string());
+                    }
                 }
                 files
             };
-            let get_matrxs = |files: &Vec<String>| -> Vec<Vec<Vec<f32>>> {
-                let mut matrxs: Vec<Vec<Vec<f32>>> =
-                    vec![vec![vec![0.0; MATRIX_SIZE]; MATRIX_SIZE]; files.len()];
+
+            let mut imgs = {
+                let mut imgs: Vec<Img> = vec![Img::default(MATRIX_SIZE, MATRIX_SIZE); files.len()];
                 for (idx, path) in files.iter().enumerate() {
-                    image_read(path, &mut matrxs[idx]);
+                    if regex::Regex::new(r"x.*.bmp").unwrap().is_match(path) {
+                        imgs[idx].shape = ImgShape::Cross;
+                    } else if regex::Regex::new(r"o.*.bmp").unwrap().is_match(path) {
+                        imgs[idx].shape = ImgShape::NonCross;
+                    } else {
+                        imgs.remove(idx);
+                        continue;
+                    }
+                    image_read(path, &mut imgs[idx].matrx);
+                    imgs[idx].path = path.clone();
                 }
-                matrxs
+                imgs
             };
 
-            let increases_files: Vec<String> = get_files(INCREASES_PATH);
-            let increases_matrxs: Vec<Vec<Vec<f32>>> = get_matrxs(&increases_files);
-
-            let decreases_files: Vec<String> = get_files(DECREASES_PATH);
-            let decrases_matrxs: Vec<Vec<Vec<f32>>> = get_matrxs(&decreases_files);
-
+            let mut rng = rand::thread_rng();
             while correcting != 0 {
-                correcting = 0;
-                for matrx in increases_matrxs.iter() {
-                    let np = neuron_power(&matrx, &weights);
-                    let na = activation(&np);
-                    // Произвожу округление 'na' для избежания ошибки представления float чисел.
-                    if (100.0 * na).round() / 100.0 < INCREASE_VALUE {
-                        weight_correction(&na, &INCREASE_VALUE, matrx, &mut weights);
-                        correcting += 1;
-                        errors += 1;
-                    }
-                }
-                for matrx in decrases_matrxs.iter() {
-                    let np = neuron_power(&matrx, &weights);
-                    let na = activation(&np);
-                    // Произвожу округление 'na' для избежания ошибки представления float чисел.
-                    if (100.0 * na).round() / 100.0 > DECREASE_VALUE {
-                        weight_correction(&na, &DECREASE_VALUE, matrx, &mut weights);
-                        correcting += 1;
-                        errors += 1;
-                    }
-                }
                 eras += 1;
+                correcting = 0;
+                imgs.shuffle(&mut rng);
+
+            /*
+                #[cfg(debug_assertions)]
+                {
+                    let mut debug_print = String::new();
+                    for img in imgs.iter() {
+                        debug_print.push_str(img.path.as_str());
+                        debug_print.push('\n');
+                    }
+                    println!("Era: {}\n{}", eras, debug_print);
+                }
+            */
+
+                for img in imgs.iter() {
+                    let np = neuron_power(&img.matrx, &weights);
+                    let na = activation(&np);
+                    let na_round = (100.0 * na).round() / 100.0;
+
+                    let mut correction = |correct_value: f32| {
+                        weight_correction(&na, &correct_value, &img.matrx, &mut weights);
+                        correcting += 1;
+                        errors += 1;
+                    };
+
+                    if img.shape == ImgShape::Cross {
+                        if na_round < INCREASE_VALUE {
+                            correction(INCREASE_VALUE);
+                        }
+                    } else {
+                        if na_round > DECREASE_VALUE {
+                            correction(DECREASE_VALUE);
+                        }
+                    }
+                }
             }
         }
     }

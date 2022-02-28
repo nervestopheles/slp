@@ -15,12 +15,8 @@
                 }
             },
             "args": [
-                "/home/soma/.tmp/other.bmp"
+                "./.tmp/image.bmp"
             ],
-            // "args": [
-            //     "--inc",
-            //     "/home/soma/.tmp/cross.bmp"
-            // ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -38,7 +34,7 @@
                 }
             },
             "args": [
-                "/home/soma/.tmp/other.bmp"
+                "./.tmp/image.bmp"
             ],
             "cwd": "${workspaceFolder}"
         }

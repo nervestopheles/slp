@@ -9,5 +9,6 @@ license = "MIT"
 strip = true
 
 [dependencies]
-rand = "*"
 bmp = "*"
+rand = "*"
+regex = "*"
