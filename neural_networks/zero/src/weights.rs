@@ -1,18 +1,19 @@
-use crate::other::*;
+// use crate::other::*;
 
 use rand::Rng;
 use std::io::{BufReader, BufWriter, Read, Write};
 
-pub const EPERM_DEN: &str = "Create or open weight file error.\nPermission denied?";
+pub const EPERM_DEN: &str = "Create or open weight file error.\n\
+                            Permission denied?";
 
 pub const WEIGHTS_FILE_PATH: &str = "./.tmp/weights.bin";
 pub const WEIGHTS_BMP_PATH: &str = "./.tmp/weights.bmp";
 
-pub const INCREASES_PATH: &str = "./.tmp/images/crosses";
-pub const DECREASES_PATH: &str = "./.tmp/images/other";
+pub const INCREASES_PATH: &str = "./.tmp/learning/crosses";
+pub const DECREASES_PATH: &str = "./.tmp/learning/other";
 
 pub const MATRIX_SIZE: usize = 80;
-pub const ALPHA_VALUE: f32 = 0.1;
+pub const ALPHA: f32 = 0.8;
 
 pub fn weights_init(weights: &mut Vec<Vec<f32>>) {
     let mut rng = rand::thread_rng();
@@ -57,15 +58,20 @@ pub fn weights_write_bin(path: &str, weights: &Vec<Vec<f32>>) {
 }
 
 pub fn weights_write_bmp(weights: &Vec<Vec<f32>>) {
+    let mut px = bmp::Pixel::new(0, 0, 0);
     let mut img = bmp::Image::new(MATRIX_SIZE as u32, MATRIX_SIZE as u32);
     for (x, vectors) in weights.iter().enumerate() {
         for (y, value) in vectors.iter().enumerate() {
-            let px = if *value > 0.0 {
-                let green: u8 = (value * 255.0).round() as u8;
-                bmp::Pixel::new(0, green, 0)
+            if *value > 0.0 {
+                let positive: u8 = (value * 255.0).round() as u8;
+                px.r = 0;
+                px.g = positive;
+                px.b = positive;
             } else {
-                let red: u8 = (value * 255.0 * -1.0).round() as u8;
-                bmp::Pixel::new(red, 0, 0)
+                let negative: u8 = (value * -255.0).round() as u8;
+                px.r = negative;
+                px.g = 0;
+                px.b = 0;
             };
             img.set_pixel(x as u32, y as u32, px);
         }
@@ -80,11 +86,13 @@ pub fn weight_correction(
     input: &Vec<Vec<f32>>,
     weights: &mut Vec<Vec<f32>>,
 ) {
-    let delta = na - correct_value;
-    let derivative = activation_derivative(na);
+    let delta = correct_value - na;
+    // let _derivative = activation_derivative(na);
     for (i, vectors) in input.iter().enumerate() {
-        for (j, _value) in vectors.iter().enumerate() {
-            weights[i][j] -= ALPHA_VALUE * 2.0 * delta * derivative * input[i][j];
+        for (j, value) in vectors.iter().enumerate() {
+            if *value != 0.0 {
+                weights[i][j] += ALPHA * delta * value /* * 2.0 * _derivative */;
+            }
         }
     }
 }

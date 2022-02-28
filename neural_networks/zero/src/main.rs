@@ -8,8 +8,13 @@ const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
 
-const INCREASE_VALUE: f32 = 0.9;
-const DECREASE_VALUE: f32 = 0.1;
+/* For sigmoid activation func */
+// const INCREASE_VALUE: f32 = 0.9;
+// const DECREASE_VALUE: f32 = 0.1;
+
+/* For binary step activation func */
+const INCREASE_VALUE: f32 = 1.0;
+const DECREASE_VALUE: f32 = 0.0;
 
 #[derive(PartialEq)]
 enum RunMode {

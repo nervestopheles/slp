@@ -1,14 +1,22 @@
 pub fn activation(x: &f32) -> f32 {
-    sigmoid(x)
+    binary_step(x) as f32
 }
-pub fn activation_derivative(x: &f32) -> f32 {
-    siqmoid_derivative(x)
+pub fn _activation_derivative(x: &f32) -> f32 {
+    _siqmoid_derivative(x)
 }
 
-fn sigmoid(x: &f32) -> f32 {
+fn binary_step(x: &f32) -> i32 {
+    if *x > 0.0 {
+        1
+    } else {
+        0
+    }
+}
+
+fn _sigmoid(x: &f32) -> f32 {
     1.0 / (1.0 + (-x).exp())
 }
-fn siqmoid_derivative(sigmoid: &f32) -> f32 {
+fn _siqmoid_derivative(sigmoid: &f32) -> f32 {
     sigmoid * (1.0 - sigmoid)
 }
 
@@ -32,7 +40,7 @@ pub fn neuron_power(input: &Vec<Vec<f32>>, weights: &Vec<Vec<f32>>) -> f32 {
             neuron += *value as f32 * weights[i][j] as f32;
         }
     }
-    return neuron;
+    neuron
 }
 
 pub fn prog_exit() -> ! {
