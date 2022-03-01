@@ -13,11 +13,11 @@ pub struct Img {
 }
 
 impl Img {
-    pub fn default(height: usize, width: usize) -> Self {
+    pub fn default(width: usize, height: usize) -> Self {
         Self {
             path: String::new(),
             shape: ImgShape::Null,
-            matrx: vec![vec![0.0; height]; width],
+            matrx: vec![vec![0.0; width]; height],
         }
     }
     pub fn new(path: String, shape: ImgShape, matrx: Vec<Vec<f32>>) -> Self {
