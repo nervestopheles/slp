@@ -167,7 +167,6 @@ fn main() {
                 for img in imgs.iter() {
                     let np = neuron_power(&img.matrx, &weights);
                     let na = activation(&np);
-                    let na_round = (100.0 * na).round() / 100.0;
 
                     let mut correction = |correct_value: f32| {
                         weight_correction(&na, &correct_value, &img.matrx, &mut weights);
@@ -176,11 +175,11 @@ fn main() {
                     };
 
                     if img.shape == ImgShape::Cross {
-                        if na_round < INCREASE_VALUE {
+                        if na < INCREASE_VALUE {
                             correction(INCREASE_VALUE);
                         }
                     } else {
-                        if na_round > DECREASE_VALUE {
+                        if na > DECREASE_VALUE {
                             correction(DECREASE_VALUE);
                         }
                     }
