@@ -1,0 +1,14 @@
+[package]
+name = "one"
+version = "0.0.1"
+edition = "2021"
+authors = ["Christina Soma"]
+license = "MIT"
+
+[profile.release]
+strip = true
+
+[dependencies]
+bmp = "0.5.0"
+rand = "0.8.5"
+regex = "1.5.4"
