@@ -2,7 +2,7 @@ use rand::Rng;
 use std::io::{BufReader, BufWriter, Read, Write};
 
 use crate::consts::EPERM_DEN;
-use crate::other::*;
+use crate::other::sigmoid;
 
 pub struct Neuron {
     shape: usize,
@@ -93,13 +93,26 @@ impl Neuron {
         alpha: f32, // learning speed
     ) {
         let delta = ev - na;
-        let derivative = activation_derivative(na);
         for (i, vectors) in input.iter().enumerate() {
             for (j, iv /* input value */) in vectors.iter().enumerate() {
                 if *iv != 0.0 {
-                    self.weights[i][j] += alpha * delta * iv * derivative;
+                    self.weights[i][j] += alpha * delta * iv;
                 }
             }
         }
+    }
+
+    pub fn power(&self, input: &Vec<Vec<f32>>) -> f32 {
+        let mut sum: f32 = 0.0;
+        for (i, rows) in input.iter().enumerate() {
+            for (j, value) in rows.iter().enumerate() {
+                sum += *value * self.weights[i][j];
+            }
+        }
+        sum
+    }
+
+    pub fn activation(x: &f32) -> f32 {
+        sigmoid(x)
     }
 }
