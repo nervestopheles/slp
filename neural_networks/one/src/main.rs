@@ -1,11 +1,11 @@
-pub mod other;
-use other::*;
+pub mod math;
+use math::*;
 
-pub mod weights;
-use weights::*;
+pub mod neuron;
+use neuron::*;
 
-pub mod imgs;
-use imgs::*;
+pub mod img;
+use img::*;
 
 pub mod consts;
 use crate::consts::*;
@@ -177,4 +177,9 @@ fn main() {
         println!("Counts of eras: {}", &eras);
         println!("All errors: {}", &errors);
     }
+}
+
+pub fn prog_exit() -> ! {
+    println!("Null input. Plese enter path to bmp file.");
+    std::process::exit(0)
 }

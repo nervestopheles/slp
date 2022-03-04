@@ -2,7 +2,7 @@ use rand::Rng;
 use std::io::{BufReader, BufWriter, Read, Write};
 
 use crate::consts::EPERM_DEN;
-use crate::other::sigmoid;
+use crate::math::{sigmoid, siqmoid_derivative};
 
 pub struct Neuron {
     shape: char,
@@ -114,5 +114,9 @@ impl Neuron {
 
     pub fn activation(x: &f32) -> f32 {
         sigmoid(x)
+    }
+
+    pub fn activation_derivative(x: &f32) -> f32 {
+        siqmoid_derivative(x)
     }
 }
