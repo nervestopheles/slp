@@ -5,15 +5,15 @@ use crate::consts::EPERM_DEN;
 use crate::other::sigmoid;
 
 pub struct Neuron {
-    shape: usize,
+    shape: char,
     weights: Vec<Vec<f32>>,
 }
 
 impl Neuron {
-    pub fn new(shape: usize, size: usize) -> Self {
+    pub fn new(shape: char, width: usize, height: usize) -> Self {
         Self {
             shape,
-            weights: vec![vec![0.0f32; size]; size],
+            weights: vec![vec![0.0f32; width]; height],
         }
     }
 
