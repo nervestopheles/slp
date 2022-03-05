@@ -137,7 +137,7 @@ fn main() {
                 for img in imgs.iter() {
                     for neuron in neurons.iter_mut() {
                         np = neuron.power(&img.matrx);
-                        na = Neuron::activation(&np);
+                        na = (1000.0 * Neuron::activation(&np)).round() / 1000.0;
                         if neuron.shape == img.shape && na < INCREASE_VALUE {
                             neuron.weights_correction(&na, &INCREASE_VALUE, &img.matrx, ALPHA);
                             correcting += 1;
