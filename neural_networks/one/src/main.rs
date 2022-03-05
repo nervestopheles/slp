@@ -42,9 +42,8 @@ fn main() {
         };
     }
 
-    // TODO: инициализировать массив нейронов
-    let mut neurons: Vec<Neuron> = {
-        let mut neurons: Vec<Neuron> = vec![];
+    let mut neurons: Vec<Neuron> = vec![];
+    {
         let weights_paths: [&str; 10] = WEIGHTS_FILES_PATH;
         for path in weights_paths {
             let mut neuron = Neuron::new(MATRIX_SIZE, MATRIX_SIZE);
@@ -56,13 +55,11 @@ fn main() {
                 neuron.weights_init(path);
                 if mode != RunMode::Learning {
                     neuron.weights_write_bin();
-                    // #[cfg(debug_assertions)]
                     neuron.weights_write_bmp();
                 }
             };
             neurons.push(neuron);
         }
-        neurons
     };
 
     let mut eras: u64 = 0;
@@ -119,34 +116,34 @@ fn main() {
             // }
         }
         RunMode::Learning => {
-            let mut imgs: Vec<Img> = {
+            let mut imgs: Vec<Img> = vec![];
+            {
                 let files = get_files(vec![IMG_FILES_PATH.to_string()]);
-                let mut imgs: Vec<Img> = vec![];
                 for path in files.iter() {
                     imgs.push(Img::new(path, MATRIX_SIZE, MATRIX_SIZE));
                 }
-                imgs
             };
 
+            let mut np: f32;
+            let mut na: f32;
             let mut rng = rand::thread_rng();
-            imgs.shuffle(&mut rng);
+
             while correcting != 0 {
                 eras += 1;
                 correcting = 0;
 
-                for img in imgs.iter() {
-                    let mut nps: Vec<f32> = vec![];
-                    let mut nas: Vec<f32> = vec![];
+                imgs.shuffle(&mut rng);
 
-                    for (idx, neuron) in neurons.iter_mut().enumerate() {
-                        nps.push(neuron.power(&img.matrx));
-                        nas.push(Neuron::activation(&nps[idx]));
-                        if neuron.shape == img.shape && nas[idx] < INCREASE_VALUE {
-                            neuron.weights_correction(&nas[idx], &INCREASE_VALUE, &img.matrx, ALPHA);
+                for img in imgs.iter() {
+                    for neuron in neurons.iter_mut() {
+                        np = neuron.power(&img.matrx);
+                        na = Neuron::activation(&np);
+                        if neuron.shape == img.shape && na < INCREASE_VALUE {
+                            neuron.weights_correction(&na, &INCREASE_VALUE, &img.matrx, ALPHA);
                             correcting += 1;
                             errors += 1;
-                        } else if neuron.shape != img.shape && nas[idx] > DECREASE_VALUE {
-                            neuron.weights_correction(&nas[idx], &DECREASE_VALUE, &img.matrx, ALPHA);
+                        } else if neuron.shape != img.shape && na > DECREASE_VALUE {
+                            neuron.weights_correction(&na, &DECREASE_VALUE, &img.matrx, ALPHA);
                             correcting += 1;
                             errors += 1;
                         }
@@ -159,7 +156,6 @@ fn main() {
     if mode != RunMode::Normal {
         for neuron in neurons {
             neuron.weights_write_bin();
-            // #[cfg(debug_assertions)]
             neuron.weights_write_bmp();
         }
         println!("Counts of eras: {}", &eras);

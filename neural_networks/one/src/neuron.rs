@@ -99,7 +99,8 @@ impl Neuron {
                 img.set_pixel(x as u32, y as u32, px);
             }
         }
-        img.save(format!("{}.bmp", self.weights_path).as_str()).expect("Weights as bmp write error.");
+        img.save(format!("{}.bmp", self.weights_path).as_str())
+            .expect("Weights as bmp write error.");
     }
 
     pub fn weights_correction(

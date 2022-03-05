@@ -1,5 +1,7 @@
 pub const EPERM_DEN: &str = "Create or open weight file error.";
 
+pub const SHAPES: [char; 10] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
 pub const IMG_FILES_PATH: &str = "./.tmp/images";
 pub const WEIGHTS_FILES_PATH: [&str; 10] = [
     "./.tmp/weights/0.weights0.bin",
@@ -21,5 +23,3 @@ pub const ALPHA: f32 = 0.1; // learning speed
 
 pub const INCREASE_VALUE: f32 = 0.9;
 pub const DECREASE_VALUE: f32 = 0.1;
-
-pub const SHAPES: [char; 10] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
