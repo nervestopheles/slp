@@ -1,15 +1,13 @@
-pub mod math;
-use math::*;
-
-pub mod neuron;
-use neuron::*;
-
-pub mod img;
-use img::*;
-
 pub mod consts;
-use crate::consts::*;
+pub mod neuron;
+pub mod img;
+pub mod math;
 
+use crate::consts::*;
+use crate::neuron::*;
+use crate::img::*;
+
+use std::path::Path;
 use rand::prelude::SliceRandom;
 
 const MODE_LEARNING: &str = "--learn";
@@ -44,20 +42,26 @@ fn main() {
         };
     }
 
-    let weights_path = std::path::Path::new(WEIGHTS_FILE_PATH);
-    let mut weights = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
-    {
-        if weights_path.exists() {
-            weights_read(weights_path, &mut weights);
-        } else {
-            std::fs::File::create(WEIGHTS_FILE_PATH).expect(EPERM_DEN);
-            weights_init(&mut weights);
-            if mode != RunMode::Learning {
-                weights_write_bin(&weights, WEIGHTS_FILE_PATH);
-                weights_write_bmp(&weights, WEIGHTS_BMP_PATH);
-            }
-        };
-    }
+    // TODO: инициализировать массив нейронов
+    let mut neurons: Vec<Neuron> = {
+        let mut neurons: Vec<Neuron>;
+        let mut weights_paths: Vec<String> = get_files(vec![WEIGHTS_FILES_PATH.to_string()]);
+        for path in weights_paths.iter() {
+            let mut neuron = Neuron::new(MATRIX_SIZE, MATRIX_SIZE);
+            if Path::new(path).exists() {
+                neuron.shape_read(path);
+                neuron.weights_read(path);
+            } else {
+                std::fs::File::create(path).expect(EPERM_DEN);
+                neuron.weights_init();
+                if mode != RunMode::Learning {
+                    neuron.weights_write_bin(path);
+                    neuron.weights_write_bmp(format!("{}.bmp", path).as_str());
+                }
+            };
+        }
+        neurons
+    };
 
     let correct_value = match mode {
         RunMode::Increase => INCREASE_VALUE,
@@ -74,69 +78,61 @@ fn main() {
     match mode {
         RunMode::Normal => {
             for path in args.iter() {
-                image_read(path, &mut input);
-                let np = neuron_power(&input, &weights);
-                let na = activation(&np);
+                let img: Img = Img::new(path.clone(), MATRIX_SIZE, MATRIX_SIZE);
+                // let nps: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron powers */
+                // let nas: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron activations */
+                let mut buf: f32;
+                let mut answ_acti: f32 = 0.0; // neuron activation
+                let mut answ_char: char = 'E'; // input shape
+                for neuron in neurons.iter() {
+                    buf = Neuron::activation(&neuron.power(&img.matrx));
+                    if buf > answ_acti {
+                        answ_acti = buf;
+                        answ_char = neuron.shape;
+                    }
+                }
                 println!(
                     "\
                     Image name: {}\n\
-                    Neuron power: {:.4}\n\
-                    Neuron activation value: {:.4}\n\
+                    Image shape: {}\n
                 ",
-                    path, &np, &na
+                    path, answ_char
                 );
             }
         }
         RunMode::Increase => {
-            for path in args.iter() {
-                image_read(path, &mut input);
-                let mut np = neuron_power(&input, &weights);
-                let mut na = activation(&np);
-                while (100.0 * na).round() / 100.0 < correct_value {
-                    weight_correction(&na, &correct_value, &input, &mut weights, ALPHA);
-                    np = neuron_power(&input, &weights);
-                    na = activation(&np);
-                    errors += 1;
-                }
-            }
+            // for path in args.iter() {
+            //     image_read(path, &mut input);
+            //     let mut np = neuron_power(&input, &weights);
+            //     let mut na = activation(&np);
+            //     while (100.0 * na).round() / 100.0 < correct_value {
+            //         weight_correction(&na, &correct_value, &input, &mut weights, ALPHA);
+            //         np = neuron_power(&input, &weights);
+            //         na = activation(&np);
+            //         errors += 1;
+            //     }
+            // }
         }
         RunMode::Decrease => {
-            for path in args.iter() {
-                image_read(path, &mut input);
-                let mut np = neuron_power(&input, &weights);
-                let mut na = activation(&np);
-                while (100.0 * na).round() / 100.0 > correct_value {
-                    weight_correction(&na, &correct_value, &input, &mut weights, ALPHA);
-                    np = neuron_power(&input, &weights);
-                    na = activation(&np);
-                    errors += 1;
-                }
-            }
+            // for path in args.iter() {
+            //     image_read(path, &mut input);
+            //     let mut np = neuron_power(&input, &weights);
+            //     let mut na = activation(&np);
+            //     while (100.0 * na).round() / 100.0 > correct_value {
+            //         weight_correction(&na, &correct_value, &input, &mut weights, ALPHA);
+            //         np = neuron_power(&input, &weights);
+            //         na = activation(&np);
+            //         errors += 1;
+            //     }
+            // }
         }
         RunMode::Learning => {
-            let files: Vec<String> = {
-                let mut files: Vec<String> = vec![];
-                for path in [INCREASES_PATH, DECREASES_PATH] {
-                    for obj in std::fs::read_dir(path).unwrap() {
-                        files.push(obj.unwrap().path().display().to_string());
-                    }
-                }
-                files
-            };
-
-            let mut imgs = {
-                let mut imgs: Vec<Img> = vec![Img::default(MATRIX_SIZE, MATRIX_SIZE); files.len()];
-                for (idx, path) in files.iter().enumerate() {
-                    if regex::Regex::new(r"x.*.bmp").unwrap().is_match(path) {
-                        imgs[idx].shape = ImgShape::Cross;
-                    } else if regex::Regex::new(r"o.*.bmp").unwrap().is_match(path) {
-                        imgs[idx].shape = ImgShape::NonCross;
-                    } else {
-                        imgs.remove(idx);
-                        continue;
-                    }
-                    image_read(path, &mut imgs[idx].matrx);
-                    imgs[idx].path = path.clone();
+            /*
+            let imgs: Vec<Img> = {
+                let files = get_files(vec![IMG_FILES_PATH.to_string()]);
+                let mut imgs: Vec<Img> = vec![];
+                for path in files {
+                    imgs.push(Img::new(path, MATRIX_SIZE, MATRIX_SIZE));
                 }
                 imgs
             };
@@ -148,7 +144,7 @@ fn main() {
                 imgs.shuffle(&mut rng);
 
                 for img in imgs.iter() {
-                    let np = neuron_power(&img.matrx, &weights);
+                    let np = ;
                     let na = activation(&np);
 
                     let mut correction = |correct_value: f32| {
@@ -168,18 +164,27 @@ fn main() {
                     }
                 }
             }
+            */
         }
     }
 
     if mode != RunMode::Normal {
-        weights_write_bin(&weights, WEIGHTS_FILE_PATH);
-        weights_write_bmp(&weights, WEIGHTS_BMP_PATH);
         println!("Counts of eras: {}", &eras);
         println!("All errors: {}", &errors);
     }
 }
 
-pub fn prog_exit() -> ! {
+fn get_files(dirs: Vec<String>) -> Vec<String> {
+    let mut files: Vec<String> = vec![];
+    for path in dirs {
+        for obj in std::fs::read_dir(path).unwrap() {
+            files.push(obj.unwrap().path().display().to_string());
+        }
+    }
+    files
+}
+
+fn prog_exit() -> ! {
     println!("Null input. Plese enter path to bmp file.");
     std::process::exit(0)
 }
