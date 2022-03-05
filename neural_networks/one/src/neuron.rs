@@ -1,33 +1,47 @@
 use rand::Rng;
+use regex::Regex;
 use std::io::{BufReader, BufWriter, Read, Write};
 
-use crate::consts::EPERM_DEN;
+use crate::consts::{EPERM_DEN, SHAPES};
 use crate::math::{sigmoid, siqmoid_derivative};
 
 pub struct Neuron {
-    shape: char,
+    pub shape: char,
     weights: Vec<Vec<f32>>,
 }
 
 impl Neuron {
-    pub fn new(shape: char, width: usize, height: usize) -> Self {
+    pub fn new(width: usize, height: usize) -> Self {
         Self {
-            shape,
+            shape: ' ',
             weights: vec![vec![0.0f32; width]; height],
         }
     }
 
-    pub fn weights_init(&self) -> Self {
-        let mut rng = rand::thread_rng();
-        for vector in self.weights {
-            for value in vector {
-                value = rng.gen_range(-0.3..=0.3);
+    pub fn shape_read(&mut self, path: &str) {
+        if !Regex::new(r".*\.weights.\.bin").unwrap().is_match(path) {
+            return;
+        }
+        let lenth = path.len();
+        for (idx, chr) in path.chars().enumerate() {
+            if idx == lenth + ".weights".len() && SHAPES.contains(&chr)
+            /* read shape in file name 01.weights(0).bin */
+            {
+                self.shape = chr;
             }
         }
-        *self
     }
 
-    pub fn weights_read(&self, path: &std::path::Path) -> Self {
+    pub fn weights_init(&mut self) {
+        let mut rng = rand::thread_rng();
+        for vector in self.weights.iter_mut() {
+            for value in vector {
+                *value = rng.gen_range(-0.3..=0.3);
+            }
+        }
+    }
+
+    pub fn weights_read(&mut self, path: &str) {
         let mut reader = BufReader::new(
             std::fs::File::options()
                 .read(true)
@@ -35,15 +49,14 @@ impl Neuron {
                 .expect("Weight file not found?"),
         );
         let mut float_buffer: [u8; 4] = [0; 4]; // f32 size is 4
-        for vector in self.weights {
+        for vector in self.weights.iter_mut() {
             for value in vector {
                 reader
                     .read(&mut float_buffer)
                     .expect("Failed read 4 bytes from weight file.");
-                value = f32::from_le_bytes(float_buffer);
+                *value = f32::from_le_bytes(float_buffer);
             }
         }
-        *self
     }
 
     pub fn weights_write_bin(&self, path: &str) {
@@ -53,7 +66,7 @@ impl Neuron {
                 .open(path)
                 .expect(EPERM_DEN),
         );
-        for vector in self.weights {
+        for vector in self.weights.iter() {
             for value in vector {
                 writer
                     .write(&value.to_le_bytes())
@@ -86,7 +99,7 @@ impl Neuron {
     }
 
     pub fn weights_correction(
-        &self,
+        &mut self,
         na: &f32, // neuron activation
         ev: &f32, // expected value of neuron activation
         input: &Vec<Vec<f32>>,

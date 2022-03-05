@@ -1,3 +1,4 @@
+use crate::consts::SHAPES;
 use regex::Regex;
 
 #[derive(Clone)]
@@ -7,35 +8,34 @@ pub struct Img {
     pub matrx: Vec<Vec<f32>>,
 }
 
-// Image name format like 01.img0.bmp
 impl Img {
-    pub fn new(path: String, width: usize, height: usize) -> Self {
+    pub fn new(path: &String, width: usize, height: usize) -> Self {
         let mut img = Self {
-            path,
+            path: path.clone(),
             shape: ' ',
             matrx: vec![vec![0.0f32; width]; height],
         };
         img.image_read(&path);
-        img.shape_read(&path)
+        img.shape_read(&path);
+        img
     }
 
-    fn shape_read(&self, path: &str) -> Self {
+    fn shape_read(&mut self, path: &str) {
         if !Regex::new(r".*\.img.\.bmp").unwrap().is_match(path) {
-            return *self;
+            return;
         }
 
         let lenth = path.len();
         for (idx, chr) in path.chars().enumerate() {
-            if idx == lenth + 4
-                && ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'].contains(&chr)
+            if idx == lenth + ".img".len() && SHAPES.contains(&chr)
+            /* read shape in file name like 01.img(0).bmp */
             {
                 self.shape = chr;
             }
         }
-        *self
     }
 
-    fn image_read(&self, path: &str) -> Self {
+    fn image_read(&mut self, path: &str) {
         let bmp = bmp::open(std::path::Path::new(path)).unwrap_or_else(|e| {
             panic!("Failed to open: {}", e);
         });
@@ -45,6 +45,5 @@ impl Img {
                 *value = (px.r as f32 * px.g as f32 * px.b as f32) / (255.0 * 255.0 * 255.0);
             }
         }
-        *self
     }
 }

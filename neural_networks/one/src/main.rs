@@ -1,14 +1,14 @@
 pub mod consts;
-pub mod neuron;
 pub mod img;
 pub mod math;
+pub mod neuron;
 
 use crate::consts::*;
-use crate::neuron::*;
 use crate::img::*;
+use crate::neuron::*;
 
-use std::path::Path;
 use rand::prelude::SliceRandom;
+use std::path::Path;
 
 const MODE_LEARNING: &str = "--learn";
 const MODE_INCREASE: &str = "--inc";
@@ -44,13 +44,14 @@ fn main() {
 
     // TODO: инициализировать массив нейронов
     let mut neurons: Vec<Neuron> = {
-        let mut neurons: Vec<Neuron>;
-        let mut weights_paths: Vec<String> = get_files(vec![WEIGHTS_FILES_PATH.to_string()]);
-        for path in weights_paths.iter() {
+        let mut neurons: Vec<Neuron> = vec![];
+        let weights_paths: [&str; 11] = WEIGHTS_FILES_PATH;
+        for path in weights_paths {
             let mut neuron = Neuron::new(MATRIX_SIZE, MATRIX_SIZE);
             if Path::new(path).exists() {
                 neuron.shape_read(path);
                 neuron.weights_read(path);
+                neurons.push(neuron);
             } else {
                 std::fs::File::create(path).expect(EPERM_DEN);
                 neuron.weights_init();
@@ -58,6 +59,7 @@ fn main() {
                     neuron.weights_write_bin(path);
                     neuron.weights_write_bmp(format!("{}.bmp", path).as_str());
                 }
+                neurons.push(neuron);
             };
         }
         neurons
@@ -78,7 +80,7 @@ fn main() {
     match mode {
         RunMode::Normal => {
             for path in args.iter() {
-                let img: Img = Img::new(path.clone(), MATRIX_SIZE, MATRIX_SIZE);
+                let img: Img = Img::new(path, MATRIX_SIZE, MATRIX_SIZE);
                 // let nps: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron powers */
                 // let nas: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron activations */
                 let mut buf: f32;
