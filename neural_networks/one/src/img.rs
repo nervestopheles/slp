@@ -27,7 +27,7 @@ impl Img {
 
         let lenth = path.len();
         for (idx, chr) in path.chars().enumerate() {
-            if idx == lenth + ".img".len() && SHAPES.contains(&chr)
+            if idx == lenth - ".bmp".len() - 1 && SHAPES.contains(&chr)
             /* read shape in file name like 01.img(0).bmp */
             {
                 self.shape = chr;

@@ -17,10 +17,10 @@ pub const WEIGHTS_FILES_PATH: [&str; 11] = [
 
 pub const WEIGHTS_BMP_PATH: &str = "./.tmp/weights.bmp";
 
-pub const MATRIX_SIZE: usize = 120; // input and weight size
-pub const ALPHA: f32 = 0.65; // learning speed
+pub const MATRIX_SIZE: usize = 80; // input and weight size
+pub const ALPHA: f32 = 0.05; // learning speed
 
-pub const INCREASE_VALUE: f32 = 0.8;
-pub const DECREASE_VALUE: f32 = 0.2;
+pub const INCREASE_VALUE: f32 = 0.9;
+pub const DECREASE_VALUE: f32 = 0.1;
 
 pub const SHAPES: [char; 11] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'];

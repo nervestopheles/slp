@@ -8,6 +8,7 @@ use crate::math::{sigmoid, siqmoid_derivative};
 pub struct Neuron {
     pub shape: char,
     weights: Vec<Vec<f32>>,
+    weights_path: String,
 }
 
 impl Neuron {
@@ -15,6 +16,7 @@ impl Neuron {
         Self {
             shape: ' ',
             weights: vec![vec![0.0f32; width]; height],
+            weights_path: String::new(),
         }
     }
 
@@ -24,21 +26,23 @@ impl Neuron {
         }
         let lenth = path.len();
         for (idx, chr) in path.chars().enumerate() {
-            if idx == lenth + ".weights".len() && SHAPES.contains(&chr)
+            if idx == lenth - ".bin".len() - 1 && SHAPES.contains(&chr)
             /* read shape in file name 01.weights(0).bin */
             {
                 self.shape = chr;
             }
         }
+        self.weights_path = path.to_string();
     }
 
-    pub fn weights_init(&mut self) {
+    pub fn weights_init(&mut self, path: &str) {
         let mut rng = rand::thread_rng();
         for vector in self.weights.iter_mut() {
             for value in vector {
                 *value = rng.gen_range(-0.3..=0.3);
             }
         }
+        self.shape_read(path);
     }
 
     pub fn weights_read(&mut self, path: &str) {
@@ -59,11 +63,11 @@ impl Neuron {
         }
     }
 
-    pub fn weights_write_bin(&self, path: &str) {
+    pub fn weights_write_bin(&self) {
         let mut writer = BufWriter::new(
             std::fs::File::options()
                 .write(true)
-                .open(path)
+                .open(&self.weights_path)
                 .expect(EPERM_DEN),
         );
         for vector in self.weights.iter() {
@@ -75,7 +79,7 @@ impl Neuron {
         }
     }
 
-    pub fn weights_write_bmp(&self, path: &str) {
+    pub fn weights_write_bmp(&self) {
         let size = self.weights.len();
         let mut px = bmp::Pixel::new(0, 0, 0);
         let mut img = bmp::Image::new(size as u32, size as u32);
@@ -95,7 +99,7 @@ impl Neuron {
                 img.set_pixel(x as u32, y as u32, px);
             }
         }
-        img.save(path).expect("Weights as bmp write error.");
+        img.save(format!("{}.bmp", self.weights_path).as_str()).expect("Weights as bmp write error.");
     }
 
     pub fn weights_correction(

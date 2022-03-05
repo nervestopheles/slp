@@ -51,27 +51,18 @@ fn main() {
             if Path::new(path).exists() {
                 neuron.shape_read(path);
                 neuron.weights_read(path);
-                neurons.push(neuron);
             } else {
                 std::fs::File::create(path).expect(EPERM_DEN);
-                neuron.weights_init();
+                neuron.weights_init(path);
                 if mode != RunMode::Learning {
-                    neuron.weights_write_bin(path);
-                    neuron.weights_write_bmp(format!("{}.bmp", path).as_str());
+                    neuron.weights_write_bin();
+                    neuron.weights_write_bmp();
                 }
-                neurons.push(neuron);
             };
+            neurons.push(neuron);
         }
         neurons
     };
-
-    let correct_value = match mode {
-        RunMode::Increase => INCREASE_VALUE,
-        RunMode::Decrease => DECREASE_VALUE,
-        _ => 0.0,
-    };
-
-    let mut input: Vec<Vec<f32>> = vec![vec![0 as f32; MATRIX_SIZE]; MATRIX_SIZE];
 
     let mut eras: u64 = 0;
     let mut errors: u64 = 0;
@@ -129,11 +120,10 @@ fn main() {
             // }
         }
         RunMode::Learning => {
-            /*
-            let imgs: Vec<Img> = {
+            let mut imgs: Vec<Img> = {
                 let files = get_files(vec![IMG_FILES_PATH.to_string()]);
                 let mut imgs: Vec<Img> = vec![];
-                for path in files {
+                for path in files.iter() {
                     imgs.push(Img::new(path, MATRIX_SIZE, MATRIX_SIZE));
                 }
                 imgs
@@ -146,31 +136,32 @@ fn main() {
                 imgs.shuffle(&mut rng);
 
                 for img in imgs.iter() {
-                    let np = ;
-                    let na = activation(&np);
+                    let mut nps: Vec<f32> = vec![];
+                    let mut nas: Vec<f32> = vec![];
 
-                    let mut correction = |correct_value: f32| {
-                        weight_correction(&na, &correct_value, &img.matrx, &mut weights, ALPHA);
-                        correcting += 1;
-                        errors += 1;
-                    };
-
-                    if img.shape == ImgShape::Cross {
-                        if na < INCREASE_VALUE {
-                            correction(INCREASE_VALUE);
-                        }
-                    } else {
-                        if na > DECREASE_VALUE {
-                            correction(DECREASE_VALUE);
+                    for (idx, neuron) in neurons.iter_mut().enumerate() {
+                        nps.push(neuron.power(&img.matrx));
+                        nas.push(Neuron::activation(&nps[idx]));
+                        if neuron.shape == img.shape && nas[idx] < INCREASE_VALUE {
+                            neuron.weights_correction(&nas[idx], &INCREASE_VALUE, &img.matrx, ALPHA);
+                            correcting += 1;
+                            errors += 1;
+                        } else if neuron.shape != img.shape && nas[idx] > DECREASE_VALUE {
+                            neuron.weights_correction(&nas[idx], &DECREASE_VALUE, &img.matrx, ALPHA);
+                            correcting += 1;
+                            errors += 1;
                         }
                     }
                 }
             }
-            */
         }
     }
 
     if mode != RunMode::Normal {
+        for neuron in neurons {
+            neuron.weights_write_bin();
+            neuron.weights_write_bmp();
+        }
         println!("Counts of eras: {}", &eras);
         println!("All errors: {}", &errors);
     }
