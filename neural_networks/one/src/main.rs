@@ -45,7 +45,7 @@ fn main() {
     // TODO: инициализировать массив нейронов
     let mut neurons: Vec<Neuron> = {
         let mut neurons: Vec<Neuron> = vec![];
-        let weights_paths: [&str; 11] = WEIGHTS_FILES_PATH;
+        let weights_paths: [&str; 10] = WEIGHTS_FILES_PATH;
         for path in weights_paths {
             let mut neuron = Neuron::new(MATRIX_SIZE, MATRIX_SIZE);
             if Path::new(path).exists() {
@@ -56,6 +56,7 @@ fn main() {
                 neuron.weights_init(path);
                 if mode != RunMode::Learning {
                     neuron.weights_write_bin();
+                    // #[cfg(debug_assertions)]
                     neuron.weights_write_bmp();
                 }
             };
@@ -72,8 +73,6 @@ fn main() {
         RunMode::Normal => {
             for path in args.iter() {
                 let img: Img = Img::new(path, MATRIX_SIZE, MATRIX_SIZE);
-                // let nps: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron powers */
-                // let nas: Vec<f32> = vec![0.0; SHAPES.len()]; /* neuron activations */
                 let mut buf: f32;
                 let mut answ_acti: f32 = 0.0; // neuron activation
                 let mut answ_char: char = 'E'; // input shape
@@ -130,10 +129,10 @@ fn main() {
             };
 
             let mut rng = rand::thread_rng();
+            imgs.shuffle(&mut rng);
             while correcting != 0 {
                 eras += 1;
                 correcting = 0;
-                imgs.shuffle(&mut rng);
 
                 for img in imgs.iter() {
                     let mut nps: Vec<f32> = vec![];
@@ -160,6 +159,7 @@ fn main() {
     if mode != RunMode::Normal {
         for neuron in neurons {
             neuron.weights_write_bin();
+            // #[cfg(debug_assertions)]
             neuron.weights_write_bmp();
         }
         println!("Counts of eras: {}", &eras);
