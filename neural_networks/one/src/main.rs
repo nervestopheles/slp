@@ -132,7 +132,6 @@ fn main() {
             loop {
                 eras += 1;
                 imgs.shuffle(&mut rng);
-                *correcting.lock().unwrap() = 0;
 
                 for img in imgs.iter() {
                     neurons.par_iter_mut().for_each(|neuron| {
@@ -152,6 +151,8 @@ fn main() {
 
                 if *correcting.lock().unwrap() == 0 {
                     break;
+                } else {
+                    *correcting.lock().unwrap() = 0;
                 }
             }
         }
