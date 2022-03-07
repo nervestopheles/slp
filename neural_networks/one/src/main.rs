@@ -7,6 +7,7 @@ use crate::consts::*;
 use crate::img::*;
 use crate::neuron::*;
 
+use rayon::prelude::*;
 use rand::prelude::SliceRandom;
 use std::path::Path;
 
@@ -62,9 +63,11 @@ fn main() {
         }
     };
 
+    use std::sync::{Arc, Mutex};
+
     let mut eras: u64 = 0;
-    let mut errors: u64 = 0;
-    let mut correcting: u64 = 1;
+    let errors = Arc::new(Mutex::new(0));
+    let correcting = Arc::new(Mutex::new(0));
 
     match mode {
         RunMode::Normal => {
@@ -124,30 +127,31 @@ fn main() {
                 }
             };
 
-            let mut np: f32;
-            let mut na: f32;
             let mut rng = rand::thread_rng();
 
-            while correcting != 0 {
+            loop {
                 eras += 1;
-                correcting = 0;
-
                 imgs.shuffle(&mut rng);
+                *correcting.lock().unwrap() = 0;
 
                 for img in imgs.iter() {
-                    for neuron in neurons.iter_mut() {
-                        np = neuron.power(&img.matrx);
-                        na = (1000.0 * Neuron::activation(&np)).round() / 1000.0;
+                    neurons.par_iter_mut().for_each(|neuron| {
+                        let np = neuron.power(&img.matrx);
+                        let na = (1000.0 * Neuron::activation(&np)).round() / 1000.0;
                         if neuron.shape == img.shape && na < INCREASE_VALUE {
                             neuron.weights_correction(&na, &INCREASE_VALUE, &img.matrx, ALPHA);
-                            correcting += 1;
-                            errors += 1;
+                            *correcting.lock().unwrap() += 1;
+                            *errors.lock().unwrap() += 1;
                         } else if neuron.shape != img.shape && na > DECREASE_VALUE {
                             neuron.weights_correction(&na, &DECREASE_VALUE, &img.matrx, ALPHA);
-                            correcting += 1;
-                            errors += 1;
+                            *correcting.lock().unwrap() += 1;
+                            *errors.lock().unwrap() += 1;
                         }
-                    }
+                    })
+                }
+
+                if *correcting.lock().unwrap() == 0 {
+                    break;
                 }
             }
         }
@@ -159,7 +163,7 @@ fn main() {
             neuron.weights_write_bmp();
         }
         println!("Counts of eras: {}", &eras);
-        println!("All errors: {}", &errors);
+        println!("All errors: {}", errors.lock().unwrap());
     }
 }
 

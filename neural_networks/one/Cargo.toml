@@ -12,3 +12,4 @@ strip = true
 bmp = "0.5.0"
 rand = "0.8.5"
 regex = "1.5.4"
+rayon = "1.5.1"
