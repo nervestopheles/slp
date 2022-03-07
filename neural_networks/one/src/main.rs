@@ -7,11 +7,12 @@ use crate::consts::*;
 use crate::img::*;
 use crate::neuron::*;
 
-use rayon::prelude::*;
 use rand::prelude::SliceRandom;
+use rayon::prelude::*;
 use std::path::Path;
 
-const MODE_LEARNING: &str = "--learn";
+const MODE_LEARNING_SYNC: &str = "--learn";
+const MODE_LEARNING_ASYNC: &str = "--learn-async";
 const MODE_INCREASE: &str = "--inc";
 const MODE_DECREASE: &str = "--dec";
 
@@ -20,7 +21,8 @@ enum RunMode {
     Normal,
     Increase,
     Decrease,
-    Learning,
+    LearningSync,
+    LearningAsync,
 }
 
 fn main() {
@@ -29,14 +31,16 @@ fn main() {
         match args[0].as_str() {
             MODE_INCREASE => RunMode::Increase,
             MODE_DECREASE => RunMode::Decrease,
-            MODE_LEARNING => RunMode::Learning,
+            MODE_LEARNING_SYNC => RunMode::LearningSync,
+            MODE_LEARNING_ASYNC => RunMode::LearningAsync,
             _ => RunMode::Normal,
         }
     } else {
         prog_exit();
     };
 
-    if mode != RunMode::Normal && mode != RunMode::Learning {
+    if mode != RunMode::Normal && mode != RunMode::LearningSync && mode != RunMode::LearningAsync
+    {
         args.remove(0);
         if args.len() == 0 {
             prog_exit();
@@ -54,7 +58,7 @@ fn main() {
             } else {
                 std::fs::File::create(path).expect(EPERM_DEN);
                 neuron.weights_init(path);
-                if mode != RunMode::Learning {
+                if mode != RunMode::LearningSync {
                     neuron.weights_write_bin();
                     neuron.weights_write_bmp();
                 }
@@ -118,7 +122,46 @@ fn main() {
             //     }
             // }
         }
-        RunMode::Learning => {
+        RunMode::LearningSync => {
+            let mut imgs: Vec<Img> = vec![];
+            {
+                let files = get_files(vec![IMG_FILES_PATH.to_string()]);
+                for path in files.iter() {
+                    imgs.push(Img::new(path, MATRIX_SIZE, MATRIX_SIZE));
+                }
+            };
+
+            let mut np: f32;
+            let mut na: f32;
+            let mut rng = rand::thread_rng();
+
+            loop {
+                eras += 1;
+                imgs.shuffle(&mut rng);
+
+                for img in imgs.iter() {
+                    for neuron in neurons.iter_mut() {
+                        np = neuron.power(&img.matrx);
+                        na = (1000.0 * Neuron::activation(&np)).round() / 1000.0;
+                        if neuron.shape == img.shape && na < INCREASE_VALUE {
+                            neuron.weights_correction(&na, &INCREASE_VALUE, &img.matrx, ALPHA);
+                            *correcting.lock().unwrap() += 1;
+                            *errors.lock().unwrap() += 1;
+                        } else if neuron.shape != img.shape && na > DECREASE_VALUE {
+                            neuron.weights_correction(&na, &DECREASE_VALUE, &img.matrx, ALPHA);
+                            *correcting.lock().unwrap() += 1;
+                            *errors.lock().unwrap() += 1;
+                        }
+                    }
+                }
+                if *correcting.lock().unwrap() == 0 {
+                    break;
+                } else {
+                    *correcting.lock().unwrap() = 0;
+                }
+            }
+        }
+        RunMode::LearningAsync => {
             let mut imgs: Vec<Img> = vec![];
             {
                 let files = get_files(vec![IMG_FILES_PATH.to_string()]);
