@@ -19,7 +19,7 @@ pub const WEIGHTS_FILES_PATH: [&str; 10] = [
 pub const WEIGHTS_BMP_PATH: &str = "./.tmp/weights.bmp";
 
 pub const MATRIX_SIZE: usize = 80; // input and weight size
-pub const ALPHA: f32 = 0.01; // learning speed
+pub const ALPHA: f32 = 0.1; // learning speed
 
-pub const INCREASE_VALUE: f32 = 0.9;
-pub const DECREASE_VALUE: f32 = 0.1;
+pub const INCREASE_VALUE: f32 = 0.95;
+pub const DECREASE_VALUE: f32 = 0.05;

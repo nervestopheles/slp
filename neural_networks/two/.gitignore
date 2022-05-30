@@ -1,0 +1,8 @@
+*.swp
+
+.tmp*
+.vscode*
+
+target*
+
+*.lock

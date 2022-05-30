@@ -39,8 +39,7 @@ fn main() {
         prog_exit();
     };
 
-    if mode != RunMode::Normal && mode != RunMode::LearningSync && mode != RunMode::LearningAsync
-    {
+    if mode != RunMode::Normal && mode != RunMode::LearningSync && mode != RunMode::LearningAsync {
         args.remove(0);
         if args.len() == 0 {
             prog_exit();
@@ -90,7 +89,7 @@ fn main() {
                 println!(
                     "\
                     Image name: {}\n\
-                    Image shape: {}\n
+                    Image shape: {}
                 ",
                     path, answ_char
                 );
