@@ -15,7 +15,7 @@ impl Neuron {
         1.0 / (1.0 + (-x).exp()) // sigmoid func
     }
 
-    pub fn activation_derivative(x: &f32) -> f32 {
+    pub fn activation_derivative(/* activation output */ x: &f32) -> f32 {
         x * (1.0 - x) // sigmoid derivative func
     }
 }

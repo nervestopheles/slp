@@ -3,7 +3,7 @@ mod envs;
 
 use rand::Rng;
 use crate::img::Img;
-use crate::envs::{H1, H2, MSIZE, OL};
+use crate::envs::{H1, H2, MSIZE, OL, IMG_FILES_PATH};
 
 fn main() {
     /* init rnd seed */
