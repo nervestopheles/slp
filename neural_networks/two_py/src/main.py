@@ -23,9 +23,9 @@ def learning():
     for i, values in enumerate(corrects):
         for j, _ in enumerate(values):
             if i != j:
-                corrects[i][j] = 0.01
+                corrects[i][j] = 0
             else:
-                corrects[i][j] = 0.99
+                corrects[i][j] = 1
 
     # --------------
 
@@ -92,7 +92,7 @@ def learning():
                 for layer_idx, gradient in enumerate(reversed(gradients)):
                     weights[layer_idx] += alpha * np.array(gradient)
 
-        alpha *= 0.99
+        alpha *= DECRAISE
         loop_count += 1
 
         errors = np.array(errors)
@@ -102,7 +102,7 @@ def learning():
         if loop_count % 50 == 0:
             np.save(CACHEPATH, weights, allow_pickle=True)
 
-        if loop_count >= 1000:
+        if loop_count >= MAXERAS:
             print("Too more loops, exit.")
             break
         if errors.mean() < EPSILON:
@@ -126,7 +126,7 @@ def testing():
     for img in imgs:
         outputs = fn.forward(weights, img)[-1]
 
-        if max(outputs) > 0.5:
+        if max(outputs) > 0.45:
             out = outputs.argmax()
         else:
             out = None
