@@ -20,7 +20,7 @@ def main():
 
     corrects = np.zeros((OL, OL), dtype=float)
     for i, values in enumerate(corrects):
-        for j, value in enumerate(values):
+        for j, _ in enumerate(values):
             if i != j:
                 corrects[i][j] = 0.01
             else:
@@ -52,59 +52,59 @@ def main():
             output = layers_activations[-1]
             correct = corrects[img.shape]
             outputs_error = 0.5 * np.square(correct - output)
-            total_output_error = sum(outputs_error)
-            errors.append(total_output_error)
+
+            if max(output) > 0.5:
+                out = np.where(output == max(output))
+            else:
+                out = None
+
+            max_error = max(outputs_error)
+            errors.append(max_error)
 
             # --- backward --- #
-            if total_output_error > EPSILON:
+            if out != img.shape:
 
-                aes = list()
-                deltas = list()
+                gradients = list()
 
                 for layer_idx, layer in enumerate(reversed(weights)):
 
-                    aes.append(list())
-                    deltas.append(list())
-
                     if layer_idx == 0:
-                        for neuron_idx, neuron_weights in enumerate(layer):
+                        dE_dO = correct - output
+                    else:
+                        dE_dO = np.sum(
+                            gradients[layer_idx-1] * weights[-layer_idx], axis=0)
 
-                            dE_dO = output[neuron_idx] - correct[neuron_idx]
-                            dO_dS = fn.act_derivative(
-                                layers_activations[-1][neuron_idx])
+                    dO_dS = fn.act_derivative(
+                        layers_activations[-(layer_idx+1)])
 
-                            aes[layer_idx].append(dE_dO * dO_dS)
-                            delta = aes[layer_idx][neuron_idx] * \
-                                layers_activations[-1][neuron_idx]
+                    if layer_idx+1 == len(weights):
+                        dS_dW = img.vec
+                    else:
+                        dS_dW = layers_activations[-(layer_idx+2)]
 
-                            deltas[layer_idx].append(delta)
-
-                    elif layer_idx != len(weights):
-
-                        for neuron_idx, neuron in enumerate(layer):
-                            pass
-
-                        for neuron_idx, neuron_weights in enumerate(layer):
-                            deltas[layer_idx].append(neuron_weights * ae)
+                    gradients.append(list())
+                    for idx in range(len(layer)):
+                        gradients[layer_idx].append(
+                            np.array(dE_dO[idx] * dO_dS[idx] * dS_dW))
 
                 # ---- correcting ---- #
-                for delta_idx, delta in enumerate(reversed(deltas)):
-                    for neuron_idx in range(len(delta)):
-                        weights[delta_idx][neuron_idx] -= alpha * \
-                            delta[neuron_idx]
+                for layer_idx, gradient in enumerate(reversed(gradients)):
+                    weights[layer_idx] += alpha * np.array(gradient)
 
-        alpha *= 0.999
+        alpha *= 0.99
         loop_count += 1
 
-        print(loop_count, max(errors))
+        errors = np.array(errors)
 
-        if loop_count % 100 == 0:
+        print(loop_count,  max(errors), min(errors), errors.mean())
+
+        if loop_count % 50 == 0:
             np.save(CACHEPATH, weights, allow_pickle=True)
 
-        if loop_count > 500:
+        if loop_count >= 1000:
             print("Too more loops, exit.")
             break
-        if max(errors) < EPSILON:
+        if errors.mean() < EPSILON:
             print("Learning complete.")
             break
 
