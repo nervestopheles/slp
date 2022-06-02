@@ -1,14 +1,35 @@
 import sys
+import glob
 import argparse
 
 import numpy as np
+
 from envs import *
+from img import Img
+
+
+def forward(weights, img):
+    layers_sums = list()
+    layers_activations = list()
+
+    for layer_idx, layer in enumerate(weights):
+        if layer_idx == 0:
+            layers_sums.append(layer.dot(img.vec))
+        else:
+            layers_sums.append(
+                layer.dot(layers_activations[layer_idx-1]))
+        layers_activations.append(
+            activation(layers_sums[layer_idx]))
+
+    return layers_activations
 
 
 def read_options(args=sys.argv[1:]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--learn", help="Get all image from folder and learning.")
+    parser.add_argument(
+        "--test", help="Get all image from folder and testing.")
     return parser.parse_args(args)
 
 
@@ -20,6 +41,23 @@ def gen_weights() -> np.ndarray:
         np.random.uniform(-0.3, 0.3, (OL, H2))      # ol
     ], dtype=object)
 
+
+def load_weights(path):
+    if os.path.exists(path+".npy"):
+        weights = np.load(path+".npy", allow_pickle=True)
+        print("Load saved weights.")
+    else:
+        weights = gen_weights()
+        print("Initializing new weights.")
+    return weights
+
+
+def load_imgs(path):
+    files = glob.glob(path + "/*.img*.bmp")
+    imgs = list()
+    for img in files:
+        imgs.append(Img(img))
+    return imgs
 
 
 def activation(x):

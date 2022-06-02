@@ -8,15 +8,16 @@ import foo as fn
 from envs import *
 from img import Img
 
+opt = fn.read_options()
 
-def main():
+
+def learning():
 
     alpha = ALPHA
-    opt = fn.read_options()
-    weights = load_weights(CACHEPATH)
+    weights = fn.load_weights(CACHEPATH)
 
     if not opt.learn is None:
-        imgs = np.asarray(load_imgs(opt.learn))
+        imgs = np.asarray(fn.load_imgs(opt.learn))
 
     corrects = np.zeros((OL, OL), dtype=float)
     for i, values in enumerate(corrects):
@@ -54,7 +55,7 @@ def main():
             outputs_error = 0.5 * np.square(correct - output)
 
             if max(output) > 0.5:
-                out = np.where(output == max(output))
+                out = output.argmax()
             else:
                 out = None
 
@@ -115,23 +116,35 @@ def main():
     print("Exit")
 
 
-def load_weights(path):
-    if os.path.exists(path+".npy"):
-        weights = np.load(path+".npy", allow_pickle=True)
-        print("Load saved weights.")
-    else:
-        weights = fn.gen_weights()
-        print("Initializing new weights.")
-    return weights
+def testing():
 
+    weights = fn.load_weights(CACHEPATH)
+    imgs = np.asarray(fn.load_imgs(opt.test))
 
-def load_imgs(path):
-    files = glob.glob(path + "/*.img*.bmp")
-    imgs = list()
-    for img in files:
-        imgs.append(Img(img))
-    return imgs
+    errors = 0
+
+    for img in imgs:
+        outputs = fn.forward(weights, img)[-1]
+
+        if max(outputs) > 0.5:
+            out = outputs.argmax()
+        else:
+            out = None
+
+        print(f"Image: {img.shape}")
+        print(f"Out: {out}")
+        print()
+
+        if img.shape != out:
+            errors += 1
+
+    print(f"Errors: {errors}, per length: {len(imgs)}")
 
 
 if __name__ == "__main__":
-    main()
+    if not opt.learn is None:
+        learning()
+    elif not opt.test is None:
+        testing()
+    else:
+        print("Dont work?")
