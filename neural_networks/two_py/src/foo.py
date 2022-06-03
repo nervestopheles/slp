@@ -27,11 +27,11 @@ def forward(weights, img):
 def read_options(args=sys.argv[1:]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "img", help="Get image and testing.")
+        "--predict", help="Get image and testing.", )
     parser.add_argument(
-        "--learn", help="Get all image from folder and learning.")
+        "--learn", help="Get all image with file format '*.img*.bmp' from folder and learning.")
     parser.add_argument(
-        "--test", help="Get all image from folder and testing.")
+        "--test", help="Get all image with file format '*.img*.bmp' from folder and testing.")
     return parser.parse_args(args)
 
 
@@ -55,7 +55,7 @@ def load_weights(path):
 
 
 def load_imgs(path):
-    files = glob.glob(path)
+    files = glob.glob(path + "/*.img*.bmp")
     imgs = list()
     for img in files:
         imgs.append(Img(img))

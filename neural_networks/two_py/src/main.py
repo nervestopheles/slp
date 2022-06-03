@@ -143,9 +143,9 @@ def testing(path):
 def predict(path):
 
     weights = fn.load_weights(CACHEPATH)
-    img = fn.load_imgs(path)
+    img = Img(path)
 
-    outputs = fn.forward(weights, img[0])[-1]
+    outputs = fn.forward(weights, img)[-1]
 
     if max(outputs) > 0.45:
         out = outputs.argmax()
@@ -156,11 +156,12 @@ def predict(path):
 
 
 if __name__ == "__main__":
-    if not opt.img is None:
-        predict(opt.img)
+    if not opt.predict is None:
+        predict(opt.predict)
     elif not opt.learn is None:
         learning(opt.learn)
     elif not opt.test is None:
         testing(opt.test)
     else:
         print("Dont work?")
+        print("Run with '-h' flags =)")
