@@ -27,6 +27,8 @@ def forward(weights, img):
 def read_options(args=sys.argv[1:]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "img", help="Get image and testing.")
+    parser.add_argument(
         "--learn", help="Get all image from folder and learning.")
     parser.add_argument(
         "--test", help="Get all image from folder and testing.")
@@ -53,11 +55,11 @@ def load_weights(path):
 
 
 def load_imgs(path):
-    files = glob.glob(path + "/*.img*.bmp")
+    files = glob.glob(path)
     imgs = list()
     for img in files:
         imgs.append(Img(img))
-    return imgs
+    return np.array(imgs)
 
 
 def activation(x):
