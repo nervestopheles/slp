@@ -11,13 +11,12 @@ from img import Img
 opt = fn.read_options()
 
 
-def learning():
+def learning(path):
 
     alpha = ALPHA
     weights = fn.load_weights(CACHEPATH)
 
-    if not opt.learn is None:
-        imgs = np.asarray(fn.load_imgs(opt.learn))
+    imgs = np.asarray(fn.load_imgs(path))
 
     corrects = np.zeros((OL, OL), dtype=float)
     for i, values in enumerate(corrects):
@@ -116,10 +115,10 @@ def learning():
     print("Exit")
 
 
-def testing():
+def testing(path):
 
     weights = fn.load_weights(CACHEPATH)
-    imgs = np.asarray(fn.load_imgs(opt.test))
+    imgs = np.asarray(fn.load_imgs(path))
 
     errors = 0
 
@@ -141,10 +140,27 @@ def testing():
     print(f"Errors: {errors}, per length: {len(imgs)}")
 
 
+def predict(path):
+
+    weights = fn.load_weights(CACHEPATH)
+    img = fn.load_imgs(path)
+
+    outputs = fn.forward(weights, img[0])[-1]
+
+    if max(outputs) > 0.45:
+        out = outputs.argmax()
+    else:
+        out = None
+
+    print(f"Out: {out}")
+
+
 if __name__ == "__main__":
-    if not opt.learn is None:
-        learning()
+    if not opt.img is None:
+        predict(opt.img)
+    elif not opt.learn is None:
+        learning(opt.learn)
     elif not opt.test is None:
-        testing()
+        testing(opt.test)
     else:
         print("Dont work?")
