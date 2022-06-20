@@ -62,7 +62,7 @@ def learning(path):
             errors.append(max_error)
 
             # --- backward --- #
-            if out != img.shape:
+            if out != img.shape or max_error < 0.01:
 
                 gradients = list()
 
